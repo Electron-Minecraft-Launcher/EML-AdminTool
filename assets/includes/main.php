@@ -14,7 +14,7 @@ define('CONFIG_FILE', 'blocked/config.json');
 
 define('ERR_MSG_LAST_V', 'Unable to get the last version of the EML AdminTool');
 define('ERR_MSG_V_LIST', 'Unable to get the list of the versions of the EML AdminTool');
-define('SERVER_URL', 'http://electron-minecraft-launcher.off/'); // TODO CHANGE THE URL
+define('SERVER_URL', 'https://admintool.electron-minecraft-launcher.ml/');
 
 define("ACCEPTED", "accepted");
 define("ADMIN", "server_admin");
