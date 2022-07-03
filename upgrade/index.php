@@ -21,7 +21,7 @@ if (!check_perm(ADMIN)) {
 
 <head>
 	<meta charset="UTF-8">
-	<title>upgrading • EML AdminTool</title>
+	<title>Upgrading • EML AdminTool</title>
 	<link rel="stylesheet" href="../assets/css/configure.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.24.0/axios.min.js"></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

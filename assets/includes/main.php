@@ -184,7 +184,7 @@ function random_str($length): string
  */
 function get_current_version(): string
 {
-	return "0.7.7-beta";
+	return "0.7.8-beta";
 }
 
 /**

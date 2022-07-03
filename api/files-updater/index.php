@@ -1,5 +1,11 @@
 <?php
 
+/** 
+ * @copyright Copyright (c) 2022, GoldFrite
+ * @license GNU GPLv3
+ */
+
+
 header("Content-Type: application/json; charset=UTF-8");
 
 $files_array = [];

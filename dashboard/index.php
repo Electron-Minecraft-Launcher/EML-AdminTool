@@ -70,7 +70,7 @@ check_auth();
       <div style="display: inline-block; margin-left: 20px; height: 45px; width: 1px; background: white"></div>
 
       <div style="display: inline-block; margin-left: 20px;">
-        <a href="/phpinfos/" target="_blank" class="no-underline"><button class="small"><?= get_lang()->dashboard->phpInfos ?></button></a>
+        <a href="/phpinfo/" target="_blank" class="no-underline"><button class="small"><?= get_lang()->dashboard->phpInfos ?></button></a>
       </div>
 
     <?php

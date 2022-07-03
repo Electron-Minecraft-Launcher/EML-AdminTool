@@ -1,5 +1,11 @@
 <?php
 
+/** 
+ * @copyright Copyright (c) 2022, GoldFrite
+ * @license GNU GPLv3
+ */
+
+
 include('../../assets/includes/main.php');
 header("Content-Type: application/json; charset=UTF-8");
 
