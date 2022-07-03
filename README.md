@@ -19,7 +19,7 @@ You have to use a compatible **Website** host.
 You'll need at last 2 MB for the EML AdminTool. But, in practice, at last 1 or 2 GB is better, for Game files hosting. Your Website need also to be able to execute **PHP 7** (not PHP 8).
 
 See the [Releases](https://github.com/GoldFrite/EML-AdminTool/releases) and download the last one.
-Then, unzip the folder and place the content in the site files (with a FTP Client, like [WinSCP](https://winscp.net) or [FileZilla](https://filezilla-project.org)).
+Then, unzip the folder and place the content at the **root** of your website (with a FTP Client, like [WinSCP](https://winscp.net) or [FileZilla](https://filezilla-project.org)).
 
 After that, you have to create a Database.
 Finally, you could access to your EML AdminTool (at the address of the Website).
@@ -44,7 +44,7 @@ Vous devez un hébergeur de **site Web** compatible.
 Vous allez avoir besoin d'au moins 2 Mo pour l'EML AdminTool. Cependant, en pratique, vous devrez plutôt utiliser au moins 1 ou 2 Go, pour l'hébergement des fichiers du Jeu. Votre site Web doit aussi pouvoir exécute **PHP 7** (pas PHP 8).
 
 Rendez-vous sur la page [Releases](https://github.com/GoldFrite/EML-AdminTool/releases) et télécharger la dernière release.
-Puis, dézippez le dossier et placez le contenu dans les fichiers du site (avec un client FTP, comme [WinSCP](https://winscp.net) ou [FileZilla](https://filezilla-project.org/)).
+Puis, dézippez le dossier et placez le contenu à la **racine** (root) de votre site Web (avec un client FTP, comme [WinSCP](https://winscp.net) ou [FileZilla](https://filezilla-project.org/)).
 
 Après cela, vous devrez créer une Base de données.
 Enfin, vous pourrez accéder à votre EML AdminTool (à l'adresse du site).
