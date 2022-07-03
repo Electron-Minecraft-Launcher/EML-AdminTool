@@ -1,0 +1,36 @@
+/** 
+ * @copyright Copyright (c) 2021, GoldFrite
+ * @license GNU GPLv3
+ */
+
+@import url('/assets/css/main.css');
+
+body {
+	margin: 0;
+	background-color: var(--background-color);
+}
+
+h3 {
+	font-size: 32px;
+	color: white;
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+
+h4 {
+	font-size: 22px;
+	color: white;
+	margin-top: 30px;
+	margin-bottom: 20px;
+}
+
+p {
+	text-align: justify;
+}
+
+img {
+	width: 600px;
+	border-radius: 5px;
+	text-align: center;
+	margin: 10px 0;
+}

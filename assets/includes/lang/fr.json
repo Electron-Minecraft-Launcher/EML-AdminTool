@@ -1,0 +1,163 @@
+{
+  "main": {
+    "home": "Accueil",
+    "documentation": "Documentation",
+    "validate": "Valider",
+    "send": "Envoyer",
+    "select": "Sélectionner",
+    "clickHere": "Cliquez ici.",
+    "tryAgain": "Veuillez réessayer",
+    "apiError": "Une erreur est survenue avec l'API.",
+    "joinDiscord": "Ressayez plus tard, ou rendez-vous sur <a href=\"discord.gg/FePaQ7v\" class=\"a\">ce Discord</a>.",
+    "digit": "Code de sécurité à 3 chiffres",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "configure": {
+    "conf2": {
+      "t1": "Votre langue a bien été enregistrée !",
+      "st1": "Vous allez maintenant avoir besoin d'une Base de données",
+      "ph1": "Hôte (host)",
+      "ph2": "Nom de la base de données (name)",
+      "ph3": "Nom d'utilisateur (username)",
+      "ph4": "Mot de passe (password) - facultatif",
+      "help": "Vous ne savez pas comment configurer votre Base de donnée ?",
+      "e": "Votre Base de données semble ne pas fonctionner ou<br>ne pas exister."
+    },
+    "conf3": {
+      "t1": "Votre Base de données fonctionne très bien !",
+      "st1": "Maintenant, vous allez devoir choisir le nom de votre Serveur",
+      "p1": "Si vous avez commandé un Launcher depuis Electron Minecraft Launcher,<br>veuillez indiquer le même nom de serveur que celui dans votre commande.",
+      "ph1": "Nom du serveur",
+      "ph2": "Mot de passe du compte serveur",
+      "ph3": "Confirmation du mot de passe",
+      "e": "Le mot de passe et sa confirmation sont différents."
+    },
+    "conf4": {
+      "t1": "Bravo !",
+      "t2": "Vous avez fini la configuration<br>de l'EML AdminTool !",
+      "t3": "Vous allez pouvoir commencer à l'utiliser !"
+    }
+  },
+  "help": {
+    "help": "Aide ",
+    "home": {
+      "helpCenter": "Centre d'aide",
+      "helpCenterDesc": "C'est ici que vous pouvez trouver certains tutoriels ou des réponses à vos questions à propos de l'EML AdminTool<br>\nSi vous avez une suggestion de tutoriel ou une question, vous pouvez l'indiquer dans ce salon <a href=\"https://discord.gg/AmC5MKHWgB\" target=\"_blank\">ce salon Discord</a>.",
+      "configuration": "Configuration",
+      "launcherManagement": "Gestion du Launcher",
+      "database": "Configurer une Base de données",
+      "pin": "Code de sécurité à 3 chiffres",
+      "filesUpdater": "Gérer les fichiers que le Launcher doit télécharger",
+      "bootstrap": "Gérer le bootstrap de votre Launcher",
+      "maintenance": "Gérer la maintenance de votre Launcher",
+      "news": "Ajouter, modifier et supprimer des news"
+    },
+    "database": {
+      "database": "Base de données",
+      "content": "<p>\n<b>Une Base de données est nécessaire au fonctionnement de l'EML AdminTool.<br>\nLa manière exacte de créer une Base de données est dépendante de votre hébergeur, bien que les étapes soient globalement les mêmes.</b>\n</p>\n\n\n<h4>Connexion</h4>\n\n<p>\nConnectez-vous à l'espace de gestion de votre site Web (Plesk, cPanel, ...).<br>\nRecherchez la section \"Base de données\".\n</p>\n\n\n<h4>Créer une Base de données</h4>\n\n<p>\nVous devez arriver sur une page vous proposant de créer une base de donnée puis de choisir un nom d'utilisateur, un mot de passe et un nom pour la base de données.<br>\nVeillez à choisir un mot de passe assez robuste : la Base de données contient des informations pouvant compromettre la sécurité de votre site Web et de votre Launcher. Ne mettez ni caractères spéciaux, ni espaces, tirets, ... dans le nom d'utilisateur et le nom de la Base de données. Utilisez uniquement des lettres minuscules et des chiffres (et des underscores <code>_</code>).<br>\nVotre Base de données est maintenant créée !\n</p>\n\n\n<h4>Lors de la configuration de l'EML AdminTool</h4>\n\n<p>\nLors de la configuration de l'EML AdminTool, une base de données vous est demandée.<br>\nVous pourrez certainement retrouver les informations de votre Base de données sur votre panel de gestion du site Web.<br>\nAttention ! Il est inutile de mettre <code>:3306</code> après l'hôte de la base de données !\n</p>"
+    },
+    "pin": {
+      "pin": "Code de sécurité à 3 chiffres",
+      "content": "<p>\n<b>Sur cette page, vous comprendrez à quoi sert le Code de sécurité à 3 chiffres, ainsi que comment le trouver et l'obtenir.</b>\n</p>\n\n\n<h4>Qu'est-ce que le Code de sécurité à 3 chiffres ?</h4>\n\n<p>\nLe Code de sécurité à 3 chiffres est une sécurité permettant d'éviter le spam de demandes de création de compte sur l'EML AdminTool. En effet, lorsque quelqu'un souhaite se créer un compte <i>Standard</i> (opposé au compte <i>Administrateur</i> ayant toutes les permissions et choisissant les permissions des comptes <i>Standards</i>), le compte Administrateur reçoit une demande d'acceptation de compte et accorde certaines permissions ou non au compte en question.<br>\nSi n'importe qui pouvait se créer un compte, l'Administrateur serait submergé par les demandes.<br>\nLe Code de sécurité à 3 chiffres doit donc être donné uniquement à des membres du Staff du serveur Minecraft de cet EML AdminTool.\n</p>\n\n\n<h4>Comment trouver et utiliser le Code de sécurité à 3 chiffres ? – Pour l'Administrateur</h4>\n\n<p>\nLe Code de sécurité à 3 chiffres est généré aléatoirement lors de la configuration de l'EML AdminTool. Vous pouvez le retrouver sur l'espace Administrateur de gestion de l'EML AdminTool<br>\n<br>\nVous devez donner ce code uniquement à des personnes de confiance qui auront besoin d'utiliser l'EML AdminTool. Ce code sera demandé lors de la création de compte. Une fois cela fait, vous pourrez attribuer des permissions à ce nouvel utilisateur.<br>\n<br>\nSi le code est divulgué et que vous recevez des demandes de création de compte trop régulièrement et trop nombreuses, vous pouvez le régénérer sur la page de gestion de l'EML AdminTool.\n</p>\n\n\n<h4>Comment obtenir le Code de sécurité à 3 chiffres ? – Pour les utilisateurs Standards</h4>\n\n<p>\nVous devez le demander à l'Administrateur de l'EML AdminTool. Celui-ci peut refuser de vous le donner s'il juge que vous n'avez pas besoin d'accéder à l'EML AdminTool.<br>\nCependant, il est indispensable de le connaître pour pouvoir vous inscrire sur l'EML AdminTool. Attention ! Vous n'êtes pas avertis lorsque le Code de sécurité à 3 chiffres que vous avez indiqué est incorrecte !<br>\nUne fois que vous vous serez inscrit, l'Administrateur pourra choisir de vous refuser ou de vous accepter. Dans ce second cas, il pourra vous attribuer certaines permissions.\n</p>"
+    },
+    "filesUpdater": {
+      "filesUpdater": "Files Updater",
+      "content": "<p>\n<b>Dans ce tutoriel, vous pourrez comprendre en quelques lignes le fonctionnement du téléchargement des fichiers du Jeu par le Launcher.</b>\n</p>\n\n\n<h4>Utilisation simple</h4>\n\n<p>\nIl suffit d'uploader des fichiers depuis l'option Files Updater pour que le Launcher le télécharge.<br>\nDe plus, le Launcher compare les hash de chaque fichier déjà téléchargé avec le hash du fichier uploadé sur l'EML AdminTool. Si les hash sont différents, le fichier sera re-téléchargé. Cela permet d'optimiser le temps de chargement du Launcher<br>\n<br>\nL'ensemble des fichiers que le Launcher doit télécharger s'appelle le <i>ModPack</i>. Celui-ci doit se composer ainsi :\n<code class=\"block\">\nconfig/<br>\nmods/<br>\nresourcepacks/<br>\nminecraft.jar<br>\nservers.dat<br>\n</code>\nDans le dossier <i>config</i> se trouvent les configurations des mods.<br>\nDans le dossier <i>mods</i> se trouvent les mods que le Launcher doit télécharger.<br>\nDans le dossier <i>resourcepacks</i> se trouvent les packs de textures que le Launcher doit télécharger pour le joueur.<br>\nLe fichier <i>minecraft.jar</i> correspond à Forge dans la bonne version. Si votre Launcher lance Minecraft en version Vanilla, vous pouvez ne pas le mettre. Si votre Launcher lance Minecraft avec Forge, vous devez télécharger l'installateur (installer) Forge correspondant à la version de Forge souhaitée depuis <a href=\"https://files.minecraftforge.net/net/minecraftforge/forge/\" target=\"_blank\">ce site</a>. Uploadez dans l'EML AdminTool <b>ce même fichier</b> ! Il est inutile d'exécuter ce fichier avant de le placer dans le ModPack !<br>\nLe fichier <i>servers.dat</i> est facultatif. Il contient la liste des serveurs multijoueurs qui devront être renseignés dans le menu Multijoueurs (Multiplayers) de Minecraft. Pour plus d'informations, veuillez vous référer à <a href=\"https://minecraft.fandom.com/wiki/Servers.dat_format\" target=\"_blank\">cette page</a>.<br>\n<br>\nSi le(s) fichier(s) que vous souhaitez uploader est/sont lourd(s), attendez-vous à un temps de chargement.\n</p>\n\n\n<h4>Utilisation complexe</h4>\n\n<p>\nL'option Files Updater est limitée en fonctionnalités.<br>\nSi vous souhaitez transférer une grande quantité de fichiers/dossiers, déplacer des éléments vers d'autres répertoires, ..., il est conseillé de passer par un client FTP tel que WinSCP ou FileZilla et de vous connecter avec les identifiants trouvables sur le panel de gestion du site (Plesk, cPanel, ...).<br>\nLes fichiers se trouvent dans le répertoire <code>/api/files-updater/files/</code>.\n</p>"
+    },
+    "bootstrap": {
+      "bootstrap": "Bootstrap",
+      "content": "<p>\n<b>Ce tutoriel vous explique ce qu'est le bootstrap du Launcher et vous explique comment l'utiliser correctement.</b>\n</p>\n\n\n<h4>Qu'est ce que le bootstrap ?</h4>\n\n<p>\nUn bootstrap est un logiciel qui se lance automatiquement au démarrage du Launcher afin de vérifier que ce dernier est à jour. Si ce n'est pas le cas, il télécharge automatiquement la nouvelle mise à jour. Cela permet aux utilisateurs du Launcher de ne pas avoir à se rendre sur votre site pour mettre à jour leur Launcher.\n</p>\n\n\n<h4>Utiliser le bootstrap</h4>\n\n<p>\nPour appliquer une mise à jour du Launcher, il faut passer par l'option Bootstrap. Vous uploaderez alors un fichier pour chaque système d'exploitation : Windows, macOS et Linux (Debian et Ubuntu). Si votre Launcher n'est pas compatible avez l'un de ces systèmes, uploadez un fichier \"au hasard\" finissant par la bonne extension (<code>.exe</code>, <code>.app</code> ou <code>.deb</code>). En effet, tous les champs doivent être complétés.<br>\nVous devrez aussi indiquer la nouvelle version. Cette nouvelle version doit obligatoirement être supérieure à la version actuellement en ligne. Par exemple, si la version actuelle est la <code>1.0.3</code>, la nouvelle version pourrait être <code>1.0.4</code>, <code>1.1.2</code> ou encore <code>2.2.0</code> (par exemple).<br>\n<br>\nSi vos fichiers ne s'uploadent pas, c'est qu'ils peuvent être trop lourds. Par défaut, la limite indiquée sur l'EML AdminTool est de 500 Mo, mais PHP peut aussi appliquer une limite. Pour modifier cette limite, il faut modifier les valeurs <code>post_max_size</code> à <code>1500M</code> et <code>upload_max_size</code> à fichier <code>500M</code> du fichier <code>php.ini</code> (si votre hébergeur le permet). Dans le cas contraire... vous êtes bloqués 😅...\n</p>"
+    },
+    "maintenance": {
+      "maintenance": "Maintenance",
+      "content": "<p>\n<b>Ce tutoriel vous explique ce qu'est la maintenance du Launcher, à quoi elle sert.</b>\n</p>\n\n\n<h4>Qu'est-ce que la maintenance ?</h4>\n\n<p>\nActiver la maintenance du Launcher permet de bloquer l'accès au Launcher aux joueurs.<br>\nIl est recommandé de ne l'activer qu'en cas de réelle nécessité, par exemple, lorsqu'une faille de sécurité importante est découverte. Vous pouvez aussi informer les utilisateurs du Launcher de la raison de cette maintenance, et planifier une date de fin approximative.<br>\nAttention, cette date de fin ne désactive pas automatiquement la maintenance, mais informe juste les joueurs d'une éventuelle fin de maintenance à cette date-là ; la maintenance doit être désactivée manuellement.<br>\n<br>\nIl faut aussi comprendre qu'activer la maintenance n'est pas une manière infaillible de bloquer l'accès au Launcher (dû à la licence du Launcher obligeant de divulguer le code source du Launcher et donc de le modifier).\n</p>\n\n\n<h4>Mettre à jour un Launcher en maintenance</h4>\n\n<p>\nUne fois la maintenance activée, vous souhaiterez certainement effectuer une mise à jour de votre Launcher.<br>\n<br>\nAfin de pouvoir accéder au Launcher malgré la maintenance activée, il faut modifier une valeur dans le fichier <code>package.json</code>.<br>\nRepérez la ligne suivante :\n<code class=\"block\">\n\"bypassMaintenance\": false\n</code>\nChangez la valeur à <code>true</code> de telle façon :\n<code class=\"block\">\n\"bypassMaintenance\": true\n </code>\nLa maintenance n'affectera plus <b>votre</b> Launcher durant les tests de mise à jour.<br>\nAvant d'exporter votre Launcher et de proposer une mise à jour, n'oubliez pas de redéfinir cette valeur sur <code>false</code>.\n</p>"
+    },
+    "news": {
+      "news": "News",
+      "content": "<p>\n<b>Dans ce tutoriel, il vous sera expliqué comment ajouter, modifier ou supprimer des News depuis l'EML AdminTool, à l'aide de la mise en forme HTML.</b>\n</p>\n\n\n<h4>Utilisation simple</h4>\n\n<p>\nL'utilisation des News sur l'EML AdminTool est simple.<br>\nPour ajouter une News, vous devez mettre un court titre, et un contenu.<br>\nDe manière facultative, vous pouvez aussi ajouter une image dans le champ <i>Lien de l'image</i>. Cette image peut être hébergée sur un hébergeur d'image, comme <a href=\"https://zupimages.net/\" target=\"_blank\">Zupimages</a>. Si vous ne voulez pas d'image, laissez le champ vide.\n</p>\n\n\n<h4>Mise en forme HTML</h4>\n\n<p>\nDans le contenu de la News, vous pouvez ajouter une mise en forme. Cette mise en forme est au format HTML :\n<code class=\"block\">\n&lt;b&gt;Gras&lt;/b&gt;<br>\n&lt;i&gt;Italique&lt;/i&gt;<br>\n&lt;u&gt;Souligné&lt;/u&gt;<br>\n&lt;a href=\"https://votrelien.com/\"&gt;Lien&lt;/a&gt;\n</code>\nRésultat :\n<codeblock style=\"font-family: 'Open Sans', sans-serif;\">\n<b>Gras</b><br>\n<i>Italique</i><br>\n<u>Souligné</u><br>\n<a href=\"https://votrelien.com\">Lien</a>\n</code>\nAttention ! Pour le lien, il ne faut pas oublier de spécifier le <code>http://</code> ou <code>https://</code> dans le <code>href=\"\"</code>, sans quoi le lien ne sera pas valide, et donc inutilisable pas l'utilisateur du Launcher.\n</p>"
+    }
+  },
+  "loginAndSignup": {
+    "login": "Connexion",
+    "logIn": "Connectez-vous",
+    "signup": "Inscription",
+    "signUp": "Inscrivez-vous",
+    "passwordConfirmation": "Confirmation du mot de passe",
+    "pin": "Code de sécurité à 3 chiffres :",
+    "noAccount": "Vous n'avez pas encore de compte ? <a href=\"signup/\">Créez-en un ici.</a>",
+    "haveAccount": "Vous avez déjà un compte ? <a href=\"../\">Connectez-vous ici.</a>"
+  },
+  "dashboard": {
+    "homeEMLAT": "Accueil - EML AdminTool",
+    "launcherManagement": "Gestion du Launcher",
+    "loggedAs": "Connecté en tant que",
+    "manageAccount": "Gérer le compte",
+    "logout": "Déconnexion",
+    "emlatManagement": "Gestion de l'EML AdminTool",
+    "launcherInternalVersion": "Version interne du Launcher",
+    "phpInfos": "PHP Infos",
+    "error": "<p style=\"margin-top: 40px; color: var(--error-red)\">Vous n'avez pas encore été accepté, ou toutes vos autorisations ont été supprimées.<br>De plus, à des fins de sécurité, vous ne serez pas avertis si le Code de sécurité à 3 chiffres&nbsp;&nbsp;<a href=\"/help/pin/\" target=\"_blank\"><i class=\"fas fa-question-circle\"></i></a>&nbsp;&nbsp;&nbsp;que vous avez indiqué lors de votre inscription est incorrect.<br>Si vous savez que vous n'auriez pas du avoir créé un compte, supprimez-le.<br>Si vous pensez que ce message n'est pas normal, contactez votre Administrateur.</p>"
+  },
+  "account": {
+    "account": "Compte",
+    "infos": "Informations",
+    "username": "Nom d'utilisateur :",
+    "usernamePlaceholder": "Obligatoire",
+    "newPassword": "Nouveau mot de passe :",
+    "newPasswordConfirmation": "Confirmez le mot de passe :",
+    "newPasswordPlaceholder": "Laissez vide si vou ne souhaitez pas changer",
+    "save": "Enregistrer",
+    "deleteAccount": "Supprimer le compte",
+    "perms": "Permissions",
+    "accountStatus": "Status du compte :"
+  },
+  "emlat": {
+    "emlat": "Gérer l'EML AdminTool",
+    "infoAbout": "Informations sur",
+    "serverName": "Nom du serveur :",
+    "editServerName": "Pour modifier le nom du serveur, modifiez votre nom d'utilisateur <a href=\"/dashboard/account\">ici</a>.",
+    "pin": "Code de sécurité à 3 chiffres :",
+    "regenerate": "Régénérer",
+    "usersAndPerms": "Utilisateurs & Permissions",
+    "perms": "Permissions",
+    "username": "Nom d'utilisateur",
+    "admin": "Admin",
+    "filesUpdater": "Files Updater",
+    "bootstrap": "Bootstrap",
+    "maintenance": "Maintenance",
+    "sendNews": "Envoyer des News",
+    "editDelNews": "Modifier/Supprimer des News",
+    "background": "Background",
+    "actions": "Actions",
+    "none": "Aucune",
+    "save": "Enregistrer",
+    "saveInfo": "Enregistrer les modifications des permissions",
+    "delete": "Supprimer",
+    "deleteInfo": "Supprimer l'utilisateur",
+    "deleteInfo2": "Supprimer définitivement l'utilisateur",
+    "accept": "Accepter",
+    "acceptInfo": "Accepter l'utilisateur avec les permissions",
+    "waitingUsers": "Utilisateurs en attente",
+    "spams": "Spams (utilisateur avec le mauvais Code de sécurité à 3 chiffres)",
+    "spamInfo": "Il est conseillé de supprimer les utilisateurs spams environ 1 fois par mois.",
+    "currentVersion": "Version actuelle :",
+    "lastVersion": "Dernière version disponible :",
+    "xUpdatesAvailable": "mise(s) à jour disponibles(s)",
+    "installX": "Installer",
+    "xUpdates": "mise(s) à jour",
+    "reset": "Réinitialiser l'EML AdminTool"
+  },
+  "perms": {
+    "adminAccount": "Compte Admin (compte Serveur)",
+    "standardAccount": "Compte Standard",
+    "filesUpdater": "Modifier les fichiers du Jeu :",
+    "bootstrap": "Modifier le bootstrap :",
+    "maintenance": "Gérer la maintenance :",
+    "sendNews": "Envoyer des News :",
+    "editDelNews": "Modifier/Supprimer des News :",
+    "background": "Modifier le background :"
+  }
+}

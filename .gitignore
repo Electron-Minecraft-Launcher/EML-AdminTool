@@ -1,0 +1,4 @@
+*.code-workspace
+assets/includes/blocked/config.json
+.scannerwork/*
+SONAR TOKEN

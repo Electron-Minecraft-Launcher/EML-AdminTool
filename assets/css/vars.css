@@ -1,0 +1,21 @@
+:root {
+	--background-color: #1e1e1f;
+	--secondary-background-color: #232325;
+
+	--light-black: #333333;
+	--border-gray: #525860;
+	--dark-gray: #555555;
+	--gray: #a5a5a5;
+	--light-gray: #aaaaaa;
+	--input-white: #e2e2e2;
+	--dark-white: #ebebeb;
+
+	--orange: #e0600a;
+	--white-orange: #f5c4b0;
+	--light-orange: #f18456;
+	--transparent-orange: #e0600a32;
+	--transparent-light-orange: #ff9e7549;
+
+	--logout-red: #ffaaaa;
+	--error-red: #fa6666;
+}

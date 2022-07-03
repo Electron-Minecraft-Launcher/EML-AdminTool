@@ -1,0 +1,109 @@
+/** 
+ * @copyright Copyright (c) 2022, GoldFrite
+ * @license GNU GPLv3
+ */
+
+@import url('/assets/css/main.css');
+
+div.edit-del-news-div {
+	width: 576px;
+}
+
+div.edit-del-news {
+	height: 311px;
+	width: 576px;
+	background-color: #232323d9;
+	position: absolute;
+	opacity: 0;
+	transition: opacity 0.3s
+}
+
+div.edit-del-news:hover {
+	opacity: 1;
+}
+
+div.textarea {
+	min-width: 550px;
+	max-width: 550px;
+	min-height: 100px;
+	max-height: 400px;
+	display: block;
+	font-size: 14px;
+	text-align: left !important;
+	color: var(--input-white);
+	caret-color: var(--input-white);
+	background-color: var(--light-black);
+	border: 1px solid var(--border-gray);
+	border-radius: 5px;
+	outline: 0 solid var(--transparent-light-orange);
+	margin-bottom: 15px;
+	padding: 12px;
+	transition: border 0.3s, outline 0.08s;
+}
+
+label {
+	font-size: 16px;
+	color: var(--dark-white);
+	line-height: 25px;
+}
+
+table.no-style td {
+	padding: 0 10px 0 0;
+	vertical-align: top;
+}
+
+table.no-style td label {
+	line-height: 35px;
+}
+
+table.user-list {
+	border-collapse: collapse;
+	border: 1px solid var(--border-gray);
+	min-width: 100%;
+	max-width: 100%;
+}
+
+table.user-list td, table.user-list th {
+	padding: 12px;
+	color: white;
+	text-align: center;
+}
+
+table.user-list th {
+	color: white;
+	background-color: var(--light-black);
+}
+
+table.user-list tr.perms th {
+	color: white;
+	background-color: var(--dark-gray);
+	width: 100px;
+}
+
+table.user-list tr td {
+	background-color: var(--dark-white);
+	color: black;
+}
+
+
+table.small-list {
+	border-collapse: collapse;
+}
+
+table.small-list td, table.small-list th {
+	padding: 8px 12px;
+	color: white;
+	text-align: center;
+}
+
+table.small-list th {
+	color: white;
+	background-color: var(--light-black);
+}
+
+div#updates-list {
+	opacity: 0;
+	transition: all 0.3s;
+	overflow-y: hidden;
+	margin-bottom: 25px;
+}

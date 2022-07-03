@@ -1,0 +1,4 @@
+AuthUserFile ""
+AuthType Basic
+AuthName "Secure area"
+Require valid-user

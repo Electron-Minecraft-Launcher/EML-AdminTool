@@ -1,0 +1,163 @@
+{
+  "main": {
+    "home": "Home",
+    "documentation": "Documentation",
+    "validate": "Validate",
+    "send": "Send",
+    "select": "Select",
+    "clickHere": "Click here.",
+    "tryAgain": "Please try again",
+    "apiError": "An error occurred with the API.",
+    "joinDiscord": "Try again later, or join <a href=\"discord.gg/FePaQ7v\" class=\"a\">this Discord</a>.",
+    "digit": "3-digit security code",
+    "username": "Username",
+    "password": "Password",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "configure": {
+    "conf2": {
+      "t1": "Your language has been saved!",
+      "st1": "Now, you will need a Database",
+      "ph1": "Host",
+      "ph2": "Database name",
+      "ph3": "Username",
+      "ph4": "Password - optional",
+      "help": "You don't know how to configure your Database?",
+      "e": "Your Database does not seem to work or to exist."
+    },
+    "conf3": {
+      "t1": "Your Database works perfectly!",
+      "st1": "Then, you have to choose your Server name",
+      "p1": "If you ordered a Launcher from Electron Minecraft Launcher, please enter the same server name as in your order.",
+      "ph1": "Server name",
+      "ph2": "Server account password",
+      "ph3": "Password confirmation",
+      "e": "The password and its confirmation are different."
+    },
+    "conf4": {
+      "t1": "Well done!",
+      "t2": "You have finished configuring<br>the EML AdminTool!",
+      "t3": "You can start using it!"
+    }
+  },
+  "help": {
+    "help": "Help",
+    "home": {
+      "helpCenter": "Help Center",
+      "helpCenterDesc": "Here you can find all the information you need to know about the EML AdminTool.\n<br>If you have any suggestion of tutorial or question, you can tell it in <a href=\"https://discord.gg/AmC5MKHWgB\" target=\"_blank\">this Discord channel</a>.",
+      "configuration": "Configuration",
+      "launcherManagement": "Launcher Management",
+      "database": "Configure your Database",
+      "pin": "3-digit Security Code",
+      "filesUpdater": "Manage the files that the Launcher needs download",
+      "bootstrap": "Manage the bootstrap of your Launcher",
+      "maintenance": "Manage the maintenance of your Launcher",
+      "news": "Add, edit or delete news"
+    },
+    "database": {
+      "database": "Database",
+      "content": "<p>\n<b>A Database is necessary for the operation of the EML AdminTool.<br>\nThe exact way to create a database depends on your hosting company, although the steps are basically the same.</b>\n</p>\n\n\n<h4>Login</h4>\n\n<p>\nLog in to the management space of your website (Plesk, cPanel, ...).<br>\nLook for the \"Database\" section.\n</p>\n\n\n<h4>Create a Database</h4>\n\n<p>\nYou should arrive on a page offering you to create a Database and then choose a username, password and name for the Database.<br>\nBe sure to choose a strong enough password: the Database contains information that can compromise the security of your website and Launcher. Do not use special characters, spaces, dashes, ... for the username and the name of the Database. Use only lower case letters and numbers (and underscores <code>_</code>).<br>\nYour database is now created!\n</p>\n\n\n<h4>When configuring the EML AdminTool</h4>\n\n<p>\nWhen configuring the EML AdminTool, you will be asked for a database.<br>\nYou will certainly be able to find the information of your database on your website management panel.<br>\nBe careful! It is useless to put <code>:3306</code> after the database host!\n</p>"
+    },
+    "pin": {
+      "pin": "3-digit Security Code",
+      "content": "<p>\n<b>On this page, you will understand what the 3-digit Security Code is for, as well as how to find and obtain it.</b>\n</p>\n\n\n<h4>What is the 3-Digit Security Code?</h4>\n\n<p>\nThe 3-digit security code is a security feature to prevent spamming of account creation requests on EML AdminTool. When someone wants to create a Standard account (as opposed to an Administrator account that has all the permissions and chooses the Standard account permissions), the Administrator account receives an account acceptance request and grants certain permissions or not to the account in question.<br>\nIf anyone could create an account, the Administrator would be overwhelmed with requests.The 3-digit Security Code should therefore only be given to Minecraft server staff members of this EML AdminTool.\n</p>\n\n\n<h4>How to find and use the 3-digit Security Code? - For the Administrator</h4>\n\n<p>\nThe 3-digit Security Code was randomly generated for you when you configured the EML AdminTool. You can find it on the EML AdminTool Administrator panel.<br>\n<br>\nYou should only give this code to trusted people who will need to use the EML AdminTool. This code will be requested during account creation. Once this is done, you can assign permissions to this new user.<br>\n<br>\nIf the code is leaked and you receive too many regular account creation requests, you can regenerate it on the EML AdminTool management page.\n</p>\n\n\n<h4>How to get the 3-digit security code? - For Standard users</h4>\n\n<p>\nYou have to ask the EML AdminTool Administrator for it. He can refuse to give it to you if he thinks that you do not need to access the EML AdminTool.<br>\nHowever, it is essential to know it to be able to register on the EML AdminTool. Be careful ! You are not notified when the 3-digit security code you entered is incorrect!<br>\nOnce you have registered, the Administrator can choose to refuse you or to accept you. In the latter case, he/she may assign certain permissions to you.\n</p>"
+    },
+    "filesUpdater": {
+      "filesUpdater": "Files Updater",
+      "content": "<p>\n<b>In this tutorial, you will be able to understand in a few lines how the Launcher downloads Game files.</b>\n</p>\n\n\n<h4>Simple use</h4>\n\n<p>\nJust upload files from the Files Updater option and the Launcher will download it.<br>\nIn addition, the Launcher compares the hashes of each file already downloaded with the hash of the file uploaded to the EML AdminTool. If the hashes are different, the file will be re-downloaded. This optimizes the loading time of the Launcher<br>\n<br>\nThe set of files that the Launcher must download is called the <i>ModPack</i>. This should be composed as follows:\n<code class=\"block\">\nconfig/<br>\nmods/<br>\nresourcepacks/<br>\nminecraft.jar<br>\nservers.dat<br>\n</code>\nIn the <i>config</i> folder are the mods configurations files.<br>\nIn the <i>mods</i> folder are the mods that the Launcher should download.<br>\nIn the <i>resourcepacks</i> folder are the texture packs that the Launcher should download for the player.<br>\nThe <i>minecraft.jar</i> file corresponds to Forge or MCP in the correct version. If your Launcher launches Minecraft in Vanilla version, you can leave it out. If your Launcher runs Minecraft with Forge, you need to download the Forge installer for the desired Forge version from <a href=\"https://files.minecraftforge.net/net/minecraftforge/forge/\" target=\"_blank\">this website</a>. Upload <b>this same file</b> to the EML AdminTool! There is no need to run this file before placing it in the ModPack!<br>\nThe <i>servers.dat</i> file is optional. It contains the list of multiplayer servers that will need to be entered in the Multiplayer menu of Minecraft. For more information, please refer to <a href=\"https://minecraft.fandom.com/wiki/Servers.dat_format\" target=\"_blank\">this page</a>.<br>\n<br>\nIf the file(s) you want to upload is/are heavy, expect a loading time.\n</p>\n\n\n<h4>Complex use</h4>\n\n<p>\nThe Files Updater option is limited in functionality.<br>\nIf you want to transfer a large amount of files/folders, move items to other directories, ..., it is advisable to use an FTP client such as WinSCP or FileZilla and connect with the credentials found on the panel site management (Plesk, cPanel, ...).<br>\nThe files are located in the <code>/api/files-updater/files/</code> directory.\n</p>"
+    },
+    "bootstrap": {
+      "bootstrap": "Bootstrap",
+      "content": "<p>\n<b>This tutorial explains what the Launcher bootstrap is and explains how to use it correctly.</b>\n</p>\n\n\n<h4>What is a bootstrap?</h4>\n\n<p>\nA bootstrap is software that is automatically launched when the Launcher is started in order to check that the latter is up to date. If not, it automatically downloads the new update. This saves Launcher users from having to visit your site to update their Launcher.\n</p>\n\n\n<h4>Use the bootstrap</h4>\n\n<p>\nTo apply a Launcher update, you must go through the Bootstrap option. You will then upload a file for each OS: Windows, macOS and Linux (Debian and Ubuntu). If your Launcher is not compatible with one of these systems, upload a \"random\" file ending with the correct extension (<code>.exe</code>, <code>.app</code> or <code>.deb</code>). Indeed, all fields must be completed.<br>\nYou will also need to indicate the new version. This new version must be superior to the version currently online. For example, if the current version is <code>1.0.3</code>, the new version could be <code>1.0.4</code>, <code>1.1.2</code> or <code >2.2.0</code> (for example).<br>\n<br>\nIf your files are not uploading, they may be too large. By default, the limit indicated on the EML AdminTool is 500 MB, but PHP can also apply a limit. To modify this limit, it is necessary to modify the values <code>post_max_size</code> to <code>1500M</code> and <code>upload_max_size</code> to file <code>500M</code> of the file <code >php.ini</code> (if your host allows it). Otherwise... you're stuck 😅...\n</p>"
+    },
+    "maintenance": {
+      "maintenance": "Maintenance",
+      "content": "<p>\n<b>This tutorial explains what Launcher maintenance is, what it is for.</b>\n</p>\n\n\n<h4>What is maintenance?</h4>\n\n<p>\nEnabling Launcher maintenance will block access to the Launcher for players.<br>\nIt is recommended to activate it only in case of real necessity, for example, when a major security vulnerability is discovered. You can also notify Launcher users of the reason for this maintenance, and schedule an approximate end date.<br>\nPlease note that this end date does not automatically deactivate maintenance, but just informs players of a possible end of maintenance on that date; maintenance must be disabled manually.<br>\n<br>\nIt should also be understood that activating maintenance is not a foolproof way to block access to the Launcher (due to the Launcher license obliging to disclose the source code of the Launcher and therefore to modify it).\n</p>\n\n\n<h4>Update a Launcher in maintenance</h4>\n\n<p>\nOnce maintenance is enabled, you may want to update your Launcher.<br>\n<br>\nIn order to be able to access the Launcher despite the maintenance activated, you must modify a value in the file <code>package.json</code>.<br>\nLocate the following line:\n<code class=\"block\">\n\"bypassMaintenance\": false\n</code>\nChange the value to <code>true</code> like so:\n<code class=\"block\">\n\"bypassMaintenance\": true\n</code>\nMaintenance will no longer affect <b>your</b> Launcher during update testing.<br>\nBefore exporting your Launcher and offering an update, remember to set this value back to <code>false</code>.\n</p>"
+    },
+    "news": {
+      "news": "News",
+      "content": "<p>\n<b>In this tutorial, you will be explained how to add, edit or delete News from the EML AdminTool, using HTML formatting.</b>\n</p>\n\n\n<h4>Simple use</h4>\n\n<p>\nUsing News on the EML AdminTool is simple.<br>\nTo add a News, you must put a short title, and a content.<br>\nOptionally, you can also add an image in the <i>Image Link</i> field. This image can be hosted on an image host, such as <a href=\"https://zupimages.net/\" target=\"_blank\">Zupimages</a>. If you don't want an image, leave the field blank.\n</p>\n\n\n<h4>HTML formatting</h4>\n\n<p>\nIn the News content, you can add formatting. This formatting is in HTML format:\n<code class=\"block\">\n&lt;b&gt;Bold&lt;/b&gt;<br>\n&lt;i&gt;Italic&lt;/i&gt;<br>\n&lt;u&gt;Underline&lt;/u&gt;<br>\n&lt;a href=\"https://yourlink.com/\"&gt;Link&lt;/a&gt;\n</code>\nResult:\n<codeblock style=\"font-family: 'Open Sans', sans-serif;\">\n<b>Bold</b><br>\n<i>Italic</i><br>\n<u>Underline</u><br>\n<a href=\"https://yourlink.com\">Link</a>\n</code>\nBe careful! For the link, do not forget to specify the <code>http://</code> or <code>https://</code> in the <code>href=\"\"</code>, without which the link will not be valid, and therefore unusable by the Launcher user.\n</p>"
+    }
+  },
+  "loginAndSignup": {
+    "login": "Login",
+    "logIn": "Log in",
+    "signup": "Registration",
+    "signUp": "Register",
+    "passwordConfirmation": "Password confirmation",
+    "pin": "3-digit security code:",
+    "noAccount": "You don't have an account? <a href=\"signup/\">Create one here</a>",
+    "haveAccount": "You already have an account? <a href=\"../\">Log in here.</a>"
+  },
+  "dashboard": {
+    "homeEMLAT": "Home - EML AdminTool",
+    "launcherManagement": "Launcher Management",
+    "loggedAs": "Logged as",
+    "manageAccount": "Manage account",
+    "logout": "Logout",
+    "emlatManagement": "Manage EML AdminTool",
+    "launcherInternalVersion": "Launcher internal version",
+    "phpInfos": "PHP info",
+    "error": "<p style=\"margin-top: 40px; color: var(--error-red)\">You are still not accepted, or all your authorizations have been deleted.<br>Moreover, for security, you will be not warned if the 3-digit security code &nbsp;&nbsp;<a href=\"/help/pin/\" target=\"_blank\"><i class=\"fas fa-question-circle\"></i></a>&nbsp;&nbsp;&nbsp;you typed during your registration is not correct.<br>If you know that you did not have to create this account, please delete it.<br>If you think that this message is not normal, please contact your Administrator</p>"
+  },
+  "account": {
+    "account": "Account",
+    "infos": "Informations",
+    "username": "Username:",
+    "usernamePlaceholder": "Required",
+    "newPassword": "New password:",
+    "newPasswordConfirmation": "Confirm password:",
+    "newPasswordPlaceholder": "Leave empty if you wont change:",
+    "save": "Save",
+    "deleteAccount": "Delete account",
+    "perms": "Permissions",
+    "accountStatus": "Account status:"
+  },
+  "emlat": {
+    "emlat": "Manage EML AdminTool",
+    "infoAbout": "Informations about",
+    "serverName": "Server name:",
+    "editServerName": "To change the name of your server, please change your username <a href=\"/dashboard/account\">here</a>.",
+    "pin": "3-digit security code:",
+    "regenerate": "Regenerate",
+    "usersAndPerms": "Users & Permissions",
+    "perms": "Permissions",
+    "username": "Username",
+    "admin": "Admin",
+    "actions": "Actions",
+    "filesUpdater": "Files Updater",
+    "bootstrap": "Bootstrap",
+    "maintenance": "Maintenance",
+    "sendNews": "Send News",
+    "editDelNews": "Edit/Delete News",
+    "background": "Background",
+    "none": "None",
+    "save": "Save",
+    "saveInfo": "Save the permissions",
+    "delete": "Delete",
+    "deleteInfo": "Delete the user",
+    "deleteInfo2": "Delete definitively the user",
+    "accept": "Accept",
+    "acceptInfo": "Accept the user wits this permissions",
+    "waitingUsers": "Waiting users",
+    "spams": "Spams (users with the bad 3-digit Security Code)",
+    "spamInfo": "It is recommended to delete spam users about once a month.",
+    "currentVersion": "Current version:",
+    "lastVersion": "Last version available:",
+    "xUpdatesAvailable": "update(s) available(s)",
+    "installX": "Install",
+    "xUpdates": "updates(s)",
+    "reset": "Reset EML AdminTool"
+  },
+  "perms": {
+    "adminAccount": "Admin Account (Server account)",
+    "standardAccount": "Standard Account",
+    "filesUpdater": "Edit Game's files:",
+    "bootstrap": "Edit bootstrap:",
+    "maintenance": "Manage maintenance:",
+    "sendNews": "Send News:",
+    "editDelNews": "Edit/Delete News:",
+    "background": "Edit background:"
+  }
+}

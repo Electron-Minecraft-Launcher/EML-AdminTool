@@ -1,0 +1,51 @@
+/** 
+ * @copyright Copyright (c) 2022, GoldFrite
+ * @license GNU GPLv3
+ */
+
+@import url('/assets/css/main.css');
+
+button.emlat-option {
+	width: 150px;
+	height: 150px;
+	padding: 0;
+	display: inline;
+	margin: 50px 15px;
+	overflow: hidden;
+}
+
+button.emlat-option:hover {
+	height: 180px;
+	transform: scale(105%);
+}
+
+img.emlat-option {
+	width: 150px;
+	filter: brightness(10);
+	margin: 0;
+	transition: all 0.3s ease;
+	-webkit-transition: all 0.3s ease;
+}
+
+button.emlat-option:hover img.emlat-option {
+	filter: brightness(1);
+	transition: all 0.3s ease;
+	-webkit-transition: all 0.3s ease;
+}
+
+p.emlat-option {
+	text-decoration: none !important;
+	font-weight: 400;
+	margin: 0;
+	position: relative;
+	top: -10px
+}
+
+button.small, button.logout {
+	top: -15px;
+}
+
+.user-infos {
+	transition: opacity 0.3s, height 0.3s;
+	overflow-y: hidden;
+}
