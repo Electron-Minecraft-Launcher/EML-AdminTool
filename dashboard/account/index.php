@@ -5,14 +5,14 @@
  * @license GNU GPLv3
  */
 
-include('../../assets/includes/main.php');
+include '../../assets/includes/main.php';
 check_config();
 check_auth();
 
-$get_user_infos = $db->prepare('SELECT * FROM users WHERE name = ?');
-$get_user_infos->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
+$get_user_info = $db->prepare('SELECT * FROM users WHERE name = ?');
+$get_user_info->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
 
-$user_infos = $get_user_infos->fetch();
+$user_info = $get_user_info->fetch();
 
 ?>
 
@@ -35,7 +35,7 @@ $user_infos = $get_user_infos->fetch();
 
 			<div class="div">
 
-				<h4><?= get_lang()->account->infos ?></h4>
+				<h4><?= get_lang()->account->info ?></h4>
 
 				<form method="POST" action="edit_account.php">
 
@@ -91,7 +91,7 @@ $user_infos = $get_user_infos->fetch();
 						<td>
 							<input type="text" name="username" id="username" value="<?php
 
-																																			if ($user_infos['server_admin'] == 1) {
+																																			if ($user_info['server_admin'] == 1) {
 																																				echo get_lang()->perms->adminAccount;
 																																			} else {
 																																				echo get_lang()->perms->standardAccount;
@@ -102,22 +102,22 @@ $user_infos = $get_user_infos->fetch();
 				</table>
 
 				<label for="files-updater"><?= get_lang()->perms->filesUpdater ?>&nbsp;&nbsp;</label>
-				<input type="text" name="files-updater" id="files-updater" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_infos[FILES_UPDATER]) ?>" disabled>&nbsp;&nbsp;&nbsp;
+				<input type="text" name="files-updater" id="files-updater" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_info[FILES_UPDATER]) ?>" disabled>&nbsp;&nbsp;&nbsp;
 
 				<label for="bootstrap"><?= get_lang()->perms->bootstrap ?>&nbsp;&nbsp;</label>
-				<input type="text" name="bootstrap" id="bootstrap" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_infos[BOOTSTRAP]) ?>" disabled>&nbsp;&nbsp;&nbsp;
+				<input type="text" name="bootstrap" id="bootstrap" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_info[BOOTSTRAP]) ?>" disabled>&nbsp;&nbsp;&nbsp;
 
 				<label for="maintenance"><?= get_lang()->perms->maintenance ?>&nbsp;&nbsp;</label>
-				<input type="text" name="maintenance" id="maintenance" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_infos[MAINTENANCE]) ?>" disabled>&nbsp;&nbsp;&nbsp;
+				<input type="text" name="maintenance" id="maintenance" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_info[MAINTENANCE]) ?>" disabled>&nbsp;&nbsp;&nbsp;
 
 				<label for="send-news"><?= get_lang()->perms->sendNews ?>&nbsp;&nbsp;</label>
-				<input type="text" name="send-news" id="send-news" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_infos[SEND_NEWS]) ?>" disabled>&nbsp;&nbsp;&nbsp;<br>
+				<input type="text" name="send-news" id="send-news" class="inline-block" style="width: 50px" value="<?= check_current_perm($user_info[SEND_NEWS]) ?>" disabled>&nbsp;&nbsp;&nbsp;<br>
 
 				<label for="edit-del-news"><?= get_lang()->perms->editDelNews ?>&nbsp;&nbsp;</label>
-				<input type="text" name="edit-del-news" id="edit-del-news" class="inline-block no-margin" style="width: 50px" value="<?= check_current_perm($user_infos[EDIT_DEL_NEWS]) ?>" disabled>&nbsp;&nbsp;&nbsp;
+				<input type="text" name="edit-del-news" id="edit-del-news" class="inline-block no-margin" style="width: 50px" value="<?= check_current_perm($user_info[EDIT_DEL_NEWS]) ?>" disabled>&nbsp;&nbsp;&nbsp;
 
 				<label for="background"><?= get_lang()->perms->background ?>&nbsp;&nbsp;</label>
-				<input type="text" name="background" id="background" class="inline-block no-margin" style="width: 50px" value="<?= check_current_perm($user_infos[BACKGROUND]) ?>" disabled>
+				<input type="text" name="background" id="background" class="inline-block no-margin" style="width: 50px" value="<?= check_current_perm($user_info[BACKGROUND]) ?>" disabled>
 
 			</div>
 

@@ -22,24 +22,24 @@ function dir_to_array($dir): void
 			if (is_dir($dir . "/" . $value)) {
 				dir_to_array($dir . "/" . $value);
 			} else {
-				$hash = hash_file('sha1', $dir . "/" . $value);
+				$path = preg_replace("/^files\//", "", $dir . "/" . $value);
 				$size = filesize($dir . "/" . $value);
-				$path = str_replace("files/", "", $dir . "/" . $value);
+				$sha1 = hash_file('sha1', $dir . "/" . $value);
 				$url = "http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . $dir . "/" . $value;
-				if (strpos($path, "libraries") !== false) {
+				if (strpos($path, "libraries")) {
 					$type = "LIBRARY";
-				} else if (strpos($path, "mods") !== false) {
+				} else if (strpos($path, "mods")) {
 					$type = "MOD";
-				} else if (strpos($path, "versions") !== false) {
+				} else if (strpos($path, "versions")) {
 					$type = "VERIONSCUSTOM";
 				} else {
 					$type = "FILE";
 				}
 
 				array_push($files_array, array(
-					"hash" => $hash,
-					"size" => $size,
 					"path" => $path,
+					"size" => $size,
+					"sha1" => $sha1,
 					"url" => $url,
 					"type" => $type
 				));

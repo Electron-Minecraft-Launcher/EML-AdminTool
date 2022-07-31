@@ -6,7 +6,7 @@
  */
 
  
-include('../../assets/includes/main.php');
+include '../../assets/includes/main.php';
 header("Content-Type: application/json; charset=UTF-8");
 
 $get_news = $db->query('SELECT * FROM news ORDER BY id DESC');

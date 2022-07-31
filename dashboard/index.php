@@ -5,7 +5,7 @@
  * @license GNU GPLv3
  */
 
-include('../assets/includes/main.php');
+include '../assets/includes/main.php';
 check_config();
 check_auth();
 
@@ -24,11 +24,11 @@ check_auth();
 
   <h1 class="center">
     <span id="h1" style="cursor: pointer;">
-      <?= get_config()->infos->serverName ?> AdminTool&nbsp;&nbsp;<i id="caret" class="fas fa-caret-right" style="transform: rotate(0deg); transition: transform 0.3s"></i>
+      <?= get_config()['info']['server_name'] ?> AdminTool&nbsp;&nbsp;<i id="caret" class="fas fa-caret-right" style="transform: rotate(0deg); transition: transform 0.3s"></i>
     </span>
   </h1>
 
-  <div class="user-infos center" id="user-infos" style="height: 0px; opacity: 0">
+  <div class="user-info center" id="user-info" style="height: 0px; opacity: 0">
 
     <div style="display: inline-block">
       <p style="margin-bottom: 0"><?= get_lang()->dashboard->loggedAs ?></p>
@@ -70,7 +70,7 @@ check_auth();
       <div style="display: inline-block; margin-left: 20px; height: 45px; width: 1px; background: white"></div>
 
       <div style="display: inline-block; margin-left: 20px;">
-        <a href="/phpinfo/" target="_blank" class="no-underline"><button class="small"><?= get_lang()->dashboard->phpInfos ?></button></a>
+        <a href="/phpinfo/" target="_blank" class="no-underline"><button class="small"><?= get_lang()->dashboard->phpinfo ?></button></a>
       </div>
 
     <?php

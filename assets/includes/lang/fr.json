@@ -98,12 +98,12 @@
     "logout": "Déconnexion",
     "emlatManagement": "Gestion de l'EML AdminTool",
     "launcherInternalVersion": "Version interne du Launcher",
-    "phpInfos": "PHP Infos",
+    "phpinfo": "PHP info",
     "error": "<p style=\"margin-top: 40px; color: var(--error-red)\">Vous n'avez pas encore été accepté, ou toutes vos autorisations ont été supprimées.<br>De plus, à des fins de sécurité, vous ne serez pas avertis si le Code de sécurité à 3 chiffres&nbsp;&nbsp;<a href=\"/help/pin/\" target=\"_blank\"><i class=\"fas fa-question-circle\"></i></a>&nbsp;&nbsp;&nbsp;que vous avez indiqué lors de votre inscription est incorrect.<br>Si vous savez que vous n'auriez pas du avoir créé un compte, supprimez-le.<br>Si vous pensez que ce message n'est pas normal, contactez votre Administrateur.</p>"
   },
   "account": {
     "account": "Compte",
-    "infos": "Informations",
+    "info": "Informations",
     "username": "Nom d'utilisateur :",
     "usernamePlaceholder": "Obligatoire",
     "newPassword": "Nouveau mot de passe :",

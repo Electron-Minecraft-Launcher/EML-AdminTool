@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_URI'] != "/configure/?step=1") {
 
 if (isset($_POST['lang']) && $_POST['lang'] != null) {
 	$current_config = get_config();
-	$current_config->infos->lang = htmlspecialchars($_POST['lang']);
+	$current_config['info']['lang'] = htmlspecialchars($_POST['lang']);
 	edit_config($current_config);
 	header('Location: ./?step=2');
 	return;
@@ -32,7 +32,7 @@ if (isset($_POST['lang']) && $_POST['lang'] != null) {
 
 		<?php
 
-		if (get_config()->infos->lang == "") {
+		if (get_config()['info']['lang'] == "") {
 		?>
 
 			main.innerHTML = "<h1>Welcome! • Bienvenue !</h1>"

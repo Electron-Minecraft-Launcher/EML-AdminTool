@@ -11,14 +11,14 @@ h1.addEventListener("click", async () => {
 	if (caret.style.transform == "rotate(90deg)") {
 
 		caret.style.transform = "rotate(0deg)"
-		document.getElementById("user-infos").style.height = "0px"
-		document.getElementById("user-infos").style.opacity = "0"
+		document.getElementById("user-info").style.height = "0px"
+		document.getElementById("user-info").style.opacity = "0"
 
 	} else {
 
 		caret.style.transform = "rotate(90deg)"
-		document.getElementById("user-infos").style.height = "100px"
-		document.getElementById("user-infos").style.opacity = "1"
+		document.getElementById("user-info").style.height = "100px"
+		document.getElementById("user-info").style.opacity = "1"
 
 	}
 

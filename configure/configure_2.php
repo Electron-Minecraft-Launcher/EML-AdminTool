@@ -27,11 +27,11 @@ if (
 		);
 
 		$current_config = get_config();
-		$current_config->db->host = htmlspecialchars($_POST['host']);
-		$current_config->db->name = htmlspecialchars($_POST['name']);
-		$current_config->db->username = htmlspecialchars($_POST['username']);
+		$current_config['db']['host'] = htmlspecialchars($_POST['host']);
+		$current_config['db']['name'] = htmlspecialchars($_POST['name']);
+		$current_config['db']['username'] = htmlspecialchars($_POST['username']);
 		if (isset($_POST['password'])) {
-			$current_config->db->password = htmlspecialchars($_POST['password']);
+			$current_config['db']['password'] = htmlspecialchars($_POST['password']);
 		}
 
 		edit_config($current_config);
@@ -103,10 +103,10 @@ if (
 
 		<?php
 
-		if (get_config()->db->host == "" && $db_test_err == 0) {
+		if (get_config()['db']['host'] == "" && $db_test_err == 0) {
 		?>
 
-			main.innerHTML = "<h1><?= get_lang()->configure->conf2->t1 ?></h1>"
+			main.innerHTML = `<h1><?= get_lang()->configure->conf2->t1 ?></h1>`
 			main.style.opacity = "1"
 
 			await sleep(1500)
@@ -119,7 +119,7 @@ if (
 		} else if ($db_test_err == 1) {
 		?>
 
-			main.innerHTML = "<h1><?= get_lang()->configure->conf2->e ?></h1>"
+			main.innerHTML = `<h1><?= get_lang()->configure->conf2->e ?></h1>`
 			main.style.opacity = "1"
 
 			await sleep(1500)
@@ -145,10 +145,10 @@ if (
 
 			<div class="center">
 
-				<input class="center" name="host" required placeholder="<?= get_lang()->configure->conf2->ph1 ?>" autofocus value="<?= get_config()->db->host ?>">
-				<input class="center" name="name" required placeholder="<?= get_lang()->configure->conf2->ph2 ?>" value="<?= get_config()->db->name ?>">
-				<input class="center" name="username" required placeholder="<?= get_lang()->configure->conf2->ph3 ?>" value="<?= get_config()->db->username ?>">
-				<input class="center separator-margin" type="password" name="password" placeholder="<?= get_lang()->configure->conf2->ph4 ?>" value="<?= get_config()->db->password ?>">
+				<input class="center" name="host" required placeholder="<?= get_lang()->configure->conf2->ph1 ?>" autofocus value="<?= get_config()['db']['host'] ?>">
+				<input class="center" name="name" required placeholder="<?= get_lang()->configure->conf2->ph2 ?>" value="<?= get_config()['db']['name'] ?>">
+				<input class="center" name="username" required placeholder="<?= get_lang()->configure->conf2->ph3 ?>" value="<?= get_config()['db']['username'] ?>">
+				<input class="center separator-margin" type="password" name="password" placeholder="<?= get_lang()->configure->conf2->ph4 ?>" value="<?= get_config()['db']['password'] ?>">
 
 				<button type="submit" class="main center"><?= get_lang()->main->validate ?></button>
 

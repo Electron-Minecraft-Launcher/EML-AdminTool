@@ -45,7 +45,7 @@ button.small, button.logout {
 	top: -15px;
 }
 
-.user-infos {
+.user-info {
 	transition: opacity 0.3s, height 0.3s;
 	overflow-y: hidden;
 }

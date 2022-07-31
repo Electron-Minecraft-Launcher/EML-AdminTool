@@ -5,7 +5,7 @@
  * @license GNU GPLv3
  */
 
-include('../assets/includes/main.php');
+include '../assets/includes/main.php';
 check_config();
 
 if (isset($_COOKIE['USERNAME']) && isset($_COOKIE['PASSWORD'])) {

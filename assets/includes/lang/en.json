@@ -98,12 +98,12 @@
     "logout": "Logout",
     "emlatManagement": "Manage EML AdminTool",
     "launcherInternalVersion": "Launcher internal version",
-    "phpInfos": "PHP info",
+    "phpinfo": "PHP info",
     "error": "<p style=\"margin-top: 40px; color: var(--error-red)\">You are still not accepted, or all your authorizations have been deleted.<br>Moreover, for security, you will be not warned if the 3-digit security code &nbsp;&nbsp;<a href=\"/help/pin/\" target=\"_blank\"><i class=\"fas fa-question-circle\"></i></a>&nbsp;&nbsp;&nbsp;you typed during your registration is not correct.<br>If you know that you did not have to create this account, please delete it.<br>If you think that this message is not normal, please contact your Administrator</p>"
   },
   "account": {
     "account": "Account",
-    "infos": "Informations",
+    "info": "Informations",
     "username": "Username:",
     "usernamePlaceholder": "Required",
     "newPassword": "New password:",

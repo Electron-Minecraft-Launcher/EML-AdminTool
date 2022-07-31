@@ -22,13 +22,13 @@ if (
 	if ($_POST['password'] == $_POST['cfr-password']) {
 
 		$server_id = strtolower(str_replace(' ', '-', htmlspecialchars($_POST['name'])));
-		$current_config->infos->serverId = $server_id;
+		$current_config['info']['server_id'] = $server_id;
 
-		$current_config->infos->serverName = htmlspecialchars($_POST['name']);
-		$current_config->infos->serverPassword = htmlspecialchars($_POST['password']);
+		$current_config['info']['server_name'] = htmlspecialchars($_POST['name']);
+		$current_config['info']['server_password'] = htmlspecialchars($_POST['password']);
 		edit_config($current_config);
 
-		include('../assets/includes/db.php');
+		include '../assets/includes/db.php';
 
 		$set_server_admin = $db->prepare('INSERT INTO users (name, password, accepted, server_admin, p_files_updater, p_bootstrap, p_maintenance, p_send_news, p_edit_del_news, p_background) VALUES (?, ?, 1, 1, 1, 1, 1, 1, 1, 1)');
 		$set_server_admin->execute(array(
@@ -66,10 +66,10 @@ if (
 
 		<?php
 
-		if (get_config()->infos->serverName == "" && $password_check_err == 0) {
+		if (get_config()['info']['server_name'] == "" && $password_check_err == 0) {
 		?>
 
-			main.innerHTML = "<h1><?= get_lang()->configure->conf3->t1 ?></h1>"
+			main.innerHTML = `<h1><?= get_lang()->configure->conf3->t1 ?></h1>`
 			main.style.opacity = "1"
 
 			await sleep(1500)
@@ -81,7 +81,7 @@ if (
 		<?php
 		} else if ($password_check_err == 1) {
 		?>
-			main.innerHTML = "<h1><?= get_lang()->configure->conf3->e ?></h1>"
+			main.innerHTML = `<h1><?= get_lang()->configure->conf3->e ?></h1>`
 			main.style.opacity = "1"
 
 			await sleep(1500)
@@ -106,9 +106,9 @@ if (
 
 			<div class="center">
 
-				<input class="center" name="name" required placeholder="<?= get_lang()->configure->conf3->ph1 ?>" autofocus value="<?= get_config()->infos->serverName ?>">
-				<input class="center" type="password" name="password" placeholder="<?= get_lang()->configure->conf3->ph2 ?>" value="<?= get_config()->infos->serverPassword ?>">
-				<input class="center separator-margin" type="password" name="cfr-password" placeholder="<?= get_lang()->configure->conf3->ph3 ?>" value="<?= get_config()->infos->serverPassword ?>">
+				<input class="center" name="name" required placeholder="<?= get_lang()->configure->conf3->ph1 ?>" autofocus value="<?= get_config()['info']['server_name'] ?>">
+				<input class="center" type="password" name="password" placeholder="<?= get_lang()->configure->conf3->ph2 ?>" value="<?= get_config()['info']['server_password'] ?>">
+				<input class="center separator-margin" type="password" name="cfr-password" placeholder="<?= get_lang()->configure->conf3->ph3 ?>" value="<?= get_config()['info']['server_password'] ?>">
 
 				<button type="submit" class="main center"><?= get_lang()->main->validate ?></button>
 

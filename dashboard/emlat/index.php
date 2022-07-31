@@ -5,7 +5,7 @@
  * @license GNU GPLv3
  */
 
-include('../../assets/includes/main.php');
+include '../../assets/includes/main.php';
 check_config();
 check_auth();
 
@@ -45,7 +45,7 @@ $get_spam_users = $db->query('SELECT * FROM users WHERE accepted = 3 ORDER BY na
 
 			<div class="div">
 
-				<h4><?= get_lang()->emlat->infoAbout ?> <i><?= get_config()->infos->serverName ?> AdminTool</i></h4>
+				<h4><?= get_lang()->emlat->infoAbout ?> <i><?= get_config()['info']['server_name'] ?> AdminTool</i></h4>
 
 				<table class="no-style">
 					<tr>
@@ -53,7 +53,7 @@ $get_spam_users = $db->query('SELECT * FROM users WHERE accepted = 3 ORDER BY na
 							<label for="server-name"><?= get_lang()->emlat->serverName ?></label>
 						</td>
 						<td>
-							<input type="text" name="server-name" id="server-name" value="<?= get_config()->infos->serverName ?>" disabled>
+							<input type="text" name="server-name" id="server-name" value="<?= get_config()['info']['server_name'] ?>" disabled>
 						</td>
 						<td></td>
 					</tr>

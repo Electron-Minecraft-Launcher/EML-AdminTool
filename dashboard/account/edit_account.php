@@ -5,7 +5,7 @@
  * @license GNU GPLv3
  */
 
-include('../../assets/includes/main.php');
+include '../../assets/includes/main.php';
 check_config();
 check_auth();
 
@@ -32,8 +32,8 @@ if ($user['name'] != $_POST['username']) {
 	if (check_perm(ADMIN)) {
 		$config = get_config();
 		$server_id = strtolower(str_replace(' ', '-', htmlspecialchars($_POST['username'])));
-		$config->infos->serverId = $server_id;
-		$config->infos->serverName = htmlspecialchars($_POST['username']);
+		$config->info->serverId = $server_id;
+		$config->info->serverName = htmlspecialchars($_POST['username']);
 		edit_config($config);
 	}
 
@@ -51,7 +51,7 @@ if (isset($_POST['new-password']) && $_POST['new-password'] != '') {
 
 		if (check_perm(ADMIN)) {
 			$config = get_config();
-			$config->infos->serverPassword = htmlspecialchars($_POST['new-password']);
+			$config->info->serverPassword = htmlspecialchars($_POST['new-password']);
 			edit_config($config);
 		}
 

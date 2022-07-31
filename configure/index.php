@@ -5,17 +5,17 @@
  * @license GNU GPLv3
  */
 
-include('../assets/includes/main.php');
+include '../assets/includes/main.php';
 
 if (
-	get_config()->db->host != "" &&
-	get_config()->db->name != "" &&
-	get_config()->db->username != "" &&
-	get_config()->infos->serverId != "" &&
-	get_config()->infos->serverName != "" &&
-	get_config()->infos->serverName != "EML" &&
-	get_config()->infos->serverPassword != "" &&
-	get_config()->infos->endConfig == true &&
+	get_config()['db']['host'] != "" &&
+	get_config()['db']['name'] != "" &&
+	get_config()['db']['username'] != "" &&
+	get_config()['info']['server_id'] != "" &&
+	get_config()['info']['server_name'] != "" &&
+	get_config()['info']['server_name'] != "EML" &&
+	get_config()['info']['server_password'] != "" &&
+	get_config()['info']['end_config'] == true &&
 	$db_err == 0
 ) {
 	header('Location: ../');
@@ -141,19 +141,19 @@ if ($_GET['step'] == 4) {
 <?php
 
 if ($_GET['step'] == 1) {
-	include('configure_1.php');
+	include 'configure_1.php';
 }
 
 if ($_GET['step'] == 2) {
-	include('configure_2.php');
+	include 'configure_2.php';
 }
 
 if ($_GET['step'] == 3) {
-	include('configure_3.php');
+	include 'configure_3.php';
 }
 
 if ($_GET['step'] == 4) {
-	include('configure_4.php');
+	include 'configure_4.php';
 }
 
 ?>
@@ -164,7 +164,7 @@ if ($_GET['step'] == 4) {
 
 function is_ok_step1()
 {
-	if (get_config()->infos->lang != "") {
+	if (get_config()['info']['lang'] != "") {
 		return true;
 	} else {
 		return false;
@@ -174,7 +174,7 @@ function is_ok_step1()
 function is_ok_step2()
 {
 	global $db_err;
-	if (is_ok_step1() && get_config()->db->host != "" && get_config()->db->name != "" && get_config()->db->username != "" && $db_err == 0) {
+	if (is_ok_step1() && get_config()['db']['host'] != "" && get_config()['db']['name'] != "" && get_config()['db']['username'] != "" && $db_err == 0) {
 		return true;
 	} else {
 		return false;
@@ -183,7 +183,7 @@ function is_ok_step2()
 
 function is_ok_step3()
 {
-	if (is_ok_step2() && get_config()->infos->serverId != "" && get_config()->infos->serverName != "" && get_config()->infos->serverName != "EML") {
+	if (is_ok_step2() && get_config()['info']['server_id'] != "" && get_config()['info']['server_name'] != "" && get_config()['info']['server_name'] != "EML") {
 		return true;
 	} else {
 		return false;

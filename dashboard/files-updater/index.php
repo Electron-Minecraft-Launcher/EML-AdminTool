@@ -5,7 +5,7 @@
  * @license GNU GPLv3
  */
 
-include('../../assets/includes/main.php');
+include '../../assets/includes/main.php';
 check_config();
 check_auth();
 
@@ -14,16 +14,16 @@ if (!check_perm(FILES_UPDATER)) {
 	return;
 }
 
-include('./config.php');
+include './config.php';
 
 if (isset($_GET['path'])) {
 	$files_folder = $files_folder . $_GET['path'];
 }
 
-include('./new_folder.php');
-include('./upload.php');
-include('./delete.php');
-include('./rename.php');
+include './new_folder.php';
+include './upload.php';
+include './delete.php';
+include './rename.php';
 
 ?>
 

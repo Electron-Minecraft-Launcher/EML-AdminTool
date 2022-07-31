@@ -1,5 +1,5 @@
 <?php
-include('../assets/includes/main.php');
+include '../assets/includes/main.php';
 
 check_config();
 
