@@ -10,7 +10,7 @@ check_config();
 check_auth();
 
 $get_user_info = $db->prepare('SELECT * FROM users WHERE name = ?');
-$get_user_info->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
+$get_user_info->execute(array(get_username()));
 
 $user_info = $get_user_info->fetch();
 
@@ -45,7 +45,7 @@ $user_info = $get_user_info->fetch();
 								<label for="username"><?= get_lang()->account->username ?></label>
 							</td>
 							<td>
-								<input type="text" name="username" id="username" value="<?= htmlspecialchars($_COOKIE['USERNAME']) ?>" placeholder="<?= get_lang()->account->usernamePlaceholder ?>">
+								<input type="text" name="username" id="username" value="<?= get_username() ?>" placeholder="<?= get_lang()->account->usernamePlaceholder ?>">
 							</td>
 						</tr>
 						<tr>
@@ -69,7 +69,7 @@ $user_info = $get_user_info->fetch();
 							<td>
 								<button class="main" type="submit"><?= get_lang()->account->save ?></button>
 								<a href="javascript:deleteAccount()"><button class="logout" type="button" <?php if (check_perm(ADMIN)) {
-																																														echo 'title="Vous ne pouvez pas supprimer le compte Administrateur" disabled';
+																																														echo 'title="You can\'t delete the Admin account!" disabled';
 																																													} ?>><?= get_lang()->account->deleteAccount ?></button></a>
 							</td>
 						</tr>

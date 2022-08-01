@@ -65,7 +65,18 @@ if (
 			p_background INT
 		)');
 
-		$db_test->query('DELETE FROM users WHERE id >= 1');
+		$db_test->query('DELETE FROM users');
+
+		$db_test->query('CREATE TABLE tokens
+		(
+			id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+			user_id INT,
+			token TEXT,
+			expiration_date VARCHAR(255),
+			ip VARCHAR(15)
+		)');
+
+		$db_test->query('DELETE FROM tokens');
 
 		$db_test->query('CREATE TABLE news
 		(

@@ -32,7 +32,7 @@ check_auth();
 
     <div style="display: inline-block">
       <p style="margin-bottom: 0"><?= get_lang()->dashboard->loggedAs ?></p>
-      <h4 style="margin-top: 3px"><?= $_COOKIE['USERNAME'] ?></h4>
+      <h4 style="margin-top: 3px"><?= get_username() ?></h4>
     </div>
 
     <div style="display: inline-block; margin-left: 20px;">

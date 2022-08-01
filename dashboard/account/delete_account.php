@@ -10,7 +10,7 @@ check_config();
 check_auth();
 
 $get_user = $db->prepare('SELECT * FROM users WHERE name = ?');
-$get_user->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
+$get_user->execute(array(get_username()));
 
 if ($user = $get_user->fetch()) {
 	
@@ -20,7 +20,7 @@ if ($user = $get_user->fetch()) {
 	}
 
 	$delete_user = $db->prepare('DELETE FROM users WHERE name = ?');
-	$delete_user->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
+	$delete_user->execute(array());
 
 	header('Location: /logout');
 

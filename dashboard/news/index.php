@@ -67,7 +67,7 @@ if (!check_perm(SEND_NEWS) && !check_perm(EDIT_DEL_NEWS)) {
 						<input type="text" name="news-img-add" id="news-img-add" placeholder="Lien d'une image (ne pas remplir si non désiré)">
 
 						<label for="news-author-add">Auteur :&nbsp;&nbsp;</label>
-						<input style="display: inline; width: 250px; margin-right: 20px;" type="text" name="news-author-add" id="news-author-add" value="<?= $_COOKIE['USERNAME'] ?>" disabled>
+						<input style="display: inline; width: 250px; margin-right: 20px;" type="text" name="news-author-add" id="news-author-add" value="<?= get_username() ?>" disabled>
 
 						<label for="news-date-add">Date :&nbsp;&nbsp;</label>
 						<input class="separator-margin" style="display: inline; width: 121px;" type="text" name="news-date-add" id="news-author-add" value="<?= date('d.m.Y') ?>" disabled>

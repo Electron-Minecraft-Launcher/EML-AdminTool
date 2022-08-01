@@ -15,7 +15,7 @@ if (!isset($_POST['username']) || $_POST['username'] == '') {
 }
 
 $get_user = $db->prepare('SELECT * FROM users WHERE name = ?');
-$get_user->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
+$get_user->execute(array(get_username()));
 $user = $get_user->fetch();
 
 if ($user['name'] != $_POST['username']) {

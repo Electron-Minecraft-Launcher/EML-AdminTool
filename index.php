@@ -8,7 +8,7 @@
 include 'assets/includes/main.php';
 check_config();
 
-if (isset($_COOKIE['USERNAME']) && isset($_COOKIE['PASSWORD'])) {
+if (isset($_COOKIE['TOKEN'])) {
 	header('Location: dashboard/');
 	return;
 }

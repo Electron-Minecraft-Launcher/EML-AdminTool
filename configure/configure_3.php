@@ -33,7 +33,7 @@ if (
 		$set_server_admin = $db->prepare('INSERT INTO users (name, password, accepted, server_admin, p_files_updater, p_bootstrap, p_maintenance, p_send_news, p_edit_del_news, p_background) VALUES (?, ?, 1, 1, 1, 1, 1, 1, 1, 1)');
 		$set_server_admin->execute(array(
 			htmlspecialchars($_POST['name']),
-			crypt($_POST['password'], '$1$$' . $_POST['password'])
+			password_hash($_POST['password'], PASSWORD_DEFAULT)
 		));
 
 		$pin = random_int(0, 9) . random_int(0, 9) . random_int(0, 9);

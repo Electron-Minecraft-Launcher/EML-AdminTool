@@ -64,14 +64,26 @@ if ($pin['pin'] != $_POST['pin-1'] . $_POST['pin-2'] . $_POST['pin-3']) {
 
 $create_account = $db->prepare('INSERT INTO users (name, password, accepted, server_admin, p_files_updater, p_bootstrap, p_maintenance, p_send_news, p_edit_del_news, p_background) VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0, 0)');
 $create_account->execute(array(
-	$_POST['username'],
-	crypt($_POST['password'], '$1$$' . $_POST['password']),
+	htmlspecialchars($_POST['username']),
+	password_hash($_POST['password'], PASSWORD_DEFAULT),
 	$pin_error
 ));
 
-setcookie("USERNAME", $_POST['username'], time() + 3600 * 24 * 365, "/", "", false, true);
-setcookie("PASSWORD", crypt($_POST['password'], '$1$$' . $_POST['password']), time() + 3600 * 24 * 365, "/", "", false, true);
+$get_account = $db->prepare('SELECT * FROM users WHERE name = ?');
+$get_account->execute(array(htmlspecialchars($_POST['username'])));
+
+$account = $get_account->fetch();
+
+$random_token = uniqid() . random_str(96 - 13);
+$set_token = $db->prepare('INSERT INTO tokens (user_id, token, expiration_date, ip) VALUES (?, ?, ?, ?)');
+$set_token->execute(array(
+	$account['id'],
+	$random_token,
+	time() + 60 * 60 * 24 * 90,
+	$_SERVER['REMOTE_ADDR']
+));
+
+setcookie('TOKEN', $random_token, time() + 60 * 60 * 24 * 90, '/', "", false, true);
 
 
 header('Location: /dashboard?success=account%20created');
-

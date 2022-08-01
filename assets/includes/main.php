@@ -26,7 +26,6 @@ define('CONFIG_FILE_INIT', '
 
 ');
 
-
 define('ERR_MSG_LAST_V', 'Unable to get the last version of the EML AdminTool');
 define('ERR_MSG_V_LIST', 'Unable to get the list of the versions of the EML AdminTool');
 define('SERVER_URL', 'https://admintool.electron-minecraft-launcher.ml/');
@@ -114,8 +113,8 @@ function edit_config($edited_config): void
 {
 	file_put_contents(
 		CONFIG_FILE,
-		CONFIG_FILE_INIT . 
-"\$config = [
+		CONFIG_FILE_INIT .
+			"\$config = [
 	'db' => [
 		'host' => '" . ($edited_config['db']['host'] ? $edited_config['db']['host'] : get_config()['db']['host']) . "',
 		'name' => '" . ($edited_config['db']['name'] ? $edited_config['db']['name'] : get_config()['db']['name']) . "',
@@ -145,8 +144,8 @@ function clear_config(): void
 	file_put_contents(CONFIG_FILE, "", FILE_USE_INCLUDE_PATH);
 	file_put_contents(
 		CONFIG_FILE,
-		CONFIG_FILE_INIT . 
-"\$config = [
+		CONFIG_FILE_INIT .
+			"\$config = [
 	'db' => [
 		'host' => '',
 		'name' => '',
@@ -212,7 +211,7 @@ function random_str($length): string
  */
 function get_current_version(): string
 {
-	return "0.8.0-beta";
+	return "0.9.0-beta";
 }
 
 /**
@@ -278,28 +277,52 @@ function check_auth(): void
 
 	global $db;
 
-	if (!isset($_COOKIE['USERNAME']) || !isset($_COOKIE['PASSWORD'])) {
-		setcookie("USERNAME", "");
-		setcookie("PASSWORD", "");
+	if (!isset($_COOKIE['TOKEN'])) {
+		setcookie("TOKEN", "", time() + 0);
 		header('Location: /');
 		exit;
 	}
 
-	if (isset($_COOKIE['USERNAME']) && isset($_COOKIE['PASSWORD'])) {
-
-		$get_auth = $db->prepare('SELECT * FROM users WHERE name = ?');
-		$get_auth->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
-
-		$auth = $get_auth->fetch();
-
-		if (
-			$auth['name'] != $_COOKIE['USERNAME'] ||
-			$auth['password'] != $_COOKIE['PASSWORD']
-		) {
-			header('Location: /logout/');
-			exit;
+	$get_token = $db->prepare('SELECT * FROM tokens WHERE token = ?');
+	$get_token->execute(array($_COOKIE['TOKEN']));
+	$token = $get_token->fetch();
+	if ($token == null || $token['expiration_date'] < time()) {
+		setcookie('TOKEN', '', time());
+		header('Location: /');
+	} else {
+		$get_user = $db->prepare('SELECT * FROM users WHERE id = ?');
+		$get_user->execute(array($token['user_id']));
+		$user = $get_user->fetch();
+		if ($user == null) {
+			setcookie('TOKEN', '', time());
+			header('Location: /');
 		}
 	}
+}
+
+
+/**
+ * Returns the username of the user from the token. This function has to be called **after** `check_auth()`!
+ */
+function get_username() {
+	global $db;
+
+	$get_user_id = $db->prepare('SELECT user_id FROM tokens WHERE token = ?');
+	$get_user_id->execute(array($_COOKIE['TOKEN']));
+
+	$user_id = $get_user_id->fetch();
+
+	$get_username = $db->prepare('SELECT name FROM users WHERE id = ?');
+	$get_username->execute(array($user_id['user_id']));
+
+	$username = $get_username->fetch();
+
+	if ($username) {
+		return $username['name'];
+	} else {
+		throw new Exception("Token not valid", 1);
+	}
+
 }
 
 /**
@@ -313,7 +336,7 @@ function check_perm($perm): bool
 	global $db;
 
 	$get_user_perm = $db->prepare('SELECT * FROM users WHERE name = ? AND accepted = 1');
-	$get_user_perm->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
+	$get_user_perm->execute(array(get_username()));
 
 
 	if ($user_perm = $get_user_perm->fetch()) {

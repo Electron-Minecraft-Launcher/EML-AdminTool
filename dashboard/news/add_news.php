@@ -43,7 +43,7 @@ if ($_POST['news-img-add'] == null || !isset($_POST['news-img-add'])) {
 }
 
 $get_user_id = $db->prepare('SELECT id FROM users WHERE name = ?');
-$get_user_id->execute(array(htmlspecialchars($_COOKIE['USERNAME'])));
+$get_user_id->execute(array(get_username()));
 
 $user_id = $get_user_id->fetch();
 

@@ -1,14 +1,14 @@
 <?php
 
 /** 
- * @copyright Copyright (c) 2021, GoldFrite
+ * @copyright Copyright (c) 2022, GoldFrite
  * @license GNU GPLv3
  */
 
 include 'assets/includes/main.php';
 check_config();
 
-if (isset($_COOKIE['USERNAME']) && isset($_COOKIE['PASSWORD'])) {
+if (isset($_COOKIE['TOKEN'])) {
 	header('Location: dashboard/');
 	return;
 }
@@ -25,11 +25,19 @@ if (
 
 	if (
 		$data_get_auth['name'] == $_POST['username'] &&
-		$data_get_auth['password'] == crypt($_POST['password'], '$1$$' . $_POST['password'])
+		password_verify($_POST['password'], $data_get_auth['password'])
 	) {
 
-		setcookie("USERNAME", $data_get_auth['name'], time() + 3600 * 24 * 365, "/", "", false, true);
-		setcookie("PASSWORD", $data_get_auth['password'], time() + 3600 * 24 * 365, "/", "", false, true);
+		$random_token = uniqid() . random_str(96 - 13);
+		$set_token = $db->prepare('INSERT INTO tokens (user_id, token, expiration_date, ip) VALUES (?, ?, ?, ?)');
+		$set_token->execute(array(
+			$data_get_auth['id'],
+			$random_token,
+			time() + 60 * 60 * 24 * 90,
+			$_SERVER['REMOTE_ADDR']
+		));
+
+		setcookie('TOKEN', $random_token, time() + 60 * 60 * 24 * 90, '/', "", false, true);
 
 		header('Location: dashboard/?success=login');
 	} else {
