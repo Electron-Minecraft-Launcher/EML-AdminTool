@@ -16,7 +16,7 @@ EML AdminTool est une logiciel Web permettant de gérer un Launcher Minecraft cr
 ### How to install?
 
 You have to use a compatible **Website** host.
-You'll need at last 2 MB for the EML AdminTool. But, in practice, at last 1 or 2 GB is better, for Game files hosting. Your Website need also to be able to execute **PHP 7** (not PHP 8).
+You'll need at last 2 MB for the EML AdminTool. But, in practice, at last 1 or 2 GB is better, for Game files hosting. Your Website need also to be able to execute **PHP 8.1**.
 
 See the [Releases](https://github.com/GoldFrite/EML-AdminTool/releases) and download the last one.
 Then, unzip the folder and place the content at the **root** of your website (with a FTP Client, like [WinSCP](https://winscp.net) or [FileZilla](https://filezilla-project.org)).
@@ -41,7 +41,7 @@ Finally, you could access to your EML AdminTool (at the address of the Website).
 ### Comment installer ?
 
 Vous devez un hébergeur de **site Web** compatible.
-Vous allez avoir besoin d'au moins 2 Mo pour l'EML AdminTool. Cependant, en pratique, vous devrez plutôt utiliser au moins 1 ou 2 Go, pour l'hébergement des fichiers du Jeu. Votre site Web doit aussi pouvoir exécute **PHP 7** (pas PHP 8).
+Vous allez avoir besoin d'au moins 2 Mo pour l'EML AdminTool. Cependant, en pratique, vous devrez plutôt utiliser au moins 1 ou 2 Go, pour l'hébergement des fichiers du Jeu. Votre site Web doit aussi pouvoir exécute **PHP 8.1**.
 
 Rendez-vous sur la page [Releases](https://github.com/GoldFrite/EML-AdminTool/releases) et télécharger la dernière release.
 Puis, dézippez le dossier et placez le contenu à la **racine** (root) de votre site Web (avec un client FTP, comme [WinSCP](https://winscp.net) ou [FileZilla](https://filezilla-project.org/)).
