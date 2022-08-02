@@ -89,6 +89,8 @@ if (!check_perm(ADMIN)) {
 		$i++;
 	}
 
+	$updates = array_reverse($updates);
+
 	if ($i == 0 && !isset($_GET['success'])) {
 		echo '<h1>No updates available.</h1>';
 		echo '<meta http-equiv="refresh" content="5;url=/">';
