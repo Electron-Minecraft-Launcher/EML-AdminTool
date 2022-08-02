@@ -47,6 +47,19 @@ include '../assets/includes/main.php';
 
 			</div>
 
+			<div class="div">
+
+				<h4><?= get_lang()->help->home->backups ?></h4>
+
+				<p>
+					<a href="./export-database/"><?= get_lang()->help->home->exportDatabase ?>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></a>
+				</p>
+				<p style="margin-bottom: 0;">
+					<a href="./save-data/"><?= get_lang()->help->home->saveData ?>&nbsp;&nbsp;<i class="fas fa-caret-right"></i></a>
+				</p>
+
+			</div>
+
 
 			<div class="div">
 

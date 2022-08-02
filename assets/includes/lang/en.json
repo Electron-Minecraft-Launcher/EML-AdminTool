@@ -47,9 +47,12 @@
       "helpCenter": "Help Center",
       "helpCenterDesc": "Here you can find all the information you need to know about the EML AdminTool.\n<br>If you have any suggestion of tutorial or question, you can tell it in <a href=\"https://discord.gg/AmC5MKHWgB\" target=\"_blank\">this Discord channel</a>.",
       "configuration": "Configuration",
+      "backups": "Backups",
       "launcherManagement": "Launcher Management",
       "database": "Configure your Database",
       "pin": "3-digit Security Code",
+      "exportDatabase": "Exporte your Database",
+      "saveData": "Save your options data",
       "filesUpdater": "Manage the files that the Launcher needs download",
       "bootstrap": "Manage the bootstrap of your Launcher",
       "maintenance": "Manage the maintenance of your Launcher",
@@ -62,6 +65,14 @@
     "pin": {
       "pin": "3-digit Security Code",
       "content": "<p>\n<b>On this page, you will understand what the 3-digit Security Code is for, as well as how to find and obtain it.</b>\n</p>\n\n\n<h4>What is the 3-Digit Security Code?</h4>\n\n<p>\nThe 3-digit security code is a security feature to prevent spamming of account creation requests on EML AdminTool. When someone wants to create a Standard account (as opposed to an Administrator account that has all the permissions and chooses the Standard account permissions), the Administrator account receives an account acceptance request and grants certain permissions or not to the account in question.<br>\nIf anyone could create an account, the Administrator would be overwhelmed with requests.The 3-digit Security Code should therefore only be given to Minecraft server staff members of this EML AdminTool.\n</p>\n\n\n<h4>How to find and use the 3-digit Security Code? - For the Administrator</h4>\n\n<p>\nThe 3-digit Security Code was randomly generated for you when you configured the EML AdminTool. You can find it on the EML AdminTool Administrator panel.<br>\n<br>\nYou should only give this code to trusted people who will need to use the EML AdminTool. This code will be requested during account creation. Once this is done, you can assign permissions to this new user.<br>\n<br>\nIf the code is leaked and you receive too many regular account creation requests, you can regenerate it on the EML AdminTool management page.\n</p>\n\n\n<h4>How to get the 3-digit security code? - For Standard users</h4>\n\n<p>\nYou have to ask the EML AdminTool Administrator for it. He can refuse to give it to you if he thinks that you do not need to access the EML AdminTool.<br>\nHowever, it is essential to know it to be able to register on the EML AdminTool. Be careful ! You are not notified when the 3-digit security code you entered is incorrect!<br>\nOnce you have registered, the Administrator can choose to refuse you or to accept you. In the latter case, he/she may assign certain permissions to you.\n</p>"
+    },
+    "exportDatabase": {
+      "exportDatabase": "Exporte Database",
+      "content": "<p>\n<b>Sometimes you will need to export your Database.<br>\nThis tutorial explains how to export your Database, then how to reinstall it from phpMyAdmin.</b>\n</p>\n\n\n<h4>Export your Database</h4>\n\n<p>\nLogin to your phpMyAdmin. To find the phpMyAdmin link, refer to the Customer area of your host.<br>\nIn the left navigation pane, click on your Database. Then, in the list of tabs, click <i>Export</i>.<br>\nThen click on the <i>Export</i> button, without giving the model a name.</p>\n\n\n<h4>Import your Database</h4>\n\n<p>Attention ! Do <b>not</b> import a Database from an older version of the EML AdminTool! This could cause major bugs.<br>\nLogin to your phpMyAdmin. In the list of tabs, click <i>Import</i>.<br>\nClick <i>Choose File</i> to select your SQL file, then click the <i>Import</i> button.\n</p>"
+    },
+    "saveData": {
+      "saveData": "Save data",
+      "content": "<p>\n<b>You can save data from Files Updater, Bootstrap and Background options.</b>\n</p>\n\n\n<h4>Open your FTP</h4>\n\n<p>\nOpen your FTP client (WinSCP, FileZilla, ...) and connect to your site. You will certainly be able to find your login information on the Customer area of your host.\n</p>\n\n\n<h4>Download files</h4>\n\n<p>\nYou will find the files to save in the folder <code>/api/files-updater/files/</code> for the Files Updater option, <code>/api/bootstrap/</code> for the Bootstrap option and <code>/api/background/</code> for Background option.<br>\nYou can save these elements on your computer to put them back in the same place after an update.</p>"
     },
     "filesUpdater": {
       "filesUpdater": "Files Updater",

@@ -47,9 +47,12 @@
       "helpCenter": "Centre d'aide",
       "helpCenterDesc": "C'est ici que vous pouvez trouver certains tutoriels ou des réponses à vos questions à propos de l'EML AdminTool<br>\nSi vous avez une suggestion de tutoriel ou une question, vous pouvez l'indiquer dans ce salon <a href=\"https://discord.gg/AmC5MKHWgB\" target=\"_blank\">ce salon Discord</a>.",
       "configuration": "Configuration",
+      "backups": "Sauvegardes",
       "launcherManagement": "Gestion du Launcher",
       "database": "Configurer une Base de données",
       "pin": "Code de sécurité à 3 chiffres",
+      "exportDatabase": "Exporter votre Base de données",
+      "saveData": "Sauvegarder les données des options",
       "filesUpdater": "Gérer les fichiers que le Launcher doit télécharger",
       "bootstrap": "Gérer le bootstrap de votre Launcher",
       "maintenance": "Gérer la maintenance de votre Launcher",
@@ -62,6 +65,14 @@
     "pin": {
       "pin": "Code de sécurité à 3 chiffres",
       "content": "<p>\n<b>Sur cette page, vous comprendrez à quoi sert le Code de sécurité à 3 chiffres, ainsi que comment le trouver et l'obtenir.</b>\n</p>\n\n\n<h4>Qu'est-ce que le Code de sécurité à 3 chiffres ?</h4>\n\n<p>\nLe Code de sécurité à 3 chiffres est une sécurité permettant d'éviter le spam de demandes de création de compte sur l'EML AdminTool. En effet, lorsque quelqu'un souhaite se créer un compte <i>Standard</i> (opposé au compte <i>Administrateur</i> ayant toutes les permissions et choisissant les permissions des comptes <i>Standards</i>), le compte Administrateur reçoit une demande d'acceptation de compte et accorde certaines permissions ou non au compte en question.<br>\nSi n'importe qui pouvait se créer un compte, l'Administrateur serait submergé par les demandes.<br>\nLe Code de sécurité à 3 chiffres doit donc être donné uniquement à des membres du Staff du serveur Minecraft de cet EML AdminTool.\n</p>\n\n\n<h4>Comment trouver et utiliser le Code de sécurité à 3 chiffres ? – Pour l'Administrateur</h4>\n\n<p>\nLe Code de sécurité à 3 chiffres est généré aléatoirement lors de la configuration de l'EML AdminTool. Vous pouvez le retrouver sur l'espace Administrateur de gestion de l'EML AdminTool<br>\n<br>\nVous devez donner ce code uniquement à des personnes de confiance qui auront besoin d'utiliser l'EML AdminTool. Ce code sera demandé lors de la création de compte. Une fois cela fait, vous pourrez attribuer des permissions à ce nouvel utilisateur.<br>\n<br>\nSi le code est divulgué et que vous recevez des demandes de création de compte trop régulièrement et trop nombreuses, vous pouvez le régénérer sur la page de gestion de l'EML AdminTool.\n</p>\n\n\n<h4>Comment obtenir le Code de sécurité à 3 chiffres ? – Pour les utilisateurs Standards</h4>\n\n<p>\nVous devez le demander à l'Administrateur de l'EML AdminTool. Celui-ci peut refuser de vous le donner s'il juge que vous n'avez pas besoin d'accéder à l'EML AdminTool.<br>\nCependant, il est indispensable de le connaître pour pouvoir vous inscrire sur l'EML AdminTool. Attention ! Vous n'êtes pas avertis lorsque le Code de sécurité à 3 chiffres que vous avez indiqué est incorrecte !<br>\nUne fois que vous vous serez inscrit, l'Administrateur pourra choisir de vous refuser ou de vous accepter. Dans ce second cas, il pourra vous attribuer certaines permissions.\n</p>"
+    },
+    "exportDatabase": {
+      "exportDatabase": "Exporter la Base de données",
+      "content": "<p>\n<b>Parfois, il vous sera nécessaire d'exporter votre Base de données.<br>\nCe tutoriel vous explique comme exporter votre Base de données, puis commet la réinstaller depuis phpMyAdmin.</b>\n</p>\n\n\n<h4>Exporter votre Base de données</h4>\n\n<p>\nConnectez-vous sur votre phpMyAdmin. Pour connaître le lien de phpMyAdmin, référez-vous à l'espace Client de votre hébergeur.<br>\nDans le volet de navigation de gauche, cliquer sur votre Base de données. Puis, dans la liste d'onglets, cliquez sur<i>Exporter</i>.<br>\nCliquez ensuite sur le bouton <i>Exporter</i>, sans donner un nom au modèle.</p>\n\n\n<h4>Importer votre Base de données</h4>\n\n<p>Attention ! N'importez <b>pas</b> une Base de données provenant d'une ancienne version de l'EML AdminTool ! Cela pourrait causer d'importants bugs.<br>\nConnectez-vous sur votre phpMyAdmin. Dans la liste d'onglets, cliquez sur <i>Importer</i>.<br>\nCliquez sur <i>Choisir une fichier</i> pour sélectionner votre fichier SQL, puis, cliquez sur le bouton <i>Importer</i>.\n</p>"
+    },
+    "saveData": {
+      "saveData": "Sauvegarder les données",
+      "content": "<p>\n<b>Vous pouvez sauvegarder les données des options Files Updater, Bootstrap et Background.</b>\n</p>\n\n\n<h4>Ouvrir votre FTP</h4>\n\n\n<p>\nOuvrez votre client FTP (WinSCP, FileZilla, ...) et connectez-vous à votre site. Vous pourrez certainement trouver vos informations de connexion sur l'espace Client de votre hébergeur.\n</p>\n\n<h4>Téléchargez les fichiers</h4>\n\n<p>\nVous trouverez les fichiers à sauvegarder dans le dossier <code>/api/files-updater/files/</code> pour l'option Files Updater, <code>/api/bootstrap/</code> pour l'option Bootstrap et <code>/api/background/</code> pour l'option Background.<br>\nVous pouvez sauvegarder ces éléments sur votre ordinateurs pour les replacer au même endroit après une mise à jour.</p>"
     },
     "filesUpdater": {
       "filesUpdater": "Files Updater",
