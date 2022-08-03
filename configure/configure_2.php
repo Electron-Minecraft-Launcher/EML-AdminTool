@@ -38,7 +38,7 @@ if (
 
 		//! DB INIT
 
-		$db->query('DROP TABLE IF EXISTS users, tokens, env, news');
+		$db_test->query('DROP TABLE IF EXISTS users, tokens, env, news');
 
 		$db_test->query('CREATE TABLE env
 		(

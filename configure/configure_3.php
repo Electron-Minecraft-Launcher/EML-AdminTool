@@ -28,8 +28,6 @@ if (
 		$current_config['info']['server_password'] = htmlspecialchars($_POST['password']);
 		edit_config($current_config);
 
-		include '../assets/includes/db.php';
-
 		$set_server_admin = $db->prepare('INSERT INTO users (name, password, accepted, server_admin, p_files_updater, p_bootstrap, p_maintenance, p_send_news, p_edit_del_news, p_background) VALUES (?, ?, 1, 1, 1, 1, 1, 1, 1, 1)');
 		$set_server_admin->execute(array(
 			htmlspecialchars($_POST['name']),
@@ -44,6 +42,8 @@ if (
 
 		$set_env = $db->prepare('INSERT INTO env VALUES (1, ?, "0.0.0", 0, NULL, NULL)');
 		$set_env->execute(array($pin));
+
+		setcookie('TOKEN', '', time());
 
 		header('Location: ./?step=4');
 		return;
