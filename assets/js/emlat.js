@@ -41,7 +41,7 @@ function updateEMLAT(resetAPI, resetConfigAndDataBase) {
 		}
 	} else if (resetAPI && resetConfigAndDataBase) {
 		if (confirm("IMPORTANT\nThis update will delete the data:\n - the Database\n - the configuration of your EML AdminTool\n - Files Updater, Bootstrap and Background options.\nIt is strongly advised to make a backup of the data in question before continuing (a tutorial is available in the Documentation).\nDo you want to update now?")) {
-			if (confirm("Are you really sure you want to update the MLE AdminTool now? If you haven't made a backup, you will definitely lose the data previously listed.\n\nThe update should not take more than a few seconds.")) {
+			if (confirm("Are you really sure you want to update the EML AdminTool now? If you haven't made a backup, you will definitely lose the data previously listed.\n\nThe update should not take more than a few seconds.")) {
 				window.location.href = "/upgrade/";
 			}
 		}
