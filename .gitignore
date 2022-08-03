@@ -4,5 +4,7 @@ SONAR TOKEN
 assets/includes/config.php
 api/files-updater/files/*
 api/background/*.jpg
-api/bootstrap/*
+api/bootstrap/*.exe
+api/bootstrap/*.app
+api/bootstrap/*.deb
 
