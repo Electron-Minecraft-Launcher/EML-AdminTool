@@ -38,6 +38,8 @@ if (
 
 		//! DB INIT
 
+		$db->query('DROP TABLE IF EXISTS users, tokens, env, news');
+
 		$db_test->query('CREATE TABLE env
 		(
 			id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
