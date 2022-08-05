@@ -1,8 +1,8 @@
 # EML AdminTool
 
-#### EML AdminTool is a Web software to manage a Minecraft Launcher built with the [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core) library.
+**EML AdminTool is a Web software to manage a Minecraft Launcher built with the [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core) library.**
 
-#### EML AdminTool est une logiciel Web permettant de gérer un Launcher Minecraft créé à partir de la librairie [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core).
+**EML AdminTool est une logiciel Web permettant de gérer un Launcher Minecraft créé à partir de la librairie [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core).**
 
 ![EML AdminTool](https://cdn.discordapp.com/attachments/762253192255766530/982626041333968966/unknown.png)
 
