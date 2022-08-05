@@ -15,5 +15,5 @@ if ($_COOKIE['token']) {
 		));
 	}
 }
-setcookie("TOKEN", "", time());
+setcookie("TOKEN", "", time(), '/');
 header('Location: ../');

@@ -1,0 +1,48 @@
+div.notification {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	padding: 15px 20px;
+	border-radius: 5px;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+	transition: all 0.3s;
+	cursor: pointer;
+	animation-duration: 0.3s;
+}
+
+div.notification i.fas {
+	display: inline-block;
+	width: 0;
+	opacity: 0;
+	transition: all 0.3s;
+}
+
+div.notification:hover i.fas {
+	width: 30px;
+	opacity: 100%;
+}
+
+div.notification.error {
+	background-color: rgb(233, 124, 116);
+	color: rgb(85, 22, 18);
+}
+
+div.notification.success {
+	background-color: rgb(159, 240, 143);
+	color: rgb(13, 75, 29);
+}
+
+@keyframes fade-out {
+	0% {
+		opacity: 100%;
+		display: block;
+	}
+	99% {
+		opacity: 0;
+		display: block
+	}
+	100% {
+		opacity: 0;
+		display: none;
+	}
+}

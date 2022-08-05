@@ -26,7 +26,7 @@ if (isset($_FILES['upload-exe']) && isset($_FILES['upload-app']) && isset($_FILE
 		$set_v = $db->prepare('UPDATE env SET launcher_v = ? WHERE id = 1');
 		$set_v->execute(array($_POST['new-v']));
 
-		header('Location: ./?success=background%20uploaded');
+		header('Location: ./?success=bootstrap%20uploaded');
 	}
 } else {
 	header('Location: ./?error=empty%20fields');

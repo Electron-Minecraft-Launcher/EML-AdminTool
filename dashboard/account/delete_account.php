@@ -1,7 +1,7 @@
 <?php
 
 /** 
- * @copyright Copyright (c) 2021, GoldFrite
+ * @copyright Copyright (c) 2022, GoldFrite
  * @license GNU GPLv3
  */
 
@@ -20,7 +20,7 @@ if ($user = $get_user->fetch()) {
 	}
 
 	$delete_user = $db->prepare('DELETE FROM users WHERE name = ?');
-	$delete_user->execute(array());
+	$delete_user->execute(array(get_username()));
 
 	header('Location: /logout');
 

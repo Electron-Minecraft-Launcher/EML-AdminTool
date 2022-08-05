@@ -37,7 +37,8 @@ if (preg_match('/[' . $pattern_username . ']/', $_POST['username']) || strlen($_
 
 // Check password and confirmation
 if (htmlspecialchars($_POST['password']) != htmlspecialchars($_POST['password-cfr'])) {
-	header('Location: ./?error=password%20mismatch');
+	header('Location: ./?error=passwords%20mismatch');
+	return;
 }
 
 // Check special chars in password

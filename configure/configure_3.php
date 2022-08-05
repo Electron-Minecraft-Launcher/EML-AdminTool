@@ -43,7 +43,7 @@ if (
 		$set_env = $db->prepare('INSERT INTO env VALUES (1, ?, "0.0.0", 0, NULL, NULL)');
 		$set_env->execute(array($pin));
 
-		setcookie('TOKEN', '', time());
+		setcookie('TOKEN', '', time(), '/');
 
 		header('Location: ./?step=4');
 		return;

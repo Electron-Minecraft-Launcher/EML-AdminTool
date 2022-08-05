@@ -24,7 +24,7 @@ if ($user['name'] != $_POST['username']) {
 	$get_users->execute(array(htmlspecialchars($_POST['username'])));
 	while ($users = $get_users->fetch()) {
 		if ($users['name'] == $_POST['username']) {
-			header('Location: ./?error=username%20taken');
+			header('Location: ./?error=username%20used');
 			return;
 		}
 	}
@@ -32,8 +32,8 @@ if ($user['name'] != $_POST['username']) {
 	if (check_perm(ADMIN)) {
 		$config = get_config();
 		$server_id = strtolower(str_replace(' ', '-', htmlspecialchars($_POST['username'])));
-		$config->info->serverId = $server_id;
-		$config->info->serverName = htmlspecialchars($_POST['username']);
+		$config['info']['server_id'] = $server_id;
+		$config['info']['server_name'] = htmlspecialchars($_POST['username']);
 		edit_config($config);
 	}
 
@@ -42,8 +42,6 @@ if ($user['name'] != $_POST['username']) {
 		htmlspecialchars($_POST['username']),
 		$user['id']
 	));
-
-	setcookie('USERNAME', htmlspecialchars($_POST['username']), time() +  3600 * 24 * 365, '/', "", false, true);
 }
 
 if (isset($_POST['new-password']) && $_POST['new-password'] != '') {
@@ -51,7 +49,7 @@ if (isset($_POST['new-password']) && $_POST['new-password'] != '') {
 
 		if (check_perm(ADMIN)) {
 			$config = get_config();
-			$config->info->serverPassword = htmlspecialchars($_POST['new-password']);
+			$config['info']['server_password'] = htmlspecialchars($_POST['new-password']);
 			edit_config($config);
 		}
 
@@ -61,7 +59,6 @@ if (isset($_POST['new-password']) && $_POST['new-password'] != '') {
 			$user['id']
 		));
 
-		setcookie('PASSWORD', crypt($_POST['new-password'], '$1$$' . $_POST['new-password']), time() +  3600 * 24 * 365, '/', "", false, true);
 	} else {
 		header('Location: ./?error=password%20mismatch');
 		return;

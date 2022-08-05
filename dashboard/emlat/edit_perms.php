@@ -34,7 +34,7 @@ if ($user = $get_user->fetch()) {
 		$_POST['user']
 	));
 
-	header('Location: ./?success=edited%20perms');
+	header('Location: ./?success=perms%20edited');
 
 } else {
 	header('Location: ./?error=user%20not%20found');

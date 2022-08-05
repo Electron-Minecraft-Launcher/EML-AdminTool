@@ -81,8 +81,7 @@ function check_config(): void
 		get_config()['info']['end_config'] == false ||
 		$db_err == 1
 	) {
-		setcookie("USERNAME", "");
-		setcookie("PASSWORD", "");
+		setcookie("TOKEN", "", time(), "/");
 
 		header('Location: /configure/');
 		exit;
@@ -211,7 +210,7 @@ function random_str($length): string
  */
 function get_current_version(): string
 {
-	return "0.9.0-beta";
+	return "1.0.0-beta";
 }
 
 /**
@@ -278,7 +277,7 @@ function check_auth(): void
 	global $db;
 
 	if (!isset($_COOKIE['TOKEN'])) {
-		setcookie("TOKEN", "", time() + 0);
+		setcookie("TOKEN", "", time() + 0, '/');
 		header('Location: /');
 		exit;
 	}
@@ -287,14 +286,14 @@ function check_auth(): void
 	$get_token->execute(array($_COOKIE['TOKEN']));
 	$token = $get_token->fetch();
 	if ($token == null || $token['expiration_date'] < time()) {
-		setcookie('TOKEN', '', time());
+		setcookie('TOKEN', '', time(), '/');
 		header('Location: /');
 	} else {
 		$get_user = $db->prepare('SELECT * FROM users WHERE id = ?');
 		$get_user->execute(array($token['user_id']));
 		$user = $get_user->fetch();
 		if ($user == null) {
-			setcookie('TOKEN', '', time());
+			setcookie('TOKEN', '', time(), '/');
 			header('Location: /');
 		}
 	}

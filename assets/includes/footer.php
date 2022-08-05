@@ -1,3 +1,7 @@
+<?php
+include __DIR__ . '\\notifications.php';
+?>
+
 <footer class="center">
 	<?php
 	if (strpos($_SERVER['REQUEST_URI'], "/help") !== false) {
