@@ -10,7 +10,7 @@ EML AdminTool est une logiciel Web permettant de gérer un Launcher Minecraft cr
 
 [![Discord](https://img.shields.io/discord/762253189525012501?color=4752c4&label=Discord)](https://discord.gg/FePaQ7v)
 ![Application size](https://img.shields.io/github/languages/code-size/Electron-Minecraft-Launcher/EML-AdminTool?label=Application%20size)
-[![Downloads](https://img.shields.io/github/downloads/Electron-Minecraft-Launcher/EML-AdminTool/total?color=fe7610&label=Downloads)](https://discord.gg/FePaQ7v)
+[![Downloads](https://img.shields.io/github/downloads/Electron-Minecraft-Launcher/EML-AdminTool/total?color=fe7610&label=Downloads)](https://ggithub.com/Electron-Minecraft-Launcher/EML-AdminTool/releases)
 
 </center>
 
