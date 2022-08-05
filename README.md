@@ -1,16 +1,15 @@
 # EML AdminTool
 
-EML AdminTool is a Web software to manage a Minecraft Launcher built with the [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core) library.
+#### EML AdminTool is a Web software to manage a Minecraft Launcher built with the [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core) library.
 
-EML AdminTool est une logiciel Web permettant de gérer un Launcher Minecraft créé à partir de la librairie [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core).
+#### EML AdminTool est une logiciel Web permettant de gérer un Launcher Minecraft créé à partir de la librairie [EML Core](https://github.com/Electron-Minecraft-Launcher/EML-Core).
 
 ![EML AdminTool](https://cdn.discordapp.com/attachments/762253192255766530/982626041333968966/unknown.png)
 
 <center>
 
-[![Discord](https://img.shields.io/discord/762253189525012501?color=4752c4&label=Discord)](https://discord.gg/FePaQ7v)
-![Application size](https://img.shields.io/github/languages/code-size/Electron-Minecraft-Launcher/EML-AdminTool?label=Application%20size)
-[![Downloads](https://img.shields.io/github/downloads/Electron-Minecraft-Launcher/EML-AdminTool/total?color=fe7610&label=Downloads)](https://ggithub.com/Electron-Minecraft-Launcher/EML-AdminTool/releases)
+[<p align="center"><img src="https://img.shields.io/discord/762253189525012501?color=5561e6&label=Discord&style=for-the-badge">](https://discord.gg/FePaQ7v)
+<img src="https://img.shields.io/badge/version-1.0.0--beta-orangered?style=for-the-badge&color=orangered"></p>
 
 </center>
 
