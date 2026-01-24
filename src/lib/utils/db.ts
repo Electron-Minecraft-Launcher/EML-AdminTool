@@ -22,7 +22,9 @@ export const IUserStatus = {
 export const ILoaderType = {
   VANILLA: 'VANILLA',
   FORGE: 'FORGE',
-  FABRIC: 'FABRIC'
+  NEOFORGE: 'NEOFORGE',
+  FABRIC: 'FABRIC',
+  QUILT: 'QUILT'
 } as const
 
 export const ILoaderFormat = {

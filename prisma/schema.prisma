@@ -20,7 +20,9 @@ enum UserStatus {
 enum LoaderType {
   VANILLA
   FORGE
+  NEOFORGE
   FABRIC
+  QUILT
 }
 
 enum LoaderFormat {

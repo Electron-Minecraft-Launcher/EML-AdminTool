@@ -1,6 +1,6 @@
 # EML AdminTool
 
-**EML AdminTool is a Web software to manage a Minecraft Launcher built with [EML Lib](https://github.com/Electron-Minecraft-Launcher/EML-Lib-v2) library.**
+**EML AdminTool is a Web software to manage a Minecraft Launcher built with [EML Lib](https://github.com/Electron-Minecraft-Launcher/EML-Lib) library.**
 
 ![EML AdminTool](./.github/assets/files-updater.png)
 
@@ -31,7 +31,7 @@
 
 ## Installation
 
-Please follow [this guide](https://emlproject.qzz.io/documentation/). 
+Please follow [this guide](https://emlproject.pages.dev/docs). 
 
 ### If you won't use a VPS
 
@@ -45,7 +45,7 @@ You can help to translate EML AdminTool!
 
 The languages files are [here](./client/src/lib/locales/). You can create another file with your translation. Please make sure to provide a correct translation!
 
-Then, you can submit your translation file as an [issue](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool-v2/issues/new?template=translation.md), by using the *Language* issue template. Your file needs to be checked and approved by two other persons.
+Then, you can submit your translation file as an [issue](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues/new?template=translation.md), by using the *Language* issue template. Your file needs to be checked and approved by two other persons.
 
 ### Development
 
@@ -53,7 +53,7 @@ Install [Node.js](https://nodejs.org/en/download/package-manager) and [Docker](h
 
 Then, download the code and run the command:
 ```bash
-cd EML-AdminTool-v2
+cd EML-AdminTool
 npm i
 ```
 
