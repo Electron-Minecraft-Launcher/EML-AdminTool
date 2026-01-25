@@ -57,15 +57,16 @@
   function setVersion(selectedType: LoaderType, selectedVersion: LoaderVersion) {
     type = selectedType
     minecraftVersion = selectedVersion.minecraftVersion
-    loaderVersion = selectedVersion.loaderVersion
+    loaderVersion =
+      type === ILoaderType.FABRIC ? tempFabricLoaderVersion : type === ILoaderType.QUILT ? tempQuiltLoaderVersion : selectedVersion.loaderVersion
   }
 
   function isActive(selectedVersion: LoaderVersion) {
     if (type === ILoaderType.FABRIC) {
-      return selectedVersion.loaderVersion === minecraftVersion && loaderVersion === tempFabricLoaderVersion
+      return selectedVersion.minecraftVersion === minecraftVersion && loaderVersion === tempFabricLoaderVersion
     }
     if (type === ILoaderType.QUILT) {
-      return selectedVersion.loaderVersion === minecraftVersion && loaderVersion === tempQuiltLoaderVersion
+      return selectedVersion.minecraftVersion === minecraftVersion && loaderVersion === tempQuiltLoaderVersion
     }
     return selectedVersion.loaderVersion === loaderVersion
   }

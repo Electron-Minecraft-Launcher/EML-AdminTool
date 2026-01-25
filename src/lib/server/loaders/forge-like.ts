@@ -97,7 +97,7 @@ export async function getForgeLikeFile(loader: typeof ILoaderType.FORGE | typeof
   let ext = 'jar'
 
   if (loader === ILoaderType.FORGE) {
-    const metaUrl = `https://files.minecraftforge.net/maven/net/minecraftforge/forge/${loaderVersion}/forge-${loaderVersion}-meta.json`
+    const metaUrl = `https://files.minecraftforge.net/net/minecraftforge/forge/${loaderVersion}/meta.json`
     const meta = (await fetchJson(metaUrl, 'Failed to fetch Forge meta')).classifiers
     format = getFormat(meta)
     ext = Object.keys(meta[format])[0]
