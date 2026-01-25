@@ -159,6 +159,7 @@
     bind:show={showChangeLoaderModal}
     loader={data.loader as unknown as Loader}
     fabricLoaderVersions={data.fabricLoaderVersions}
+    quiltLoaderVersions={data.quiltLoaderVersions}
     loaderList={data.loaderList}
   />
 {/if}
@@ -220,7 +221,15 @@
       <div>
         <p class="label">Loader</p>
         <p>
-          {data.loader.type === ILoaderType.FORGE ? 'Forge' : data.loader.type === ILoaderType.FABRIC ? 'Fabric' : 'Vanilla'}
+          {data.loader.type === ILoaderType.FORGE
+            ? 'Forge'
+            : data.loader.type === ILoaderType.NEOFORGE
+              ? 'NeoForge'
+              : data.loader.type === ILoaderType.FABRIC
+                ? 'Fabric'
+                : data.loader.type === ILoaderType.QUILT
+                  ? 'Quilt'
+                  : 'Vanilla'}
         </p>
       </div>
 

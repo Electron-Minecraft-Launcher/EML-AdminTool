@@ -62,8 +62,8 @@ export default {
 
     [NotificationCode.FILESUPDATER_VERSIONS_MISMATCH]: `Versioni non corrispondenti.`,
     [NotificationCode.FILESUPDATER_MINECRAFT_VERSION_NOT_FOUND]: `Versione di Minecraft non trovata.`,
-    [NotificationCode.FILESUPDATER_FORGE_VERSION_NOT_FOUND]: `Versione di Forge non trovata.`,
-    [NotificationCode.FILESUPDATER_FABRIC_VERSION_NOT_FOUND]: `Versione di Fabric non trovata.`,
+    [NotificationCode.FILESUPDATER_LOADER_VERSION_NOT_FOUND]: `Versione del loader non trovata.`,
+    [NotificationCode.FILESUPDATER_GAME_VERSION_NOT_FOUND]: `Versione di gioco non trovata.`,
 
     [NotificationCode.BOOTSTRAPS_MALFORMED_VERSION]: `La versione specificata nel file YAML è malformata.`,
     [NotificationCode.BOOTSTRAPS_INVALID_FILES]: `Uno o più file bootstrap caricati non sono validi.`,

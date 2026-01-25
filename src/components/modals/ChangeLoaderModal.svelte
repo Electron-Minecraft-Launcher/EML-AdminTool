@@ -13,28 +13,34 @@
     show: boolean
     loader: Loader
     fabricLoaderVersions: string[]
+    quiltLoaderVersions: string[]
     loaderList: { [key: string]: LoaderVersion[] }
   }
 
-  let { show = $bindable(), loader, fabricLoaderVersions, loaderList }: Props = $props()
+  let { show = $bindable(), loader, fabricLoaderVersions, quiltLoaderVersions, loaderList }: Props = $props()
 
   const latestInfo = 'Choosing this version will always force the Launcher to download the latest release.'
 
   let showLoader = $state(false)
+
   let type: LoaderType = $state(loader.type ?? ILoaderType.VANILLA)
-  let minecraftVersion = $state(loader.minecraftVersion ?? '')
-  let minecraftMajorVersion = $state(
+  let majorVersion = $state(
     loader.minecraftVersion?.includes('latest') ? 'Latest' : (loader.minecraftVersion?.split('.').slice(0, 2).join('.') ?? '')
   )
+  let minecraftVersion = $state(loader.minecraftVersion ?? '')
   let loaderVersion = $state(loader.loaderVersion ?? '')
-  let minecraftVersions = $derived([...new Set(loaderList[type].map((version) => version.minecraftVersion))])
-  let visibleVersions = $derived(loaderList[type]?.filter((l) => l.minecraftVersion === minecraftMajorVersion) || [])
+
+  let minecraftVersions = $derived([...new Set(loaderList[type].map((version) => version.majorVersion))])
+  let visibleVersions = $derived(loaderList[type]?.filter((l) => l.majorVersion === majorVersion) || [])
 
   let isFormValid = $derived.by(() => {
     return minecraftVersion && loaderVersion && type
   })
   let tempFabricLoaderVersion: string = $state(
     loader.type === ILoaderType.FABRIC && loader.loaderVersion ? loader.loaderVersion : (fabricLoaderVersions[0] ?? '')
+  )
+  let tempQuiltLoaderVersion: string = $state(
+    loader.type === ILoaderType.QUILT && loader.loaderVersion ? loader.loaderVersion : (quiltLoaderVersions[0] ?? '')
   )
 
   function switchType(newType: LoaderType) {
@@ -44,40 +50,91 @@
   }
 
   function switchMinecraftVersion(newVersion: string) {
-    minecraftMajorVersion = newVersion
+    majorVersion = newVersion
     loaderVersion = ''
   }
 
   function setVersion(selectedType: LoaderType, selectedVersion: LoaderVersion) {
     type = selectedType
-    if (type === ILoaderType.FORGE) {
-      minecraftVersion = selectedVersion.loaderVersion.split('-')[0].replace('_', '-')
-    } else {
-      minecraftVersion = selectedVersion.loaderVersion
-    }
-    loaderVersion = type === ILoaderType.FABRIC ? tempFabricLoaderVersion : selectedVersion.loaderVersion
+    minecraftVersion = selectedVersion.minecraftVersion
+    loaderVersion = selectedVersion.loaderVersion
   }
 
   function isActive(selectedVersion: LoaderVersion) {
     if (type === ILoaderType.FABRIC) {
       return selectedVersion.loaderVersion === minecraftVersion && loaderVersion === tempFabricLoaderVersion
     }
+    if (type === ILoaderType.QUILT) {
+      return selectedVersion.loaderVersion === minecraftVersion && loaderVersion === tempQuiltLoaderVersion
+    }
     return selectedVersion.loaderVersion === loaderVersion
   }
 
   function formatVersionName(version: LoaderVersion): string {
+    const mcVer = version.minecraftVersion
     if (type === ILoaderType.FORGE) {
-      const mcVer = version.loaderVersion.split('-')[0].replace('_', '-')
       const forgeVer = version.loaderVersion.split('-').slice(1).join('-')
       return `Minecraft ${mcVer} (Forge ${forgeVer})`
     }
+    if (type === ILoaderType.NEOFORGE) {
+      const neoForgeVer = version.loaderVersion
+      return `Minecraft ${mcVer} (NeoForge ${neoForgeVer})`
+    }
     if (type === ILoaderType.FABRIC) {
-      const mcVer = version.loaderVersion.split('+')[0].replace('_', '-')
       return `Minecraft ${mcVer} (Fabric ${tempFabricLoaderVersion})`
+    }
+    if (type === ILoaderType.QUILT) {
+      return `Minecraft ${mcVer} (Quilt ${tempQuiltLoaderVersion})`
     }
     if (version.loaderVersion === 'latest_release') return 'Latest Minecraft release'
     if (version.loaderVersion === 'latest_snapshot') return 'Latest Minecraft snapshot'
     return `Minecraft ${version.loaderVersion}`
+  }
+
+  function getGroupedVersions(type: LoaderType, versions: LoaderVersion[]) {
+    const groups: { label: string; versions: LoaderVersion[] }[] = []
+
+    if (type === ILoaderType.VANILLA || type === ILoaderType.FABRIC || type === ILoaderType.QUILT) {
+      const releases = versions.filter((v) => v.type.includes('release'))
+      if (releases.length) groups.push({ label: 'Releases', versions: releases })
+
+      const snapshots = versions.filter((v) => v.type.includes('snapshot'))
+      if (snapshots.length) groups.push({ label: 'Snapshots', versions: snapshots })
+    } else if (type === ILoaderType.FORGE) {
+      const recommended = versions.filter((v) => v.type.includes('recommended'))
+      if (recommended.length) groups.push({ label: 'Recommended', versions: recommended })
+
+      const latest = versions.filter((v) => v.type.includes('latest'))
+      if (latest.length) groups.push({ label: 'Latest', versions: latest })
+
+      if (versions.length) groups.push({ label: 'All versions', versions })
+    } else if (type === ILoaderType.NEOFORGE) {
+      const stable = versions.filter((v) => !v.type.includes('beta') && !v.type.includes('alpha'))
+      if (stable.length) groups.push({ label: 'Stable', versions: stable })
+
+      const ba = versions.filter((v) => v.type.includes('beta') || v.type.includes('alpha'))
+      if (ba.length) groups.push({ label: 'Beta & Alpha', versions: ba })
+    }
+
+    return groups
+  }
+
+  function isOldFabricVersion(version: string) {
+    const [maj, min, pat] = version.split('.').map((v) => parseInt(v))
+    return maj <= 0 && min < 15
+  }
+
+  function formatH4Title(type: LoaderType, majorVersion: string) {
+    if (type === ILoaderType.FORGE) {
+      return `Minecraft Forge ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
+    }
+    if (type === ILoaderType.FABRIC) {
+      return `Minecraft Fabric ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
+    }
+    if (type === ILoaderType.NEOFORGE) {
+      return `Minecraft NeoForge ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
+    }
+    return `Minecraft Vanilla ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
   }
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
@@ -101,38 +158,11 @@
     }
   }
 
-  function isOldFabricVersion(version: string) {
-    const [maj, min, pat] = version.split('.').map((v) => parseInt(v))
-    return maj <= 0 && min < 15
-  }
-
   $effect(() => {
-    if (!minecraftVersions.includes(minecraftMajorVersion)) {
-      minecraftMajorVersion = minecraftVersions[0]
+    if (!minecraftVersions.includes(majorVersion)) {
+      majorVersion = minecraftVersions[0]
     }
   })
-
-  function getGroupedVersions(type: LoaderType, versions: LoaderVersion[]) {
-    const groups: { label: string; versions: LoaderVersion[] }[] = []
-
-    if (type === ILoaderType.VANILLA || type === ILoaderType.FABRIC) {
-      const releases = versions.filter((v) => v.type.includes('release'))
-      if (releases.length) groups.push({ label: 'Releases', versions: releases })
-
-      const snapshots = versions.filter((v) => v.type.includes('snapshot'))
-      if (snapshots.length) groups.push({ label: 'Snapshots', versions: snapshots })
-    } else if (type === ILoaderType.FORGE) {
-      const recommended = versions.filter((v) => v.type.includes('recommended'))
-      if (recommended.length) groups.push({ label: 'Recommended', versions: recommended })
-
-      const latest = versions.filter((v) => v.type.includes('latest'))
-      if (latest.length) groups.push({ label: 'Latest', versions: latest })
-
-      if (versions.length) groups.push({ label: 'All versions', versions })
-    }
-
-    return groups
-  }
 </script>
 
 <ModalTemplate size={'ml'} bind:show>
@@ -146,10 +176,15 @@
     <div class="list-container">
       <div class="list loader-list">
         <p class="label sticky-header">Loaders</p>
-        <button class="list" type="button" class:active={type === ILoaderType.VANILLA} onclick={() => switchType(ILoaderType.VANILLA)}>Vanilla</button
-        >
+        <button class="list" type="button" class:active={type === ILoaderType.VANILLA} onclick={() => switchType(ILoaderType.VANILLA)}>
+          Vanilla
+        </button>
         <button class="list" type="button" class:active={type === ILoaderType.FORGE} onclick={() => switchType(ILoaderType.FORGE)}>Forge</button>
+        <button class="list" type="button" class:active={type === ILoaderType.NEOFORGE} onclick={() => switchType(ILoaderType.NEOFORGE)}>
+          NeoForge
+        </button>
         <button class="list" type="button" class:active={type === ILoaderType.FABRIC} onclick={() => switchType(ILoaderType.FABRIC)}>Fabric</button>
+        <button class="list" type="button" class:active={type === ILoaderType.QUILT} onclick={() => switchType(ILoaderType.QUILT)}>Quilt</button>
       </div>
 
       <div class="list version-list">
@@ -164,20 +199,24 @@
               >
             {/each}
           </select>
+        {:else if type === ILoaderType.QUILT}
+          <label for="loader-version" class="sticky-header" style="z-index: 100">Loader version</label>
+          <select name="loader-version" id="loader-version" class="loader-list-select" bind:value={tempQuiltLoaderVersion}>
+            {#each quiltLoaderVersions as version}
+              <option value={version}>{version}</option>
+            {/each}
+          </select>
         {/if}
         <p class="label sticky-header" style="z-index: 100">Minecraft versions</p>
         {#each minecraftVersions as version}
-          <button class="list" type="button" class:active={minecraftMajorVersion === version} onclick={() => switchMinecraftVersion(version)}>
+          <button class="list" type="button" class:active={majorVersion === version} onclick={() => switchMinecraftVersion(version)}>
             {version}
           </button>
         {/each}
       </div>
 
       <div class="list content-list">
-        <h4>
-          {type === ILoaderType.FORGE ? 'Minecraft Forge' : type === ILoaderType.FABRIC ? 'Minecraft Fabric' : 'Minecraft Vanilla'}
-          {minecraftMajorVersion === 'Latest' || minecraftMajorVersion === 'Snapshots' ? minecraftMajorVersion : `${minecraftMajorVersion}.x`}
-        </h4>
+        <h4>{formatH4Title(type, majorVersion)}</h4>
 
         {#each getGroupedVersions(type, visibleVersions) as group}
           <p class="label">{group.label}</p>
@@ -208,7 +247,8 @@
   @use '../../../static/scss/modals.scss';
   @use '../../../static/scss/list.scss';
 
-  .sticky-header {
+  p.sticky-header,
+  label.sticky-header {
     margin-top: 0;
     position: sticky;
     top: 0;
