@@ -23,6 +23,11 @@
 
   let showLoader = $state(false)
 
+  let jsonLabel = $state('')
+  let jsonFile: File | null = $state(null)
+  let jarLabel = $state('')
+  let jarFile: File | null = $state(null)
+
   let type: LoaderType = $state(loader.type ?? ILoaderType.VANILLA)
   let majorVersion = $state(
     loader.minecraftVersion?.includes('latest') ? 'Latest' : (loader.minecraftVersion?.split('.').slice(0, 2).join('.') ?? '')
@@ -30,7 +35,7 @@
   let minecraftVersion = $state(loader.minecraftVersion ?? '')
   let loaderVersion = $state(loader.loaderVersion ?? '')
 
-  let minecraftVersions = $derived([...new Set(loaderList[type].map((version) => version.majorVersion))])
+  let minecraftVersions = $derived([...new Set(loaderList[type]?.map((version) => version.majorVersion))])
   let visibleVersions = $derived(loaderList[type]?.filter((l) => l.majorVersion === majorVersion) || [])
 
   let isFormValid = $derived.by(() => {
@@ -138,6 +143,46 @@
     return `Minecraft Vanilla ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
   }
 
+  async function uploadFile(fileType: 'json' | 'jar') {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = fileType === 'json' ? '.json' : '.jar'
+    input.multiple = false
+
+    input.onchange = () => {
+      const files = input.files ? [input.files[0]] : []
+      if (files.length === 0) return
+
+      const label = files[0].name
+
+      switch (fileType) {
+        case 'json':
+          jsonFile = files[0]
+          jsonLabel = label
+          break
+        case 'jar':
+          jarFile = files[0]
+          jarLabel = label
+          break
+        default:
+          console.warn('Unknown file:', fileType)
+      }
+    }
+
+    input.click()
+  }
+
+  function reset(fileType: 'json' | 'jar') {
+    if (fileType === 'json') {
+      jsonFile = null
+      jsonLabel = ''
+    }
+    if (fileType === 'jar') {
+      jarFile = null
+      jarLabel = ''
+    }
+  }
+
   const enhanceForm: SubmitFunction = ({ formData }) => {
     showLoader = true
     formData.set('type', type)
@@ -186,55 +231,105 @@
         </button>
         <button class="list" type="button" class:active={type === ILoaderType.FABRIC} onclick={() => switchType(ILoaderType.FABRIC)}>Fabric</button>
         <button class="list" type="button" class:active={type === ILoaderType.QUILT} onclick={() => switchType(ILoaderType.QUILT)}>Quilt</button>
+        <button class="list" type="button" class:active={type === ILoaderType.CUSTOM} onclick={() => switchType(ILoaderType.CUSTOM)}>Custom</button>
       </div>
 
-      <div class="list version-list">
-        {#if type === ILoaderType.FABRIC}
-          <label for="loader-version" class="sticky-header" style="z-index: 100">Loader version</label>
-          <select name="loader-version" id="loader-version" class="loader-list-select" bind:value={tempFabricLoaderVersion}>
-            {#each fabricLoaderVersions as version}
-              <option
-                value={version}
-                title={isOldFabricVersion(version) ? 'Old Fabric Loader version may not support recent Minecraft versions.' : ''}
-                class:old={isOldFabricVersion(version)}>{version}</option
-              >
-            {/each}
-          </select>
-        {:else if type === ILoaderType.QUILT}
-          <label for="loader-version" class="sticky-header" style="z-index: 100">Loader version</label>
-          <select name="loader-version" id="loader-version" class="loader-list-select" bind:value={tempQuiltLoaderVersion}>
-            {#each quiltLoaderVersions as version}
-              <option value={version}>{version}</option>
-            {/each}
-          </select>
-        {/if}
-        <p class="label sticky-header" style="z-index: 100">Minecraft versions</p>
-        {#each minecraftVersions as version}
-          <button class="list" type="button" class:active={majorVersion === version} onclick={() => switchMinecraftVersion(version)}>
-            {version}
-          </button>
-        {/each}
-      </div>
-
-      <div class="list content-list">
-        <h4>{formatH4Title(type, majorVersion)}</h4>
-
-        {#each getGroupedVersions(type, visibleVersions) as group}
-          <p class="label">{group.label}</p>
-          {#each group.versions as version}
-            <button type="button" class:active={isActive(version)} onclick={() => setVersion(type, version)}>
-              {formatVersionName(version)}
-              {#if version.loaderVersion === 'latest_release' || version.loaderVersion === 'latest_snapshot'}
-                &nbsp;&nbsp;<i class="fa-solid fa-circle-question" title={latestInfo} style="cursor: help"></i>
-              {/if}
+      {#if type !== ILoaderType.CUSTOM}
+        <div class="list version-list">
+          {#if type === ILoaderType.FABRIC}
+            <label for="loader-version" class="sticky-header" style="z-index: 100">Loader version</label>
+            <select name="loader-version" id="loader-version" class="loader-list-select" bind:value={tempFabricLoaderVersion}>
+              {#each fabricLoaderVersions as version}
+                <option
+                  value={version}
+                  title={isOldFabricVersion(version) ? 'Old Fabric Loader version may not support recent Minecraft versions.' : ''}
+                  class:old={isOldFabricVersion(version)}>{version}</option
+                >
+              {/each}
+            </select>
+          {:else if type === ILoaderType.QUILT}
+            <label for="loader-version" class="sticky-header" style="z-index: 100">Loader version</label>
+            <select name="loader-version" id="loader-version" class="loader-list-select" bind:value={tempQuiltLoaderVersion}>
+              {#each quiltLoaderVersions as version}
+                <option value={version}>{version}</option>
+              {/each}
+            </select>
+          {/if}
+          <p class="label sticky-header" style="z-index: 100">Minecraft versions</p>
+          {#each minecraftVersions as version}
+            <button class="list" type="button" class:active={majorVersion === version} onclick={() => switchMinecraftVersion(version)}>
+              {version}
             </button>
+          {/each}
+        </div>
+
+        <div class="list content-list">
+          <h4>{formatH4Title(type, majorVersion)}</h4>
+
+          {#each getGroupedVersions(type, visibleVersions) as group}
+            <p class="label">{group.label}</p>
+            {#each group.versions as version}
+              <button type="button" class:active={isActive(version)} onclick={() => setVersion(type, version)}>
+                {formatVersionName(version)}
+                {#if version.loaderVersion === 'latest_release' || version.loaderVersion === 'latest_snapshot'}
+                  &nbsp;&nbsp;<i class="fa-solid fa-circle-question" title={latestInfo} style="cursor: help"></i>
+                {/if}
+              </button>
+            {:else}
+              <p class="no-link">-</p>
+            {/each}
           {:else}
             <p class="no-link">-</p>
           {/each}
-        {:else}
-          <p class="no-link">-</p>
-        {/each}
-      </div>
+        </div>
+      {:else}
+        <div class="list content-list">
+          <h4>Custom Loader</h4>
+          <p class="desc">You can upload your own version of Minecraft here (modified with MCP, for example).</p>
+          <ol style="margin-top: 5px; color: #505050; margin-bottom: 5px; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+            <li>
+              Upload your custom <code>&lt;version&gt;.json</code> file, with the same format as Vanilla or Forge Minecraft's
+              <code>&lt;version&gt;.json</code>
+              (example
+              <a
+                href="https://piston-meta.mojang.com/v1/packages/30bb79802dcf36de95322ef6a055960c88131d2b/1.21.11.json"
+                target="_blank"
+                rel="noopener noreferrer">here</a
+              >).
+            </li>
+            <li>Upload your modified <code>&lt;version&gt;.jar</code>.</li>
+            <li>
+              If needed, you can also upload other files required by you custom version via the Files Updater interface. Ensure de strictly following
+              the required format of your <code>&lt;version&gt;.json</code> file. You may need to create a <code>libraries/</code>,
+              <code>assets/</code>, or other folders as specified in your JSON file.
+            </li>
+          </ol>
+
+          <p class="label" style="margin-top: 20px"><i class="fa-solid fa-bars-staggered"></i>&nbsp;&nbsp;version.json</p>
+          {#if !jsonFile}
+            <button type="button" class="secondary upload" onclick={() => uploadFile('json')}>
+              <i class="fa-solid fa-file-arrow-up"></i>&nbsp;&nbsp;Select file...
+            </button>
+          {:else}
+            <p class="no-link">{jsonLabel}</p>
+            <button type="button" class="remove" onclick={() => reset('json')} aria-label="Remove version.json">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          {/if}
+
+          <p class="label" style="margin-top: 20px"><i class="fa-brands fa-java"></i>&nbsp;&nbsp;version.jar</p>
+          {#if !jarFile}
+            <button type="button" class="secondary upload" onclick={() => uploadFile('jar')}>
+              <i class="fa-solid fa-file-arrow-up"></i>&nbsp;&nbsp;Select file...
+            </button>
+          {:else}
+            <p class="no-link">{jarLabel}</p>
+            <button type="button" class="remove" onclick={() => reset('jar')} aria-label="Remove version.jar">
+              <i class="fa-solid fa-circle-xmark"></i>
+            </button>
+          {/if}
+        </div>
+      {/if}
     </div>
 
     <div class="actions">
@@ -262,7 +357,8 @@
     overflow-y: auto;
 
     &.loader-list {
-      flex: 0.3 !important;
+      flex: unset !important;
+      width: 140px !important;
     }
 
     &.version-list {
@@ -291,7 +387,7 @@
       }
     }
 
-    button {
+    button:not(.remove):not(.upload) {
       display: block;
       border-bottom: none;
       color: #1e1e1e;
@@ -317,5 +413,17 @@
         background: #eeeeee;
       }
     }
+  }
+
+  code {
+    background: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-family: 'Fira Code', monospace;
+    font-size: 13px;
+  }
+
+  button.secondary.upload {
+    margin-top: 0;
   }
 </style>

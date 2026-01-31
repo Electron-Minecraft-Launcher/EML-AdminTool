@@ -23,6 +23,7 @@ enum LoaderType {
   NEOFORGE
   FABRIC
   QUILT
+  CUSTOM
 }
 
 enum LoaderFormat {
