@@ -27,6 +27,8 @@ services:
     restart: unless-stopped
     networks:
       - network
+    env_file:
+      - .env
     environment:
       NODE_ENV: 'production'
       BODY_SIZE_LIMIT: 'Infinity'
