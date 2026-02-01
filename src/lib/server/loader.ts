@@ -29,7 +29,7 @@ export async function updateLoader(loader: Partial<Loader>) {
     minecraftVersion: loader.minecraftVersion ?? 'latest_release',
     loaderVersion: loader.loaderVersion ?? 'latest_release',
     format: loader.format ?? ILoaderFormat.UNIVERSAL,
-    file: loader.file ?? (null as any)
+    file: (loader.file ?? null) as any
   }
 
   try {

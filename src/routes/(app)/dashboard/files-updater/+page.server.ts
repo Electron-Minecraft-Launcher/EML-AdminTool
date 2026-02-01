@@ -10,8 +10,8 @@ import { ILoaderFormat, ILoaderType, type Loader, type LoaderFormat } from '$lib
 import { updateLoader } from '$lib/server/loader'
 import path_ from 'node:path'
 import { checkVanillaLoader, getVanillaVersions } from '$lib/server/loaders/vanilla'
-import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forge-like'
-import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabric-like'
+import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forgelike'
+import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
 
 export const load = (async (event) => {
   const domain = event.url.origin

@@ -31,7 +31,7 @@ export async function getForgeLikeVersions(loader: ForgeLikeLoader) {
     const v = V[loader]
     const mavenMetadataUrl = `${v.mavenUrl}/${v.group.replace(/\./g, '/')}/${v.artifact}/maven-metadata.xml`
     const metadata = await fetchXml(mavenMetadataUrl, `Failed to fetch ${v.name} versions`)
-    const rawVersions: string[] = metadata.metadata.versioning.versions.version
+    const rawVersions: string[] = metadata?.metadata?.versioning?.versions?.version ?? []
     const promos: Record<string, string> | null = v.promotionsUrl
       ? (await fetchJson(v.promotionsUrl, `Failed to fetch ${v.name} promotions`)).promos
       : null
@@ -73,11 +73,27 @@ export async function getForgeLikeVersions(loader: ForgeLikeLoader) {
       versions.push({ majorVersion, minecraftVersion, loaderVersion, type })
     }
 
-    return versions.sort((a, b) => {
+    const sorted = versions.sort((a, b) => {
       const mcDiff = b.minecraftVersion.localeCompare(a.minecraftVersion, undefined, { numeric: true })
       if (mcDiff !== 0) return mcDiff
       return b.loaderVersion.localeCompare(a.loaderVersion, undefined, { numeric: true })
     })
+
+    if (v.name === 'NeoForge') {
+      const seenMcVersions = new Set<string>()
+
+      for (const ver of sorted) {
+        if (!seenMcVersions.has(ver.minecraftVersion)) {
+          if (!ver.type.includes('latest')) {
+            ver.type = ver.type.filter((t) => t !== 'default')
+            ver.type.push('latest')
+          }
+          seenMcVersions.add(ver.minecraftVersion)
+        }
+      }
+    }
+
+    return sorted
   })
 }
 

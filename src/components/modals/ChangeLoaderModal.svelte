@@ -115,6 +115,9 @@
 
       if (versions.length) groups.push({ label: 'All versions', versions })
     } else if (type === ILoaderType.NEOFORGE) {
+      const latest = versions.filter((v) => v.type.includes('latest'))
+      if (latest.length) groups.push({ label: 'Latest', versions: latest })
+
       const stable = versions.filter((v) => !v.type.includes('beta') && !v.type.includes('alpha'))
       if (stable.length) groups.push({ label: 'Stable', versions: stable })
 
