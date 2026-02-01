@@ -31,7 +31,7 @@
 
 ## Installation
 
-Please follow [this guide](https://emlproject.pages.dev/docs). 
+Please follow [this guide](https://emlproject.pages.dev/docs/). 
 
 ### If you won't use a VPS
 
