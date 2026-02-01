@@ -1,6 +1,6 @@
 {
   "name": "eml-admintool",
-  "version": "2.0.0-beta.9",
+  "version": "2.0.0-",
   "author": "GoldFrite",
   "license": "GPL-3.0-or-later",
   "private": true,
@@ -38,6 +38,7 @@
     "dotenv": "^17.0.1",
     "dotenv-cli": "^11.0.0",
     "extract": "^1.0.0",
+    "fast-xml-parser": "^5.3.3",
     "generate-password-browser": "^1.1.0",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^2.35.0",

@@ -190,7 +190,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       <p><i class="fa-solid fa-times-circle"></i></p>
       <p>
         You are using a alpha/beta version of EML AdminTool. This version is not linked to the update system, so you have to update manually.
-        <br /> Please see <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool-v2/" target="_blank">GitHub</a> to get the latest version.
+        <br /> Please see <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/" target="_blank">GitHub</a> to get the latest version.
       </p>
     </div>
   {:else} -->
@@ -216,7 +216,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         <p class="release-date">
           {$l({ date: new Date(data.update.releaseDate).toLocaleDateString() }).dashboard.emlatSettings.update.releasedOn}
           –
-          <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool-v2/releases/tag/v{data.update.latestVersion}" target="_blank">
+          <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/tag/v{data.update.latestVersion}" target="_blank">
             {$l.dashboard.emlatSettings.update.openGithub}&nbsp;&nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 12px"></i>
           </a>
         </p>

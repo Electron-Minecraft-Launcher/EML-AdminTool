@@ -62,8 +62,8 @@ export default {
 
     [NotificationCode.FILESUPDATER_VERSIONS_MISMATCH]: `Versionsuoverensstemmelse.`,
     [NotificationCode.FILESUPDATER_MINECRAFT_VERSION_NOT_FOUND]: `Minecraft-version ikke fundet.`,
-    [NotificationCode.FILESUPDATER_FORGE_VERSION_NOT_FOUND]: `Forge-version ikke fundet.`,
-    [NotificationCode.FILESUPDATER_FABRIC_VERSION_NOT_FOUND]: `Fabric-version ikke fundet.`,
+    [NotificationCode.FILESUPDATER_LOADER_VERSION_NOT_FOUND]: `Loader-version ikke fundet.`,
+    [NotificationCode.FILESUPDATER_GAME_VERSION_NOT_FOUND]: `Spilversion ikke fundet.`,
 
     [NotificationCode.BOOTSTRAPS_MALFORMED_VERSION]: `Versionen angivet i YAML-filen er forkert udformet.`,
     [NotificationCode.BOOTSTRAPS_INVALID_FILES]: `En eller flere uploadede bootstrap-filer er ugyldige.`,

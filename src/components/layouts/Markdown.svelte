@@ -115,7 +115,7 @@
     }
 
     a {
-      line-height: 1.3;
+      line-height: 1.2;
     }
 
     strong {

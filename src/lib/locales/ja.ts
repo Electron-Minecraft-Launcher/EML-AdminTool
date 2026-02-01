@@ -62,8 +62,8 @@ export default {
 
     [NotificationCode.FILESUPDATER_VERSIONS_MISMATCH]: `バージョンが一致しません。`,
     [NotificationCode.FILESUPDATER_MINECRAFT_VERSION_NOT_FOUND]: `Minecraftのバージョンが見つかりません。`,
-    [NotificationCode.FILESUPDATER_FORGE_VERSION_NOT_FOUND]: `Forgeのバージョンが見つかりません。`,
-    [NotificationCode.FILESUPDATER_FABRIC_VERSION_NOT_FOUND]: `Fabricのバージョンが見つかりません。`,
+    [NotificationCode.FILESUPDATER_LOADER_VERSION_NOT_FOUND]: `ローダーのバージョンが見つかりません。`,
+    [NotificationCode.FILESUPDATER_GAME_VERSION_NOT_FOUND]: `ゲームのバージョンが見つかりません。`,
 
     [NotificationCode.BOOTSTRAPS_MALFORMED_VERSION]: `YAMLファイルで指定されたバージョンの形式が正しくありません。`,
     [NotificationCode.BOOTSTRAPS_INVALID_FILES]: `アップロードされた1つ以上のブートストラップファイルが無効です。`,

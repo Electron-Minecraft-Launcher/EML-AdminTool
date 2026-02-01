@@ -7,18 +7,11 @@ import { cacheFiles, createFile, deleteFile, editFile, getCachedFilesParsed, get
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { db } from '$lib/server/db'
 import { ILoaderFormat, ILoaderType, type Loader, type LoaderFormat } from '$lib/utils/db'
-import {
-  checkFabricLoader,
-  checkForgeLoader,
-  checkVanillaLoader,
-  getFabricLoaderVersions,
-  getFabricVersions,
-  getForgeFile,
-  getForgeVersions,
-  getVanillaVersions,
-  updateLoader
-} from '$lib/server/loader'
+import { updateLoader } from '$lib/server/loader'
 import path_ from 'node:path'
+import { checkVanillaLoader, getVanillaVersions } from '$lib/server/loaders/vanilla'
+import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forgelike'
+import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
 
 export const load = (async (event) => {
   const domain = event.url.origin
@@ -31,9 +24,9 @@ export const load = (async (event) => {
   try {
     const files = await getCachedFilesParsed(domain, 'files-updater')
 
-    let loader
+    let loader: Loader | null = null
     try {
-      loader = await db.loader.findFirst()
+      loader = (await db.loader.findFirst()) as Loader | null
     } catch (err) {
       console.error('Failed to load loader:', err)
       throw new ServerError('Failed to load loader', err, NotificationCode.DATABASE_ERROR, 500)
@@ -53,12 +46,15 @@ export const load = (async (event) => {
 
     const loaderList = {
       [ILoaderType.VANILLA]: await getVanillaVersions(),
-      [ILoaderType.FORGE]: await getForgeVersions(),
-      [ILoaderType.FABRIC]: await getFabricVersions()
+      [ILoaderType.FORGE]: await getForgeLikeVersions(ILoaderType.FORGE),
+      [ILoaderType.NEOFORGE]: await getForgeLikeVersions(ILoaderType.NEOFORGE),
+      [ILoaderType.FABRIC]: await getFabricLikeGameVersions(ILoaderType.FABRIC),
+      [ILoaderType.QUILT]: await getFabricLikeGameVersions(ILoaderType.QUILT)
     }
-    const fabricLoaderVersions = await getFabricLoaderVersions()
+    const fabricLoaderVersions = await getFabricLikeLoaderVersions(ILoaderType.FABRIC)
+    const quiltLoaderVersions = await getFabricLikeLoaderVersions(ILoaderType.QUILT)
 
-    return { loader, loaderList, fabricLoaderVersions, files }
+    return { loader, loaderList, fabricLoaderVersions, quiltLoaderVersions, files }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -277,13 +273,13 @@ export const actions: Actions = {
       let format: LoaderFormat = ILoaderFormat.CLIENT
       if (type === ILoaderType.VANILLA) {
         checkVanillaLoader(minecraftVersion, loaderVersion)
-      } else if (type === ILoaderType.FORGE) {
-        checkForgeLoader(minecraftVersion, loaderVersion)
-        const res = await getForgeFile(loaderVersion)
+      } else if (type === ILoaderType.FORGE || type === ILoaderType.NEOFORGE) {
+        checkForgeLikeLoader(type, minecraftVersion, loaderVersion)
+        const res = await getForgeLikeFile(type, loaderVersion)
         file = res.file
         format = res.format
-      } else if (type === ILoaderType.FABRIC) {
-        checkFabricLoader(minecraftVersion, loaderVersion)
+      } else if (type === ILoaderType.FABRIC || type === ILoaderType.QUILT) {
+        checkFabricLikeLoader(type, minecraftVersion, loaderVersion)
       }
 
       const loader = { type, minecraftVersion, loaderVersion, format, file }

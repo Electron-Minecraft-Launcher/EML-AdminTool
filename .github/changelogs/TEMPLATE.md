@@ -31,7 +31,7 @@
 
 ### First-time setup
 
-Please follow [this guide](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool-v2/wiki/Installation-and-setup) to install EML AdminTool for the first time.
+Please follow [this guide](https://emlproject.pages.dev/docs) to install EML AdminTool for the first time.
 
 ### Upgrading from a previous version
 
