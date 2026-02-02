@@ -16,6 +16,12 @@ import { dev } from '$app/environment'
 import { sequence } from '@sveltejs/kit/hooks'
 import '$lib/utils/prototypes'
 
+const DEFAULT_ORIGINS = [
+  'http://localhost:8080',
+  'http://127.0.0.1:8080',
+  'http://localhost:5173'
+]
+
 const filesDir = path.resolve(process.cwd(), 'files')
 
 const app: Handle = async ({ event, resolve }) => {
@@ -89,8 +95,17 @@ export const handleError: HandleServerError = ({ error, event, status, message }
 export const handle = sequence(app, logger)
 
 function getAllowedOrigins() {
-  const allowed = (process.env.ALLOWED_ORIGINS ?? '').split(',').map((o) => o.trim())
+  const envValue = process.env.ALLOWED_ORIGINS
+
+  if (!envValue) {
+    const defaults = [...DEFAULT_ORIGINS]
+    if (dynEnv.ORIGIN) defaults.push(dynEnv.ORIGIN)
+    return defaults
+  }
+
+  const allowed = envValue.split(',').map((o) => o.trim())
   if (dynEnv.ORIGIN) allowed.push(dynEnv.ORIGIN)
+
   return allowed.filter(Boolean)
 }
 
@@ -151,7 +166,14 @@ function injectCorsHeaders(response: Response, event: RequestEvent): Response {
 }
 
 function serveStaticFile(pathname: string) {
-  const relativePath = pathname.substring('/files/'.length)
+  let relativePath = pathname.substring('/files/'.length)
+
+  try {
+    relativePath = decodeURIComponent(relativePath)
+  } catch (e) {
+    return new Response('Malformed URL', { status: 400 })
+  }
+
   const resolvedPath = path.resolve(path.join(filesDir, relativePath))
 
   if (!resolvedPath.startsWith(filesDir)) {
@@ -251,5 +273,8 @@ function getUserInfo(user: User) {
     isAdmin: user.isAdmin
   }
 }
+
+
+
 
 

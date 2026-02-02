@@ -13,7 +13,7 @@
 # start or restart the application.                   #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
-# EML AdminTool v2.0.0-beta.10
+# EML AdminTool v2.0.0-beta.11
 #
 
 name: eml-admintool
@@ -23,17 +23,16 @@ networks:
 
 services:
   web:
-    image: ghcr.io/electron-minecraft-launcher/eml-admintool:2.0.0-beta.10
+    image: ghcr.io/electron-minecraft-launcher/eml-admintool:2.0.0-beta.11
     restart: unless-stopped
     networks:
       - network
     env_file:
-      - .env
+      - path: .env
+        require: false
     environment:
       NODE_ENV: 'production'
       BODY_SIZE_LIMIT: 'Infinity'
-      ORIGIN: '${ORIGIN:-http://localhost:8080}'
-      ALLOWED_ORIGINS: '${ALLOWED_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080}'
     volumes:
       - files:/app/files
       - env:/app/env
