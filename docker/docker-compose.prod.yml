@@ -29,7 +29,7 @@ services:
       - network
     env_file:
       - path: .env
-        require: false
+        required: false
     environment:
       NODE_ENV: 'production'
       BODY_SIZE_LIMIT: 'Infinity'
