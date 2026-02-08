@@ -12,6 +12,7 @@ declare global {
         name: string
         theme: string
         version: string
+        serverIp?: string | null
       }
       user?: {
         id: string

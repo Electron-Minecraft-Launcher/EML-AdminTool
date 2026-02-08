@@ -9,8 +9,8 @@ import bcrypt from 'bcrypt'
 import { NotificationCode } from '$lib/utils/notifications'
 import { dev } from '$app/environment'
 import { generateRandomPin } from './pin'
-import { sleep } from '$lib/utils/utils'
 import path from 'path'
+import { cuid2 } from 'zod/v4'
 const execAsync = promisify(exec)
 
 export const envPath = path.resolve(process.cwd(), 'env', '.env')
@@ -176,6 +176,34 @@ export async function setLanguage(language: string) {
   console.log('Language set successfully to:', language)
 }
 
+export async function setDefaultInstance(name: string) {
+  console.log('\n----------- SETTING DEFAULT INSTANCE -----------\n')
+  resetProcessEnv()
+
+  const client = new Client({ connectionString: process.env.DATABASE_URL })
+  await client.connect()
+
+  const slug = name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+
+  try {
+    await client.query(
+      `INSERT INTO "Instance" ("id", "name", "isDefault", "slug", "createdAt", "updatedAt") VALUES ($1, $2, true, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
+      [1, name, slug]
+    )
+  } catch (err) {
+    console.error('Error setting default instance:', err)
+    await client.end()
+    throw new ServerError('Failed to set default instance', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+
+  await client.end()
+
+  console.log('Default instance set successfully.')
+}
+
 export async function markAsConfigured() {
   console.log('\n-------------- UPDATING ENV FILE ---------------\n')
   resetProcessEnv()
@@ -305,9 +333,3 @@ BODY_SIZE_LIMIT=Infinity
 
   resetProcessEnv()
 }
-
-
-
-
-
-

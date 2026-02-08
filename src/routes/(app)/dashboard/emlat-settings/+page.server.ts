@@ -25,13 +25,20 @@ export const load = (async (event) => {
   }
 
   try {
-    let environment, users, vps, update
+    let environment, instances, users, vps, update
 
     try {
       environment = (await db.environment.findFirst())!
     } catch (err) {
       console.error('Failed to load environment:', err)
       throw new ServerError('Failed to load environment', err, NotificationCode.DATABASE_ERROR, 500)
+    }
+
+    try {
+      instances = await db.instance.findMany({ orderBy: { name: 'asc' } })
+    } catch (err) {
+      console.error('Failed to load instances:', err)
+      throw new ServerError('Failed to load instances', err, NotificationCode.DATABASE_ERROR, 500)
     }
 
     try {
@@ -54,7 +61,7 @@ export const load = (async (event) => {
       throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
     }
 
-    return { environment, users, vps, update }
+    return { environment, instances, users, vps, update }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 

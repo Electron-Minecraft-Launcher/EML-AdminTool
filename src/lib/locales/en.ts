@@ -86,7 +86,8 @@ export default {
     [NotificationCode.UPDATER_ERROR]: `Updater error.`,
     [NotificationCode.FILE_SYSTEM_ERROR]: `File system error.`,
     [NotificationCode.INTERNAL_SERVER_ERROR]: `Unexpected error.`,
-    [NotificationCode.EXTERNAL_API_ERROR]: `External API error.`
+    [NotificationCode.EXTERNAL_API_ERROR]: `External API error.`,
+    [NotificationCode.NETWORK_ERROR]: `Network error. Please check your internet connection and try again.`
   },
   setup: {
     setup: `Setup`,
@@ -153,8 +154,8 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           regeneratePin: `Regenerate PIN`
         }
       },
-      usersManagement: {
-        title: `Users management`,
+      userManagement: {
+        title: `User management`,
         users: `Users`,
         pendingUsers: `Pending users`,
         wrongPinUsers: `Wrong-PIN users`,
@@ -171,6 +172,19 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           title: `Edit user information`,
           acceptUser: `Accept user`,
           permissions: `Permissions`
+        }
+      },
+      instanceManagement: {
+        title: `Instance management`,
+        instances: `Instances`,
+        modal: {
+          title: `Edit instance information`,
+          addInstance: `Add instance`,
+          instanceName: `Instance name`,
+          instanceIp: `IP address or domain name`,
+          instancePort: `Port`,
+          instanceTcpProtocol: `TCP protocol (optional)`,
+          instanceTcpPvn: `Protocole version number (optional)`,
         }
       },
       update: {

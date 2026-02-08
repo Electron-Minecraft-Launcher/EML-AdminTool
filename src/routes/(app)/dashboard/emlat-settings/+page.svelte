@@ -12,6 +12,7 @@
   import { waitForServerRestart, sleep } from '$lib/utils/utils'
   import { callAction } from '$lib/utils/call'
   import Markdown from '../../../../components/layouts/Markdown.svelte'
+  import InstanceManagement from '../../../../components/contents/InstanceManagement.svelte'
 
   let { data = $bindable() }: PageProps = $props()
 
@@ -23,7 +24,8 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
   let showLoader = $state(false)
   let showEditAdminToolModal = $state(false)
 
-  let selectedUserId = $state(data.users[0].id)
+  let selectedInstanceId = $state(data.instances[0].id)
+  let selectedUserId = $state(data.instances[0].id)
   let updateMessage: string = $state('')
 
   onMount(() => {
@@ -128,17 +130,36 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 
     <div>
       <p class="label">{$l.dashboard.emlatSettings.info.nbUsers}</p>
-      <p>{data.users.length}</p>
+      <p>{data.instances.length}</p>
     </div>
   </div>
 </section>
 
 <section class="section">
-  <h3>{$l.dashboard.emlatSettings.usersManagement.title}</h3>
+  <h3>{$l.dashboard.emlatSettings.instanceManagement.title}</h3>
 
   <div class="list-container">
     <div class="list">
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.users}</p>
+      <p class="label">{$l.dashboard.emlatSettings.instanceManagement.instances}</p>
+      {#each data.instances as i}
+        <button class="list" class:active={selectedInstanceId === i.id} onclick={() => (selectedInstanceId = i.id)}>
+          {i.name}
+        </button>
+      {/each}
+    </div>
+
+    <div class="content-list">
+      <InstanceManagement bind:selectedInstanceId {data} />
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h3>{$l.dashboard.emlatSettings.userManagement.title}</h3>
+
+  <div class="list-container">
+    <div class="list">
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.users}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.ACTIVE}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
@@ -147,7 +168,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         {/if}
       {/each}
 
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.pendingUsers}</p>
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.pendingUsers}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.PENDING}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
@@ -156,7 +177,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         {/if}
       {/each}
 
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.wrongPinUsers}</p>
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.wrongPinUsers}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.SPAM}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
@@ -165,7 +186,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         {/if}
       {/each}
 
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.deletedUsers}</p>
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.deletedUsers}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.DELETED}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
