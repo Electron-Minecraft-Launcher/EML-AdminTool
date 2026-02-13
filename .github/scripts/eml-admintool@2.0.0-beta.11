@@ -24,6 +24,7 @@ echo "EML AdminTool v2.0.0-beta.11 Installer"
 echo "Copyright (c) 2026, GoldFrite"
 echo "This script is under the GPL-3.0 license."
 echo ""
+echo "Having trouble installing? Join our Discord support server: https://discord.gg/YVB4k6HzAY"
 
 # Check OS
 echo ""
@@ -54,6 +55,9 @@ else
   echo -e "\e[31mThis script is not compatible with your OS. Exiting.\e[0m"
   exit 1
 fi
+
+INSTALL_DIR="$HOME/.eml/admintool"
+mkdir -p "$INSTALL_DIR"
 
 # Check Docker and Docker Compose
 echo ""
@@ -136,21 +140,21 @@ else
   PRIMARY_ORIGIN="http://$LOCAL_IP:8080"
 fi
 
-echo "# EML AdminTool Environment Configuration" > .env
-echo "NODE_ENV=production" >> .env
-echo "ORIGIN=$PRIMARY_ORIGIN" >> .env
-echo "ALLOWED_ORIGINS=$ORIGINS" >> .env
+ENV_FILE="$INSTALL_DIR/.env"
+
+echo "# EML AdminTool Environment Configuration" > "$ENV_FILE"
+echo "NODE_ENV=production" >> "$ENV_FILE"
+echo "ORIGIN=$PRIMARY_ORIGIN" >> "$ENV_FILE"
+echo "ALLOWED_ORIGINS=$ORIGINS" >> "$ENV_FILE"
 
 echo ""
-echo -e "Configuration saved to $INSTALL_DIR/.env"
-echo -e "Allowed Origins: \e[2m$ORIGINS\e[0m"
+echo -e "Configuration saved to $ENV_FILE"
+echo -e "Allowed origins: \e[2m$ORIGINS\e[0m"
 
 # Install EML AdminTool
 echo ""
 echo -e "• \e[1mInstalling EML AdminTool...\e[0m"
 
-INSTALL_DIR="$HOME/.eml/admintool"
-mkdir -p "$INSTALL_DIR"
 URL="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/download/v2.0.0-beta.11/docker-compose.prod.yml"
 
 if [ "$fetcher" == "curl" ]; then
@@ -180,7 +184,7 @@ if start_docker; then
   echo -e "\e[32mEML AdminTool is successfully installed and running! \e[0m"
   echo -e "Access it at \e[1mhttp://localhost:8080\e[0m or at \e[1m$PRIMARY_ORIGIN\e[0m if your reverse proxy is set up."
   echo ""
-  read "⭐️ Don't forget to star the GitHub repository!"
+  echo "⭐️ Don't forget to star the GitHub repository! "
 else
   echo ""
   echo -e "\e[31mFailed to start Docker containers.\e[0m"
