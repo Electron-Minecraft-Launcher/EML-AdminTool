@@ -178,7 +178,6 @@ echo "Allowed origins: $ORIGINS"
 # Install EML AdminTool
 echo ""
 echo "${BOLD}• Installing EML AdminTool...${RESET}"
-echo ""
 
 URL="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/download/v2.0.0-beta.11/docker-compose.prod.yml"
 
