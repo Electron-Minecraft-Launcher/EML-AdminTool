@@ -4,6 +4,21 @@
 #
 # This script is used to install EML AdminTool v2.0.0-beta.11.
 
+# --- Portable Colors Definition ---
+if command -v tput >/dev/null 2>&1; then
+    BOLD=$(tput bold)
+    RED=$(tput setaf 1)
+    GREEN=$(tput setaf 2)
+    YELLOW=$(tput setaf 3)
+    RESET=$(tput sgr0)
+else
+    BOLD="\033[1m"
+    RED="\033[31m"
+    GREEN="\033[32m"
+    YELLOW="\033[33m"
+    RESET="\033[0m"
+fi
+
 echo "                                                                        "
 echo " ______ __  __ _                    _           _    _______          _ "
 echo "|  ____|  \/  | |          /\      | |         (_)  |__   __|        | |"
@@ -24,11 +39,31 @@ echo "EML AdminTool v2.0.0-beta.11 Installer"
 echo "Copyright (c) 2026, GoldFrite"
 echo "This script is under the GPL-3.0 license."
 echo ""
-echo "Having trouble installing? Join our Discord support server: https://discord.gg/YVB4k6HzAY"
+
+# Check wget or curl
+echo ""
+echo "${BOLD}• Checking wget or curl...${RESET}"
+
+fetcher=""
+
+if [ -x "$(command -v curl)" ]; then
+  fetcher="curl"
+  echo "Using curl."
+elif [ -x "$(command -v wget)" ]; then
+  fetcher="wget"
+  echo "Using wget."
+else
+  echo "${RED}Neither wget nor curl is installed. Exiting.${RESET}"
+  exit 1
+fi
+
+# Create install directory immediately to fix the .env issue
+INSTALL_DIR="$HOME/.eml/admintool"
+mkdir -p "$INSTALL_DIR"
 
 # Check OS
 echo ""
-echo -e "• \e[1mChecking OS...\e[0m"
+echo "${BOLD}• Checking OS...${RESET}"
 
 os=""
 arch=""
@@ -39,60 +74,41 @@ if [ "$(uname -m)" == "x86_64" ]; then
 elif [ "$(uname -m)" == "aarch64" ] || [ "$(uname -m)" == "arm64" ]; then
   arch="aarch64"
 else
-  echo -e "\e[31mThis script is not compatible with your OS. Exiting.\e[0m"
+  echo "${RED}This script is not compatible with your OS. Exiting.${RESET}"
   exit 1
 fi
 
 if [ "$(uname)" == "Darwin" ]; then
   os="mac"
   platform="darwin"
-  echo -e "Running on macOS $arch."
+  echo "Running on macOS $arch."
 elif [ "$(uname)" == "Linux" ]; then
   os="linux"
   platform="linux"
-  echo -e "Running on Linux $arch."
+  echo "Running on Linux $arch."
 else
-  echo -e "\e[31mThis script is not compatible with your OS. Exiting.\e[0m"
+  echo "${RED}This script is not compatible with your OS. Exiting.${RESET}"
   exit 1
 fi
-
-INSTALL_DIR="$HOME/.eml/admintool"
-mkdir -p "$INSTALL_DIR"
 
 # Check Docker and Docker Compose
 echo ""
-echo -e "• \e[1mChecking Docker...\e[0m"
+echo "${BOLD}• Checking Docker...${RESET}"
 
 if ! [ -x "$(command -v docker)" ]; then
-  echo -e "\e[31mDocker is not installed. Exiting.\e[0m"
+  echo "${RED}Docker is not installed. Exiting.${RESET}"
   exit 1
 fi
 if ! docker compose version >/dev/null 2>&1; then
-  echo -e "\e[31mDocker Compose v2 is not installed. Exiting.\e[0m"
+  echo "${RED}Docker Compose v2 is not installed. Exiting.${RESET}"
   exit 1
 fi
-echo -e "Docker and Docker Compose are installed."
+echo "Docker and Docker Compose are installed."
 
-# Check wget or curl
-echo ""
-echo -e "• \e[1mChecking wget or curl...\e[0m"
-
-fetcher=""
-
-if [ -x "$(command -v curl)" ]; then
-  fetcher="curl"
-  echo -e "Using curl."
-elif [ -x "$(command -v wget)" ]; then
-  fetcher="wget"
-  echo -e "Using wget."
-else
-  echo -e "\e[31mNeither wget nor curl is installed. Exiting.\e[0m"
-  exit 1
-fi
 
 # Configuration
 echo ""
-echo -e "• \e[1mNetwork configuration...\e[0m"
+echo "${BOLD}• Network configuration...${RESET}"
 
 LOCAL_IP="127.0.0.1"
 if [ "$os" == "mac" ]; then
@@ -103,7 +119,8 @@ fi
 echo "Local IP detected:    $LOCAL_IP"
 
 PUBLIC_IP=""
-echo -n "Public IP detected:   "
+# Use printf for portability instead of echo -n
+printf "Public IP detected:   "
 if [ "$fetcher" == "wget" ]; then
   PUBLIC_IP=$(wget -4 -qO- --timeout=3 https://ifconfig.me 2>/dev/null)
 else
@@ -119,7 +136,13 @@ fi
 echo ""
 echo "Do you have a custom domain pointing to this server?"
 echo "Example: admintool.myserver.com (Enter WITHOUT http:// or https://)"
-read -p "Domain (leave empty if none): " CUSTOM_DOMAIN < /dev/tty
+# Read compatiblity fix for zsh/bash
+if [ -n "$BASH_VERSION" ]; then
+    read -p "Domain (leave empty if none): " CUSTOM_DOMAIN < /dev/tty
+else
+    printf "Domain (leave empty if none): "
+    read CUSTOM_DOMAIN < /dev/tty
+fi
 
 if [ -n "$CUSTOM_DOMAIN" ]; then
   CUSTOM_DOMAIN=$(echo "$CUSTOM_DOMAIN" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
@@ -140,6 +163,7 @@ else
   PRIMARY_ORIGIN="http://$LOCAL_IP:8080"
 fi
 
+# Fix: Write .env directly to the install directory
 ENV_FILE="$INSTALL_DIR/.env"
 
 echo "# EML AdminTool Environment Configuration" > "$ENV_FILE"
@@ -148,12 +172,12 @@ echo "ORIGIN=$PRIMARY_ORIGIN" >> "$ENV_FILE"
 echo "ALLOWED_ORIGINS=$ORIGINS" >> "$ENV_FILE"
 
 echo ""
-echo -e "Configuration saved to $ENV_FILE"
-echo -e "Allowed origins: \e[2m$ORIGINS\e[0m"
+echo "Configuration saved to $ENV_FILE"
+echo "Allowed Origins: ${BOLD}$ORIGINS${RESET}"
 
 # Install EML AdminTool
 echo ""
-echo -e "• \e[1mInstalling EML AdminTool...\e[0m"
+echo "${BOLD}• Installing EML AdminTool...${RESET}"
 
 URL="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/download/v2.0.0-beta.11/docker-compose.prod.yml"
 
@@ -170,7 +194,7 @@ start_docker() {
     return 0
   fi
   
-  echo -e "\e[33mDocker permissions denied. Trying with sudo...\e[0m"
+  echo "${YELLOW}Docker permissions denied. Trying with sudo...${RESET}"
   
   if sudo docker compose -f docker-compose.prod.yml up -d; then
     return 0
@@ -181,12 +205,17 @@ start_docker() {
 
 if start_docker; then
   echo ""
-  echo -e "\e[32mEML AdminTool is successfully installed and running! \e[0m"
-  echo -e "Access it at \e[1mhttp://localhost:8080\e[0m or at \e[1m$PRIMARY_ORIGIN\e[0m if your reverse proxy is set up."
+  echo "${GREEN}EML AdminTool is successfully installed and running! ${RESET}"
+  echo "Access it at ${BOLD}http://localhost:8080${RESET} or at ${BOLD}$PRIMARY_ORIGIN${RESET} if your reverse proxy is set up."
   echo ""
-  echo "⭐️ Don't forget to star the GitHub repository! "
+  # Portable read for pause
+  if [ -n "$BASH_VERSION" ]; then
+      read -p "⭐️ Don't forget to star the GitHub repository!" < /dev/tty
+  else
+      echo "⭐️ Don't forget to star the GitHub repository!"
+  fi
 else
   echo ""
-  echo -e "\e[31mFailed to start Docker containers.\e[0m"
+  echo "${RED}Failed to start Docker containers.${RESET}"
   echo "Please ensure Docker is running and you have permissions."
 fi
