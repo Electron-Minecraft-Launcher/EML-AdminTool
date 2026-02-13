@@ -4,7 +4,6 @@
 #
 # This script is used to install EML AdminTool v2.0.0-beta.11.
 
-# --- Portable Colors Definition ---
 if command -v tput >/dev/null 2>&1; then
     BOLD=$(tput bold)
     RED=$(tput setaf 1)
@@ -39,31 +38,12 @@ echo "EML AdminTool v2.0.0-beta.11 Installer"
 echo "Copyright (c) 2026, GoldFrite"
 echo "This script is under the GPL-3.0 license."
 echo ""
-
-# Check wget or curl
-echo ""
-echo "${BOLD}• Checking wget or curl...${RESET}"
-
-fetcher=""
-
-if [ -x "$(command -v curl)" ]; then
-  fetcher="curl"
-  echo "Using curl."
-elif [ -x "$(command -v wget)" ]; then
-  fetcher="wget"
-  echo "Using wget."
-else
-  echo "${RED}Neither wget nor curl is installed. Exiting.${RESET}"
-  exit 1
-fi
-
-# Create install directory immediately to fix the .env issue
-INSTALL_DIR="$HOME/.eml/admintool"
-mkdir -p "$INSTALL_DIR"
+echo "Having trouble installing? Join our Discord support server: https://discord.gg/YVB4k6HzAY"
 
 # Check OS
 echo ""
 echo "${BOLD}• Checking OS...${RESET}"
+echo ""
 
 os=""
 arch=""
@@ -91,9 +71,13 @@ else
   exit 1
 fi
 
+INSTALL_DIR="$HOME/.eml/admintool"
+mkdir -p "$INSTALL_DIR"
+
 # Check Docker and Docker Compose
 echo ""
 echo "${BOLD}• Checking Docker...${RESET}"
+echo ""
 
 if ! [ -x "$(command -v docker)" ]; then
   echo "${RED}Docker is not installed. Exiting.${RESET}"
@@ -105,10 +89,28 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 echo "Docker and Docker Compose are installed."
 
+# Check wget or curl
+echo ""
+echo "${BOLD}• Checking wget or curl...${RESET}"
+echo ""
+
+fetcher=""
+
+if [ -x "$(command -v curl)" ]; then
+  fetcher="curl"
+  echo "Using curl."
+elif [ -x "$(command -v wget)" ]; then
+  fetcher="wget"
+  echo "Using wget."
+else
+  echo "${RED}Neither wget nor curl is installed. Exiting.${RESET}"
+  exit 1
+fi
 
 # Configuration
 echo ""
 echo "${BOLD}• Network configuration...${RESET}"
+echo ""
 
 LOCAL_IP="127.0.0.1"
 if [ "$os" == "mac" ]; then
@@ -119,7 +121,6 @@ fi
 echo "Local IP detected:    $LOCAL_IP"
 
 PUBLIC_IP=""
-# Use printf for portability instead of echo -n
 printf "Public IP detected:   "
 if [ "$fetcher" == "wget" ]; then
   PUBLIC_IP=$(wget -4 -qO- --timeout=3 https://ifconfig.me 2>/dev/null)
@@ -135,7 +136,7 @@ fi
 
 echo ""
 echo "Do you have a custom domain pointing to this server?"
-echo "Example: admintool.myserver.com (Enter WITHOUT http:// or https://)"
+echo "Example: admintool.myserver.com (enter ${BOLD}without${RESET} http:// or https://)"
 # Read compatiblity fix for zsh/bash
 if [ -n "$BASH_VERSION" ]; then
     read -p "Domain (leave empty if none): " CUSTOM_DOMAIN < /dev/tty
@@ -163,7 +164,6 @@ else
   PRIMARY_ORIGIN="http://$LOCAL_IP:8080"
 fi
 
-# Fix: Write .env directly to the install directory
 ENV_FILE="$INSTALL_DIR/.env"
 
 echo "# EML AdminTool Environment Configuration" > "$ENV_FILE"
@@ -173,11 +173,12 @@ echo "ALLOWED_ORIGINS=$ORIGINS" >> "$ENV_FILE"
 
 echo ""
 echo "Configuration saved to $ENV_FILE"
-echo "Allowed Origins: ${BOLD}$ORIGINS${RESET}"
+echo "Allowed origins: $ORIGINS"
 
 # Install EML AdminTool
 echo ""
 echo "${BOLD}• Installing EML AdminTool...${RESET}"
+echo ""
 
 URL="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/download/v2.0.0-beta.11/docker-compose.prod.yml"
 
@@ -205,15 +206,10 @@ start_docker() {
 
 if start_docker; then
   echo ""
-  echo "${GREEN}EML AdminTool is successfully installed and running! ${RESET}"
+  echo "${GREEN}EML AdminTool is successfully installed and running!${RESET}"
   echo "Access it at ${BOLD}http://localhost:8080${RESET} or at ${BOLD}$PRIMARY_ORIGIN${RESET} if your reverse proxy is set up."
   echo ""
-  # Portable read for pause
-  if [ -n "$BASH_VERSION" ]; then
-      read -p "⭐️ Don't forget to star the GitHub repository!" < /dev/tty
-  else
-      echo "⭐️ Don't forget to star the GitHub repository!"
-  fi
+  echo "⭐️ Don't forget to star the GitHub repository! "
 else
   echo ""
   echo "${RED}Failed to start Docker containers.${RESET}"
