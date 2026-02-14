@@ -7,7 +7,7 @@
   import { addNotification } from '$lib/stores/notifications'
   import type { NotificationCode } from '$lib/utils/notifications'
   import { applyAction } from '$app/forms'
-  import EditUserModal from '../modals/EditUserModal.svelte'
+  import AddEditInstanceModal from '../modals/AddEditInstanceModal.svelte'
 
   interface Props {
     selectedInstanceId: string
@@ -18,7 +18,7 @@
 
   let showEditInstanceModal = $state(false)
   let selectedInstance = $derived.by(() => data.instances.find((instance) => instance.id === selectedInstanceId))!
-  let action: 'ACCEPT' | 'EDIT' = $state('ACCEPT')
+  let action: 'ADD' | 'EDIT' = $state('ADD')
 
   const enhanceForm: SubmitFunction = ({ action, formData, cancel }) => {
     const warning =
@@ -50,7 +50,7 @@
 </script>
 
 {#if showEditInstanceModal}
-  <EditUserModal bind:show={showEditInstanceModal} bind:selectedUserId={selectedInstanceId} {action} {data} />
+  <AddEditInstanceModal bind:show={showEditInstanceModal} bind:selectedInstanceId={selectedInstanceId} {action} {data} />
 {/if}
 
 {#if !selectedInstance.isDefault}

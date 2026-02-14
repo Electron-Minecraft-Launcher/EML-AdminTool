@@ -26,7 +26,7 @@
     tcpProtocol: '',
     tcpPvn: '',
     updatedAt: new Date(),
-    createdAt: new Date(),
+    createdAt: new Date()
   }
 
   let { show = $bindable(), selectedInstanceId = $bindable(), action, data, scroll = $bindable(null) }: Props = $props()
@@ -68,13 +68,11 @@
 
   <form method="POST" action="?/addEditInstance" use:enhance={enhanceForm}>
     <h2>
-      {action === 'ADD' ? $l.dashboard.emlatSettings.userManagement.modal.acceptUser : $l.dashboard.emlatSettings.userManagement.modal.title}
+      {action === 'ADD' ? $l.dashboard.emlatSettings.instanceManagement.modal.addInstance : $l.dashboard.emlatSettings.instanceManagement.modal.title}
     </h2>
 
     <label for="name" style="margin-top: 0">{$l.dashboard.emlatSettings.instanceManagement.modal.instanceName}</label>
     <input type="text" id="name" name="name" bind:value={name} />
-
-    
 
     <div class="actions">
       <button type="button" class="secondary" onclick={() => (show = false)}>{$l.common.cancel}</button>

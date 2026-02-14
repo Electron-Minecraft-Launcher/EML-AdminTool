@@ -36,7 +36,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     }
   })
 
-  async function editAdminToolModal() {
+  function editAdminToolModal() {
     showEditAdminToolModal = true
   }
 
