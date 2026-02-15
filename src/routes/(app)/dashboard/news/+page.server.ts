@@ -31,9 +31,8 @@ export const load = (async (event) => {
     throw redirect(303, '/dashboard')
   }
 
-  let news, newsCategories, newsTags, images
-
   try {
+    let news, newsCategories, newsTags, images
     try {
       news = await db.news.findMany({
         orderBy: { createdAt: 'desc' },
@@ -166,7 +165,7 @@ export const actions: Actions = {
     try {
       for (const image of images) {
         if (!(image instanceof File)) continue
- 
+
         const newName = `${randomBytes(8).toString('hex')}${path_.extname(image.name)}`
         const newImage = new File([image], newName, { type: image.type })
 
@@ -333,7 +332,3 @@ export const actions: Actions = {
     }
   }
 }
-
-
-
-

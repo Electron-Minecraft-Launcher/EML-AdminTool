@@ -23,7 +23,7 @@ export interface ServerStatus {
 export async function getServerStatus(
   ip: string,
   port: number = 25565,
-  protocol: 'modern' | '1.6' | '1.4-1.5' = 'modern',
+  protocol: 'modern' | '1.6' | '1.4-1.5' | 'beta1.8-1.3' = 'modern',
   pvn: number = -1,
   timeout: number = 5
 ): Promise<ServerStatus> {
@@ -59,14 +59,17 @@ export async function getServerStatus(
           bufWriter.writeShort(11),
           bufWriter.writeStringUTF16BE('MC|PingHost'),
           bufWriter.writeShort(7 + 2 * ip.length),
-          bufWriter.writeByte(pvn),
-          bufWriter.writeShort(2 * ip.length),
+          bufWriter.writeByte(0x4a),
+          bufWriter.writeShort(ip.length),
           bufWriter.writeStringUTF16BE(ip),
           bufWriter.writeInt(port)
         ])
         socket.write(buf)
       } else if (protocol === '1.4-1.5') {
         const buf = Buffer.concat([bufWriter.writeByte(0xfe), bufWriter.writeByte(1)])
+        socket.write(buf)
+      } else if (protocol === 'beta1.8-1.3') {
+        const buf = bufWriter.writeByte(0xfe)
         socket.write(buf)
       } else {
         reject(new ServerError('Unsupported protocol version', null, NotificationCode.NETWORK_ERROR, 400))
@@ -99,7 +102,7 @@ export async function getServerStatus(
               ping: ping,
               version: json.version.name,
               motd:
-                typeof json.description === 'object' && json.description.text
+                typeof json.description === 'object' && typeof json.description.text === 'string'
                   ? json.description.text
                   : typeof json.description === 'string'
                     ? json.description
@@ -107,26 +110,26 @@ export async function getServerStatus(
               players: { max: json.players.max, online: json.players.online }
             })
             socket.destroy()
-            clearTimeout(connectionTimeout)
+            clearTimeout(timeout)
           } catch (err) {
             reject(new ServerError(`Received invalid response`, err, NotificationCode.NETWORK_ERROR, 502))
             socket.destroy()
-            clearTimeout(connectionTimeout)
+            clearTimeout(timeout)
           }
         } else {
           reject(new ServerError(`Received unexpected packet`, null, NotificationCode.NETWORK_ERROR, 502))
           socket.destroy()
-          clearTimeout(connectionTimeout)
+          clearTimeout(timeout)
         }
-      } else {
+      } else if (protocol === '1.6' || protocol === '1.4-1.5') {
         if (incomingBuf.readUInt8(0) === 0xff) {
           const bufReader = new BufferReader(incomingBuf)
-          const fields = bufReader.readStringUTF16BE().split('\u0000')
+          const fields = bufReader.readStringUTF16BE_Old().split('\u0000')
 
           if (fields[0] !== '§1') {
             reject(new ServerError(`Received invalid response: the first field is not '§1'`, null, NotificationCode.NETWORK_ERROR, 502))
             socket.destroy()
-            clearTimeout(connectionTimeout)
+            clearTimeout(timeout)
           }
 
           resolve({
@@ -136,11 +139,31 @@ export async function getServerStatus(
             players: { max: +fields[5], online: +fields[4] }
           })
           socket.destroy()
-          clearTimeout(connectionTimeout)
+          clearTimeout(timeout)
         } else {
           reject(new ServerError(`Received invalid response: wrong packet identifier`, null, NotificationCode.NETWORK_ERROR, 502))
           socket.destroy()
-          clearTimeout(connectionTimeout)
+          clearTimeout(timeout)
+        }
+      } else if (protocol === 'beta1.8-1.3') {
+        const bufReader = new BufferReader(incomingBuf)
+        const responseStr = bufReader.readStringUTF16BE_Old()
+
+        if (protocol === 'beta1.8-1.3') {
+          const fields = responseStr.split('§')
+
+          resolve({
+            ping: ping,
+            version: '< 1.4',
+            motd: fields[0],
+            players: { max: +fields[2], online: +fields[1] }
+          })
+          socket.destroy()
+          clearTimeout(timeout)
+        } else {
+          reject(new ServerError(`Received invalid response: wrong packet identifier`, null, NotificationCode.NETWORK_ERROR, 502))
+          socket.destroy()
+          clearTimeout(timeout)
         }
       }
     })

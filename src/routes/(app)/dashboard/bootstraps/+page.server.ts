@@ -19,7 +19,13 @@ export const load = (async (event) => {
   }
 
   try {
-    let bootstraps = await db.bootstrap.findUnique({ where: { id: '1' } })
+    let bootstraps
+    try {
+      bootstraps = await db.bootstrap.findUnique({ where: { id: '1' } })
+    } catch (err) {
+      console.error('Failed to load bootstraps:', err)
+      throw new ServerError('Failed to load bootstraps', err, NotificationCode.DATABASE_ERROR, 500)
+    }
 
     const allFiles = await getFiles(domain, 'bootstraps')
 

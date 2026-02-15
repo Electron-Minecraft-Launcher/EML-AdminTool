@@ -16,6 +16,7 @@ import { deleteAllFiles, markAsUnconfigured, resetDatabase } from '$lib/server/r
 import { restartServer } from '$lib/server/setup'
 import { IUserStatus } from '$lib/utils/db'
 import { dev } from '$app/environment'
+import { getVanillaVersions } from '$lib/server/loaders/vanilla'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -25,7 +26,7 @@ export const load = (async (event) => {
   }
 
   try {
-    let environment, instances, users, vps, update
+    let environment, instances, users, vps, update, minecraftVersions
 
     try {
       environment = (await db.environment.findFirst())!
@@ -61,7 +62,9 @@ export const load = (async (event) => {
       throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
     }
 
-    return { environment, instances, users, vps, update }
+    minecraftVersions = await getVanillaVersions()
+
+    return { environment, instances, users, vps, update, minecraftVersions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 

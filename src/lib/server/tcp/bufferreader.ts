@@ -54,6 +54,30 @@ export default class BufferReader {
     return result
   }
 
+  readShort() {
+    const result = this.buffer.readUInt16BE(this.offset)
+    this.offset += 2
+    return result
+  }
+
+  readStringUTF16BE_Old() {
+    this.offset += 1
+    const length = this.readShort() * 2
+
+    const val = Buffer.from(this.buffer.subarray(this.offset, this.offset + length))
+
+    for (let i = 0; i < val.length; i += 2) {
+      const temp = val[i]
+      val[i] = val[i + 1]
+      val[i + 1] = temp
+    }
+
+    const result = val.toString('utf16le')
+    this.offset += length
+
+    return result
+  }
+
   getOffset(): number {
     return this.offset
   }

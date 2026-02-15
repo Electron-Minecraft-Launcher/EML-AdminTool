@@ -137,6 +137,10 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
   },
   dashboard: {
     welcome: `Welcome, {{username}}!`,
+    time: `Server time`,
+    serverStatus: `Server status`,
+    undefinedServer: `The Minecraft server information is not defined.`,
+    launcherStatus: `Launcher status`,
     emlatSettings: {
       title: `EML AdminTool settings`,
       info: {
@@ -181,10 +185,11 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           title: `Edit instance information`,
           addInstance: `Add instance`,
           instanceName: `Instance name`,
-          instanceIp: `IP address or domain name`,
-          instancePort: `Port`,
-          instanceTcpProtocol: `TCP protocol (optional)`,
-          instanceTcpPvn: `Protocole version number (optional)`,
+          instanceSlug: `Instance ID`,
+          ip: `IP address or domain name`,
+          port: `Port`,
+          minecraftVersion: `Minecraft version`,
+          minecraftVersionInfo: `If your Minecraft server is compatible with multiple Minecraft versions, you should choose the highest Minecraft version it is compatible with.`,
         }
       },
       update: {

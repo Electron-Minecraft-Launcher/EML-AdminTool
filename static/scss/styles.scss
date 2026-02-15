@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root {
   --primary-color: rgb(194, 81, 5);
@@ -121,7 +122,7 @@ input:not([type=checkbox]) {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   outline: 0px solid var(--primary-tr-color-hover);
   transition: all 0.3s ease, shadow 0.1s ease, margin 0.1s, outline 0.1s ease;
-  line-height: 15px;
+  line-height: 16px;
 
   &:hover:not(:disabled) {
     box-shadow: none;
@@ -180,7 +181,7 @@ button:not(.a) {
   cursor: pointer;
   transition: all 0.3s ease, shadow 0.1s ease, margin 0.1s, outline 0.1s ease;
   outline: 0px solid var(--primary-tr-color-hover);
-  line-height: 15px;
+  line-height: 16px;
   font-size: 13.3px;
 
   &.primary {

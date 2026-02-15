@@ -100,7 +100,6 @@ model Instance {
   ip          String?
   port        Int?
   tcpProtocol String?
-  tcpPvn      String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
