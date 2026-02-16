@@ -69,69 +69,59 @@
   <i class="fa-solid fa-pen"></i>
 </button>
 
-<div class="perms">
-  <h4>{selectedInstance.name}</h4>
+<div class="info">
+  <h4 style="margin-bottom: 0">{selectedInstance.name}</h4>
 
-  <!-- <p class="label">{$l.common.username}</p>
-  <p>{selectedInstance.username}</p> -->
-
-  <!-- {#if selectedInstance.status === IUserStatus.ACTIVE}
-    <p class="label">{$l.dashboard.emlatSettings.userManagement.permissions}</p>
-    {#if selectedInstance.isAdmin}
-      <p>Admin (all permissions)</p>
-    {:else}
-      {#if selectedInstance.p_filesUpdater >= 1}
-        <p>Add, edit and delete files</p>
-      {/if}
-      {#if selectedInstance.p_filesUpdater === 2}
-        <p>Change Minecraft loader</p>
-      {/if}
-
-      {#if selectedInstance.p_bootstraps}
-        <p>Change bootstraps files</p>
-      {/if}
-
-      {#if selectedInstance.p_maintenance}
-        <p>Change maintenance status</p>
-      {/if}
-
-      {#if selectedInstance.p_news || selectedInstance.p_newsCategories || selectedInstance.p_newsTags}
-        {#if selectedInstance.p_news >= 1}
-          <p>Add news, edit and delete news they created</p>
-        {/if}
-        {#if selectedInstance.p_news === 2}
-          <p>Delete any news</p>
-        {/if}
-        {#if selectedInstance.p_newsCategories}
-          <p>Add, edit and delete news categories</p>
-        {/if}
-        {#if selectedInstance.p_newsTags}
-          <p>Add, edit and delete news tags</p>
-        {/if}
-      {/if}
-
-      {#if selectedInstance.p_backgrounds}
-        <p>Change backgrounds</p>
-      {/if}
-
-      {#if selectedInstance.p_stats === 1}
-        <p>View stats</p>
-      {:else if selectedInstance.p_stats === 2}
-        <p>View and delete stats</p>
-      {/if}
-
-      {#if !selectedInstance.p_filesUpdater && !selectedInstance.p_bootstraps && !selectedInstance.p_maintenance && !selectedInstance.p_news && !selectedInstance.p_newsCategories && !selectedInstance.p_newsTags && !selectedInstance.p_backgrounds && !selectedInstance.p_stats}
-        <p>No permissions</p>
-      {/if}
-    {/if}
-  {/if} -->
+  <div class="container" style="margin-top: 0;">
+    <div>
+      <p class="label">{$l.dashboard.emlatSettings.instanceManagement.instanceName}</p>
+      <p>{selectedInstance.name}</p>
+    </div>
+    <div>
+      <p class="label">{$l.dashboard.emlatSettings.instanceManagement.instanceSlug}</p>
+      <p>{selectedInstance.id}</p>
+    </div>
+    <div class="flex">
+      <div class="ip">
+        <p class="label">{$l.dashboard.emlatSettings.instanceManagement.ip}</p>
+        <p>{selectedInstance.ip ?? 'unset'}</p>
+      </div>
+      <div class="separator">
+        <p>:</p>
+      </div>
+      <div class="port">
+        <p class="label">{$l.dashboard.emlatSettings.instanceManagement.port}</p>
+        <p>{selectedInstance.port ?? 'unset'}</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style lang="scss">
-  div.perms {
-    min-height: 400px;
-    max-height: 600px;
+  div.info {
+    min-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
+  }
+
+  div.flex {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+
+    .ip {
+      text-align: right;
+      min-width: 150px;
+      width: fit-content;
+
+      p:not(.label) {
+      }
+    }
+
+    .separator {
+      width: 5px;
+      margin-top: 57.5px;
+    }
   }
 
   button.right {

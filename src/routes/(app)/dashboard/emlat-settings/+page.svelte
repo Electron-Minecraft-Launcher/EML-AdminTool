@@ -139,7 +139,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
   <h3>{$l.dashboard.emlatSettings.instanceManagement.title}</h3>
 
   <div class="list-container">
-    <div class="list">
+    <div class="list small">
       <p class="label">{$l.dashboard.emlatSettings.instanceManagement.instances}</p>
       {#each data.instances as i}
         <button class="list" class:active={selectedInstanceId === i.id} onclick={() => (selectedInstanceId = i.id)}>

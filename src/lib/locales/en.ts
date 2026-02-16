@@ -142,6 +142,8 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
     serverStatus: `Server status`,
     undefinedServer: `The Minecraft server information is not defined.`,
     launcherStatus: `Launcher status`,
+    news: `News`,
+    noNews: `No news yet.`,
     emlatSettings: {
       title: `EML AdminTool settings`,
       info: {
@@ -182,6 +184,11 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
       instanceManagement: {
         title: `Instance management`,
         instances: `Instances`,
+        instanceName: `Instance name`,
+        instanceSlug: `Instance ID`,
+        ip: `IP address`,
+        port: `Port`,
+        minecraftVersion: `Minecraft version`,
         modal: {
           title: `Edit instance information`,
           addInstance: `Add instance`,
@@ -190,7 +197,7 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           ip: `IP address or domain name`,
           port: `Port`,
           minecraftVersion: `Minecraft version`,
-          minecraftVersionInfo: `If your Minecraft server is compatible with multiple Minecraft versions, you should choose the highest Minecraft version it is compatible with.`,
+          minecraftVersionInfo: `If your Minecraft server is compatible with multiple Minecraft versions, you should choose the highest Minecraft version it is compatible with.`
         }
       },
       update: {
@@ -243,3 +250,4 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
     }
   }
 }
+

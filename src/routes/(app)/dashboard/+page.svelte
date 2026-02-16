@@ -2,6 +2,7 @@
   import { l } from '$lib/stores/language'
   import getEnv from '$lib/utils/env'
   import getUser from '$lib/utils/user'
+  import Markdown from '../../../components/layouts/Markdown.svelte'
   import type { PageProps } from './$types'
   import { onDestroy, onMount } from 'svelte'
 
@@ -36,6 +37,14 @@
     displayTime = clockFormatter.format(new Date(currentServerTime))
   }
   updateClock()
+
+  function filterPosts(post: any) {
+    if (!post.filter) return true
+    return (post.filter as any[]).every((filter: string) => {
+      if (filter === 'admin') return user.isAdmin
+      return true
+    })
+  }
 
   onMount(() => {
     interval = setInterval(updateClock, 1000)
@@ -118,6 +127,47 @@
       </p>
     </div>
   </div>
+  <section class="section">
+    {#await data.streamed.fetchNews}
+      <p>Loading...</p>
+    {:then news}
+      {#each news.filter(filterPosts) as post}
+        <article class="blog-post">
+          <header class="post-header">
+            <div class="meta-tags">
+              <span class="date">
+                <i class="fa-solid fa-calendar"></i>
+                {new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
+              {#if post.author}
+                <span class="author">
+                  <i class="fa-solid fa-user"></i>
+                  {post.author}
+                </span>
+              {/if}
+              {#if post.tags}
+                <div class="tags">
+                  {#each post.tags as tag}
+                    <span class="tag">#{tag}</span>
+                  {/each}
+                </div>
+              {/if}
+            </div>
+
+            <h2 class="post-title">{post.title}</h2>
+          </header>
+
+          <div class="doc-content">
+            <Markdown source={post.content} />
+          </div>
+        </article>
+      {:else}
+        <p>{$l.dashboard.noNews}</p>
+      {/each}
+    {:catch error}
+      <p>{$l.dashboard.noNews}</p>
+    {/await}
+  </section>
 </div>
 
 <style lang="scss">
@@ -137,6 +187,62 @@
     display: flex;
     gap: 25px;
     flex-direction: column;
+  }
+
+  section.section {
+    flex: 1;
+    margin-top: 0;
+    display: flex;
+    gap: 30px;
+    flex-direction: column;
+
+    .blog-post {
+      &:not(:last-child) {
+        padding-bottom: 30px;
+        border-bottom: 2px solid var(--border-color2)
+      }
+    }
+
+    .post-header {
+      margin-bottom: 2rem;
+
+      h2.post-title {
+        font-size: 2rem;
+        margin-top: 10px;
+        margin-bottom: 0;
+        color: var(--text-main);
+      }
+
+      .meta-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        color: #646464;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+
+        span {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .tags {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+
+        .tag {
+          background: var(--secondary-color);
+          color: var(--primary-color);
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 0.8rem;
+          font-weight: 600;
+        }
+      }
+    }
   }
 
   div.widget {

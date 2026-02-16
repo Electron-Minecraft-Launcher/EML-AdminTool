@@ -67,6 +67,21 @@ export const load = (async (event) => {
       }
     }
 
+    const fetchNews = async () => {
+      try {
+        const response = await fetch('https://emlproject.pages.dev/api/news?get-content&limit=4')
+        if (!response.ok) {
+          console.error('Failed to fetch news:', response.statusText)
+          return []
+        }
+        const data = await response.json()
+        return data ?? [] as any[]
+      } catch (err) {
+        console.error('Failed to fetch news:', err)
+        return []
+      }
+    }
+
     if (instance?.ip && instance?.port && instance?.tcpProtocol) {
       serverStatus = {
         name: instance?.name ?? 'N/A',
@@ -85,7 +100,7 @@ export const load = (async (event) => {
       scheduledStartTime: maintenance?.startTime ?? null
     }
 
-    return { timeInfo, serverStatus, launcherStatus, streamed: { pingServer: pingServer() } }
+    return { timeInfo, serverStatus, launcherStatus, streamed: { pingServer: pingServer(), fetchNews: fetchNews() } }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -107,3 +122,4 @@ export const actions: Actions = {
     }
   }
 }
+
