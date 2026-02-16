@@ -88,7 +88,7 @@ export const actions: Actions = {
 
     try {
       await renameFile('files-updater', path, name, newName)
-      await cacheFiles(domain, 'files-updater')
+      await cacheFiles('files-updater')
 
       const files = await getFiles(domain, 'files-updater')
       return { files }
@@ -130,7 +130,7 @@ export const actions: Actions = {
         const path = path_.join(currentPath, path_.dirname(file.webkitRelativePath ?? file.name))
 
         await uploadFile('files-updater', path, file)
-        await cacheFiles(domain, 'files-updater')
+        await cacheFiles('files-updater')
       }
 
       const cache = await getCachedFilesParsed(domain, 'files-updater')
@@ -167,7 +167,7 @@ export const actions: Actions = {
 
     try {
       await createFile('files-updater', path, name)
-      await cacheFiles(domain, 'files-updater')
+      await cacheFiles('files-updater')
 
       const files = await getFiles(domain, 'files-updater')
       return { files }
@@ -204,7 +204,7 @@ export const actions: Actions = {
 
     try {
       await editFile('files-updater', path, name, content)
-      await cacheFiles(domain, 'files-updater')
+      await cacheFiles('files-updater')
 
       const files = await getFiles(domain, 'files-updater')
       return { files }
@@ -233,7 +233,7 @@ export const actions: Actions = {
         if (typeof path !== 'string') continue
 
         await deleteFile('files-updater', path)
-        await cacheFiles(domain, 'files-updater')
+        await cacheFiles('files-updater')
       }
 
       const cache = await getCachedFilesParsed(domain, 'files-updater')
