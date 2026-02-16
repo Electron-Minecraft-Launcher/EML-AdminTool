@@ -41,7 +41,7 @@ export async function changeDatabasePassword(newPassword: string) {
   console.log('\n---------- CHANGING DATABASE PASSWORD ----------\n')
   resetProcessEnv()
 
-  newPassword = newPassword.replace(/"\/\\+&#%?=:@/g, '')
+  newPassword = newPassword.replace(/["\/\\\+&#%\?=:@]/g, '')
 
   const client = new Client({ connectionString: process.env.DATABASE_URL })
   await client.connect()
@@ -333,3 +333,4 @@ BODY_SIZE_LIMIT=Infinity
 
   resetProcessEnv()
 }
+

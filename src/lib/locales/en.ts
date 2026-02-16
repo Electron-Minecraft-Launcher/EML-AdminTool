@@ -113,7 +113,8 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
       weak: `Weak`,
       medium: `Medium`,
       strong: `Strong`,
-      veryStrong: `Very strong`
+      veryStrong: `Very strong`,
+      unwantedChars: `Unwanted characters detected. Please avoid using " / \\ + & # % ? = : @ in your password.`
     },
     step3: {
       title: `Then, choose your server name and a password:`,

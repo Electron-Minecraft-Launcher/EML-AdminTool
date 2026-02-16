@@ -23,6 +23,10 @@
     return [strength.id, strength.value as 'veryWeak' | 'weak' | 'medium' | 'strong' | 'veryStrong']
   })
 
+  let unwantedCharsPresent = $derived.by(() => {
+    return /["\/\\\+&#%\?=:@]/g.test(setupData.dbPassword)
+  })
+
   function generatePassword() {
     const password = generator.generate({
       length: 24,
@@ -69,10 +73,11 @@
     </div>
 
     <span class="rel">{$l.setup.step2[pwdStrength[1]]}</span>
+    <span class="unwanted-chars">{unwantedCharsPresent ? $l.setup.step2.unwantedChars : ''}</span>
   </div>
 
   <div class="actions">
-    <button type="submit" class="primary" disabled={pwdStrength[0] < 3}>{$l.common.next}&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i></button>
+    <button type="submit" class="primary" disabled={pwdStrength[0] < 3 || unwantedCharsPresent}>{$l.common.next}&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i></button>
     <button type="button" class="secondary" onclick={() => step--}><i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;{$l.common.back}</button>
   </div>
 </form>
@@ -142,5 +147,12 @@
     font-weight: 500;
     font-size: 14px;
     margin-top: 10px;
+  }
+
+  span.unwanted-chars {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--red-color);
   }
 </style>
