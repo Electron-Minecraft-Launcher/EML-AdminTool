@@ -36,6 +36,9 @@ export default {
     [NotificationCode.EMLAT_UPDATE_FAILED]: `Failed to update EML AdminTool. Please see the logs for more details.`,
     [NotificationCode.EMLAT_RESET_FAILED]: `Failed to reset EML AdminTool. Please see the logs for more details.`,
 
+    [NotificationCode.INSTANCE_NAME_TOO_SHORT]: `Instance name must be at least 1 character long.`,
+    [NotificationCode.INSTANCE_NAME_TOO_LONG]: `Instance name must be at most 64 characters long.`,
+
     [NotificationCode.EDIT_USER_USERNAME_TOO_SHORT]: `Username must be at least 2 characters long.`,
     [NotificationCode.EDIT_USER_USERNAME_TOO_LONG]: `Username must be at most 64 characters long.`,
 

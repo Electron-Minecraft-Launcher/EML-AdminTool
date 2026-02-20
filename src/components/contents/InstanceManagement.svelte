@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { IUserStatus } from '$lib/utils/db'
-  import type { PageData } from '../../routes/(app)/dashboard/emlat-settings/$types'
+  import { applyAction, enhance } from '$app/forms'
   import { l } from '$lib/stores/language'
-  import { enhance } from '$app/forms'
-  import type { SubmitFunction } from '@sveltejs/kit'
   import { addNotification } from '$lib/stores/notifications'
   import type { NotificationCode } from '$lib/utils/notifications'
-  import { applyAction } from '$app/forms'
+  import type { SubmitFunction } from '@sveltejs/kit'
+  import type { PageData } from '../../routes/(app)/dashboard/emlat-settings/$types'
   import AddEditInstanceModal from '../modals/AddEditInstanceModal.svelte'
 
   interface Props {
@@ -79,19 +77,19 @@
     </div>
     <div>
       <p class="label">{$l.dashboard.emlatSettings.instanceManagement.instanceSlug}</p>
-      <p>{selectedInstance.id}</p>
+      <p>{selectedInstance.slug}</p>
     </div>
     <div class="flex">
       <div class="ip">
         <p class="label">{$l.dashboard.emlatSettings.instanceManagement.ip}</p>
-        <p>{selectedInstance.ip ?? 'unset'}</p>
+        <p>{selectedInstance.ip ?? '-'}</p>
       </div>
       <div class="separator">
         <p>:</p>
       </div>
       <div class="port">
         <p class="label">{$l.dashboard.emlatSettings.instanceManagement.port}</p>
-        <p>{selectedInstance.port ?? 'unset'}</p>
+        <p>{selectedInstance.port ?? '-'}</p>
       </div>
     </div>
   </div>

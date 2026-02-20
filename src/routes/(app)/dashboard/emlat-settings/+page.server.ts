@@ -6,7 +6,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getOS, getStorage } from '$lib/server/vps'
 import { getUpdate, update } from '$lib/server/update'
-import { editEMLATSchema, editUserSchema } from '$lib/utils/validations'
+import { editEMLATSchema, editInstanceSchema, editUserSchema } from '$lib/utils/validations'
 import { editEMLAT } from '$lib/server/emlat'
 import { generateRandomPin, getPin } from '$lib/server/pin'
 import type { LanguageCode } from '$lib/stores/language'
@@ -112,6 +112,49 @@ export const actions: Actions = {
       console.error('Unknown error:', err)
       throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
     }
+  },
+
+  editInstance: async (event) => {
+    const user = event.locals.user
+
+    if (!user?.isAdmin) {
+      throw error(403, { message: NotificationCode.FORBIDDEN })
+    }
+
+    const form = await event.request.formData()
+
+    const raw = {
+      instanceId: form.get('instance-id'),
+      name: form.get('name'),
+      ip: form.get('ip'),
+      port: form.get('port'),
+      tcpProtocol: form.get('tcp-protocol')
+    }
+
+    const result = editInstanceSchema.safeParse(raw)
+
+    if (!result.success) {
+      return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
+    }
+
+    const { instanceId, name, ip, port, tcpProtocol } = result.data
+    const slug = name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '')
+
+      try {
+      await db.instance.update({
+        where: { id: instanceId },
+        data: {
+          name,
+          slug,
+          ip,
+          port,
+          tcpProtocol
+        }
+      })
+    } catch (err) {}
   },
 
   editUser: async (event) => {
@@ -317,4 +360,9 @@ function getStatsPermissions(result: any) {
   if (result.data.p_stats_1) return 1
   return 0
 }
+
+
+
+
+
 
