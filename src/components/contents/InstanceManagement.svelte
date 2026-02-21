@@ -68,7 +68,7 @@
 </button>
 
 <div class="info">
-  <h4 style="margin-bottom: 0">{selectedInstance.name}</h4>
+  <h4 style="margin-bottom: 0">{selectedInstance.name}{@html selectedInstance.isDefault ? ' (default instance)' : ''}</h4>
 
   <div class="container" style="margin-top: 0;">
     <div>

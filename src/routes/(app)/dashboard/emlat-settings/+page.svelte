@@ -13,6 +13,7 @@
   import { callAction } from '$lib/utils/call'
   import Markdown from '../../../../components/layouts/Markdown.svelte'
   import InstanceManagement from '../../../../components/contents/InstanceManagement.svelte'
+  import UninstallModal from '../../../../components/modals/UninstallModal.svelte'
 
   let { data = $bindable() }: PageProps = $props()
 
@@ -23,6 +24,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 
   let showLoader = $state(false)
   let showEditAdminToolModal = $state(false)
+  let showUninstallModal = $state(false)
 
   let selectedInstanceId = $state(data.instances[0].id)
   let selectedUserId = $state(data.instances[0].id)
@@ -106,6 +108,10 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
   <EditEMLAdminToolModal bind:show={showEditAdminToolModal} />
 {/if}
 
+{#if showUninstallModal}
+  <UninstallModal bind:show={showUninstallModal} />
+{/if}
+
 <h2>{$l.dashboard.emlatSettings.title}</h2>
 
 <section class="section">
@@ -144,6 +150,9 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       {#each data.instances as i}
         <button class="list" class:active={selectedInstanceId === i.id} onclick={() => (selectedInstanceId = i.id)}>
           {i.name}
+          {#if i.isDefault}
+            &nbsp; <i class="fa-solid fa-star" title={$l.dashboard.emlatSettings.instanceManagement.defaultInstance}></i>
+          {/if}
         </button>
       {/each}
     </div>
@@ -281,6 +290,9 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     <div>
       <button class="primary danger" onclick={reset}>{$l.dashboard.emlatSettings.dangerZone.reset}</button>
     </div>
+    <div>
+      <button class="secondary danger" onclick={() => showUninstallModal = true}>{$l.dashboard.emlatSettings.dangerZone.uninstall}</button>
+    </div>
   </div>
 </section>
 
@@ -342,6 +354,12 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         color: var(--red-color);
       }
     }
+  }
+
+  i.fa-solid.fa-star {
+    cursor: help;
+    font-size: 10px;
+    color: #5f5f5f;
   }
 
   div.updater {

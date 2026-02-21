@@ -187,6 +187,7 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
       instanceManagement: {
         title: `Instance management`,
         instances: `Instances`,
+        defaultInstance: `Default instance`,
         instanceName: `Instance name`,
         instanceSlug: `Instance ID`,
         ip: `IP address`,
@@ -221,7 +222,19 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
         reset: `Reset EML AdminTool`,
         resetEMLATWarning: `Are you sure you want to reset EML AdminTool? All the data will be lost and EML AdminTool will be reset to its initial state. This action is irreversible.
 Moreover, be sure that nobody can access EML AdminTool during the reset: EML AdminTool is not protected during the setup!`,
-        areYouSure: `Are you sure?`
+        areYouSure: `Are you sure?`,
+        uninstall: `How to uninstall EML AdminTool?`,
+        modal: {
+          title: `How to properly uninstall/reinstall EML AdminTool?`,
+          content: `<p>To properly uninstall EML AdminTool, you need to follow these steps:</p>
+<ol>
+  <li>If EML AdminTool is installed on a VPS, access your EML AdminTool VPS via SSH.</li>
+  <li>Navigate to the EML AdminTool configuration directory (usually <code>~/.eml/admintool</code>).</li>
+  <li>Remove the EML AdminTool containers with <code>docker compose -f docker-compose.prod.yml down --rmi all -v</code>.</li>
+  <li>Delete the EML AdminTool configuration directory with <code>rm -rf ~/.eml</code>.</li>
+</ol>
+<p>After that, EML AdminTool will be completely removed from your system. You can then reinstall it by following the <a href="https://emlproject.pages.dev/docs/install-eml-admintool" target="_blank">installation guide</a>.</p>`
+        }
       }
     },
     account: {

@@ -219,7 +219,7 @@ button:not(.a) {
     }
   }
 
-  &.danger {
+  &.primary.danger {
     margin-top: 30px;
     background: var(--red-color);
     box-shadow: 0 2px 0 rgb(107, 12, 12);
@@ -234,6 +234,23 @@ button:not(.a) {
     &:hover:active:not(:disabled) {
       box-shadow: 0 0 rgb(184, 28, 28);
       outline: 6px solid rgba(194, 5, 5, 0.2);
+    }
+  }
+
+  &.secondary.danger {
+    margin-top: 25px;
+    background: rgb(247, 236, 236);
+    box-shadow: 0 2px 0 rgb(216, 191, 191);
+    color: var(--red-color);
+
+    &:hover:not(:disabled) {
+      background: rgb(245, 245, 245);
+      box-shadow: 0 2px 0 rgb(222, 222, 222);
+    }
+
+    &:hover:active:not(:disabled) {
+      box-shadow: 0 0 rgb(222, 222, 222);
+      outline: 6px solid rgba(216, 43, 43, 0.2);
     }
   }
 
