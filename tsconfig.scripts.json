@@ -5,7 +5,8 @@
     "moduleResolution": "NodeNext",
     "outDir": "./dist-scripts",
     "rootDir": "./scripts",
-    "noEmit": false
+    "noEmit": false,
+    "sourceMap": false
   },
   "include": ["scripts/**/*"]
 }
