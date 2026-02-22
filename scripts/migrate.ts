@@ -2,13 +2,16 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { PrismaClient } from '@prisma/client'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 
-const prisma = new PrismaClient()
+const connectionString = process.env.DATABASE_URL
+const pool = new Pool({ connectionString })
+const adapter = new PrismaPg(pool)
+const prisma = new PrismaClient({ adapter })
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 async function runMigrations() {
-  console.log('📦 Starting database and file migrations...')
-
   const migrationsDir = path.join(__dirname, 'migrations')
 
   let files: string[] = []
@@ -26,6 +29,7 @@ async function runMigrations() {
   const appliedMigrations = await prisma.systemMigration.findMany()
   const appliedIds = new Set(appliedMigrations.map((m) => m.id))
 
+  let applied = 0
   for (const file of files) {
     if (appliedIds.has(file)) continue
 
@@ -42,14 +46,16 @@ async function runMigrations() {
       await prisma.systemMigration.create({
         data: { id: file }
       })
+      
       console.log(`✅ Migration ${file} applied successfully.`)
+      applied++
     } catch (error) {
       console.error(`❌ Critical error during migration ${file}:`, error)
       process.exit(1)
     }
   }
 
-  console.log('✅ All migrations applied.')
+  console.log(`✅ Applied ${applied} migrations.`)
 }
 
 runMigrations()
