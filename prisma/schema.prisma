@@ -1,4 +1,7 @@
-//! Don't forget to update db.d.ts after editing this file
+/**
+ *! For enums, add a const in $lib/utils/db.ts with the same name but without the "I" prefix, and the values as keys with the same value. 
+ *! This allows using them in both server and client code without importing from @prisma/client directly, which can cause issues in SvelteKit. 
+ */
 
 generator client {
   provider      = "prisma-client-js"

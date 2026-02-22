@@ -1,7 +1,8 @@
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { db } from './db'
-import { ILoaderFormat, ILoaderType, type Loader } from '$lib/utils/db'
+import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
+import type { Loader } from '@prisma/client'
 
 export async function getLoader() {
   let loader

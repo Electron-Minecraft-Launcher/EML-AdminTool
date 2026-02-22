@@ -9,7 +9,8 @@
   import { callAction } from '$lib/utils/call'
   import { l } from '$lib/stores/language'
   import { addNotification } from '$lib/stores/notifications'
-  import { ILoaderFormat, ILoaderType, type Loader } from '$lib/utils/db'
+  import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
+  import type { Loader } from '@prisma/client'
 
   let { data }: PageProps = $props()
 
