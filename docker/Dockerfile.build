@@ -1,4 +1,4 @@
-FROM node:25-bookworm-slim AS build
+FROM node:24-alpine AS build
 
 WORKDIR /app
 
@@ -10,13 +10,11 @@ RUN npx prisma generate --no-hints
 RUN npm run build
 RUN npx tsc --project tsconfig.scripts.json
 
-FROM node:25-bookworm-slim
+FROM node:24-alpine
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends docker.io && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache docker-cli
 
 COPY --from=build /app/dist .
 COPY --from=build /app/dist-scripts ./migration-scripts
