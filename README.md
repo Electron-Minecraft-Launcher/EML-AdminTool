@@ -60,10 +60,24 @@ npm i
 You can now start the development server:
 ```bash
 cd docker
-docker-compose -f dockerfile.dev.yml up
+docker-compose -f docker-compose.dev.yml up
 ```
 
 The application is accessible at [http://localhost:5173](http://localhost:5173). You can also access pgAdmin at [https://localhost:5050](http://localhost:5050).
+
+<details>
+<summary>How to connect to pgAdmin?</summary>
+To connect to pgAdmin, you can use the following information:
+
+* **Email**: `admintool@eml.com`
+* **Password**: `eml`
+
+Then, you can add a new server with the following information:
+* **Host**: `dbs`
+* **Port**: `5432`
+* **Username**: `eml`
+* **Password**: the value of `DATABASE_PASSWORD` in the `.env` file
+</details>
 
 You can now make pull requests!
 

@@ -70,6 +70,7 @@ services:
       - network
     environment:
       - ENVIRONMENT=development
+      - PYTHONUNBUFFERED=1
     volumes:
       - ../env:/app/env:ro
     depends_on:
@@ -78,6 +79,8 @@ services:
       - com.eml.admintool.updater
   pga:
     image: dpage/pgadmin4
+    networks:
+      - network
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admintool@eml.com

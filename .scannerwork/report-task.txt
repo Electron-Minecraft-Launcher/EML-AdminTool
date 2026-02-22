@@ -1,6 +1,0 @@
-projectKey=EML-AdminTool
-serverUrl=http://localhost:9010
-serverVersion=25.7.0.110598
-dashboardUrl=http://localhost:9010/dashboard?id=EML-AdminTool
-ceTaskId=ed53390c-576e-4b02-a7b9-70a5d6273ebe
-ceTaskUrl=http://localhost:9010/api/ce/task?id=ed53390c-576e-4b02-a7b9-70a5d6273ebe

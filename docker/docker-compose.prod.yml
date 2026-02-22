@@ -56,6 +56,9 @@ services:
     image: ghcr.io/electron-minecraft-launcher/eml-admintool-updater:latest
     networks:
       - network
+    environment:
+      - ENVIRONMENT=production
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./docker-compose.prod.yml:/app/compose/docker-compose.prod.yml
       - ./.env:/app/compose/.env:ro
