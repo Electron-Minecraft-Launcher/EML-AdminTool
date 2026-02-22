@@ -5,7 +5,8 @@ import { db } from '$lib/server/db'
 import { NotificationCode } from '$lib/utils/notifications'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import type { File as File_ } from '$lib/utils/types'
-import { type BackgroundStatus, IBackgroundStatus } from '$lib/utils/db'
+import { IBackgroundStatus } from '$lib/utils/db'
+import type { BackgroundStatus } from '@prisma/client'
 import { backgroundSchema } from '$lib/utils/validations'
 import { addBackground, updateBackground, enableBackground, getBackgroundById, deleteBackground } from '$lib/server/backgrounds'
 import { randomBytes } from 'node:crypto'
@@ -167,4 +168,3 @@ export const actions: Actions = {
     }
   }
 }
-

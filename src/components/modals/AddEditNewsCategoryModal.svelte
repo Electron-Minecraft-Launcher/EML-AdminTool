@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NewsCategory } from '$lib/utils/db'
+  import type { NewsCategory } from '@prisma/client'
   import ModalTemplate from './__ModalTemplate.svelte'
   import { l } from '$lib/stores/language'
   import LoadingSplash from '../layouts/LoadingSplash.svelte'

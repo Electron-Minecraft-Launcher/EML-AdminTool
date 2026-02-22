@@ -1,4 +1,4 @@
-//! Don't forget to update db.d.ts after editing this file
+//! Don't forget to update $lib/utils/db.ts after editing this file
 
 generator client {
   provider      = "prisma-client-js"

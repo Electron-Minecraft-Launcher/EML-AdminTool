@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NewsCategory, NewsTag } from '$lib/utils/db'
+  import type { NewsCategory, NewsTag } from '@prisma/client'
   import Markdown from '../layouts/Markdown.svelte'
 
   interface Props {

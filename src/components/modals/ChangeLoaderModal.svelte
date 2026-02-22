@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { ILoaderType, type LoaderType, type Loader } from '$lib/utils/db'
+  import { ILoaderType } from '$lib/utils/db'
+  import type { Loader, LoaderType } from '@prisma/client'
   import type { LoaderVersion } from '$lib/utils/types'
   import ModalTemplate from './__ModalTemplate.svelte'
   import LoadingSplash from '../layouts/LoadingSplash.svelte'

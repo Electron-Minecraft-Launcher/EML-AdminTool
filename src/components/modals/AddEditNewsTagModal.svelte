@@ -1,12 +1,12 @@
 <script lang="ts">
-  import type { NewsTag } from "@prisma/client"
-  import ModalTemplate from "./__ModalTemplate.svelte"
-  import { l } from "$lib/stores/language"
-  import { applyAction, enhance } from "$app/forms"
-  import type { SubmitFunction } from "@sveltejs/kit"
-  import LoadingSplash from "../layouts/LoadingSplash.svelte"
-  import { addNotification } from "$lib/stores/notifications"
-  import type { NotificationCode } from "$lib/utils/notifications"
+  import type { NewsTag } from '@prisma/client'
+  import ModalTemplate from './__ModalTemplate.svelte'
+  import { l } from '$lib/stores/language'
+  import { applyAction, enhance } from '$app/forms'
+  import type { SubmitFunction } from '@sveltejs/kit'
+  import LoadingSplash from '../layouts/LoadingSplash.svelte'
+  import { addNotification } from '$lib/stores/notifications'
+  import type { NotificationCode } from '$lib/utils/notifications'
 
   interface Props {
     show: boolean
@@ -46,7 +46,7 @@
   {#if showLoader}
     <LoadingSplash transparent />
   {/if}
-  
+
   <form method="POST" action="?/addEditTag" use:enhance={enhanceForm}>
     <h2>{selectedTagId ? 'Edit tag' : 'Create a tag'}</h2>
 
