@@ -53,7 +53,6 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         await sleep(2000)
         window.location.href = '/dashboard/emlat-settings?updated=true'
       } else {
-        updateMessage = `Restarting...`
         await waitForServerRestart(12, '/dashboard/emlat-settings?updated=true', data.update.currentVersion)
       }
     } catch (err) {
