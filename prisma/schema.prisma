@@ -1,6 +1,6 @@
 /**
- *! For enums, add a const in $lib/utils/db.ts with the same name but without the "I" prefix, and the values as keys with the same value. 
- *! This allows using them in both server and client code without importing from @prisma/client directly, which can cause issues in SvelteKit. 
+ * ! For enums, add a const in $lib/utils/db.ts with the same name but without the "I" prefix, and the values as keys with the same value.
+ * ! This allows using them in both server and client code without importing from @prisma/client directly, which can cause issues in SvelteKit.
  */
 
 generator client {
@@ -162,4 +162,11 @@ model ExpiredToken {
 model SystemMigration {
   id        String   @id
   appliedAt DateTime @default(now())
+}
+
+// test only
+
+model Instance {
+  id   String @id @default(cuid(2))
+  name String
 }
