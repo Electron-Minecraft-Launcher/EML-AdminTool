@@ -1,3 +1,8 @@
+/**
+ *! For enums, add a const in $lib/utils/db.ts with the same name but without the "I" prefix, and the values as keys with the same value. 
+ *! This allows using them in both server and client code without importing from @prisma/client directly, which can cause issues in SvelteKit. 
+ */
+
 generator client {
   provider      = "prisma-client-js"
   output        = "../node_modules/.prisma/client"
@@ -9,10 +14,10 @@ datasource db {
 }
 
 enum UserStatus {
-  ACTIVE
-  PENDING
-  SPAM
-  DELETED
+  ACTIVE // User is active and can log in
+  PENDING // User is pending activation by an admin, can log in
+  SPAM // User is flagged as spam (wrong PIN), can log in
+  DELETED // User is deleted and cannot log in
 }
 
 enum LoaderType {
@@ -57,14 +62,14 @@ model User {
   password         String
   status           UserStatus @default(PENDING)
   isAdmin          Boolean    @default(false)
-  p_filesUpdater   Int        @default(0)
-  p_bootstraps     Int        @default(0)
-  p_maintenance    Int        @default(0)
-  p_news           Int        @default(0)
-  p_newsCategories Int        @default(0)
-  p_newsTags       Int        @default(0)
-  p_backgrounds    Int        @default(0)
-  p_stats          Int        @default(0)
+  p_filesUpdater   Int        @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
+  p_bootstraps     Int        @default(0) // 0 = no access, 1 = read and write
+  p_maintenance    Int        @default(0) // 0 = no access, 1 = read and write
+  p_news           Int        @default(0) // 0 = no access, 1 = read and write, 2 = admin (can delete news they did not create)
+  p_newsCategories Int        @default(0) // 0 = no access, 1 = read and write
+  p_newsTags       Int        @default(0) // 0 = no access, 1 = read and write
+  p_backgrounds    Int        @default(0) // 0 = no access, 1 = read and write
+  p_stats          Int        @default(0) // 0 = no access, 1 = read, 2 = read and reset
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
   logs             Log[]
