@@ -9,7 +9,6 @@ import bcrypt from 'bcrypt'
 import { NotificationCode } from '$lib/utils/notifications'
 import { dev } from '$app/environment'
 import { generateRandomPin } from './pin'
-import { sleep } from '$lib/utils/utils'
 import path from 'path'
 const execAsync = promisify(exec)
 
@@ -41,7 +40,7 @@ export async function changeDatabasePassword(newPassword: string) {
   console.log('\n---------- CHANGING DATABASE PASSWORD ----------\n')
   resetProcessEnv()
 
-  newPassword = newPassword.replace(/"\/\\+&#%?=:@/g, '')
+  newPassword = newPassword.replace(/["\/\\\+&#%\?=:@]/g, '')
 
   const client = new Client({ connectionString: process.env.DATABASE_URL })
   await client.connect()
@@ -233,33 +232,26 @@ export function resetProcessEnv() {
 export async function restartUpdater() {
   console.log('\n-------------- RESTARTING UPDATER --------------\n')
 
-  let updaterName = 'upd'
-  const filter = 'com.eml.admintool.updater'
-
   try {
-    const { stdout, stderr } = await execAsync(`docker ps --filter "label=${filter}" --format "{{.Names}}"`)
-    if (stderr) {
-      console.error('Error while fetching Updater container name:', stderr)
-      throw new ServerError('Failed to fetch Updater container name', new Error(stderr), NotificationCode.INTERNAL_SERVER_ERROR, 500)
-    }
-    updaterName = stdout.trim() ?? updaterName
-  } catch (err) {
-    console.error('Error while fetching Updater container name:', err)
-    throw new ServerError('Failed to fetch Updater container name', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
-  }
+    const response = await fetch('http://upd:4000/reload', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.UPDATER_HTTP_API_TOKEN}`
+      }
+    })
 
-  try {
-    const { stderr } = await execAsync(`docker restart ${updaterName}`)
-    if (stderr && stderr.trim() !== updaterName) {
-      console.error('Error while restarting Updater:', stderr)
-      throw new ServerError('Failed to restart Updater', new Error(stderr), NotificationCode.INTERNAL_SERVER_ERROR, 500)
+    const data = await response.json()
+
+    if (!response.ok || !data.success) {
+      console.error('Error from Updater:', data.error)
+      throw new ServerError('Failed to reload Updater configuration', new Error(data.error), NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
   } catch (err) {
-    console.error('Error restarting Updater:', err)
-    throw new ServerError('Failed to restart Updater', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+    console.error('Network or execution error while contacting Updater:', err)
+    throw new ServerError('Failed to contact Updater', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
   }
-
-  console.log('Updater restarted successfully.')
+  
+  console.log('Updater configuration reloaded successfully.')
 }
 
 export async function restartServer() {
@@ -305,9 +297,3 @@ BODY_SIZE_LIMIT=Infinity
 
   resetProcessEnv()
 }
-
-
-
-
-
-

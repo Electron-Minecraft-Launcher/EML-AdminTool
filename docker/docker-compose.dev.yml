@@ -65,11 +65,13 @@ services:
     ports:
       - '5432:5432'
   upd:
-    image: ghcr.io/electron-minecraft-launcher/eml-admintool-updater:latest
+    image: ghcr.io/electron-minecraft-launcher/eml-admintool-updater:1.1.0
+    restart: unless-stopped
     networks:
       - network
     environment:
       - ENVIRONMENT=development
+      - PYTHONUNBUFFERED=1
     volumes:
       - ../env:/app/env:ro
     depends_on:
@@ -78,6 +80,8 @@ services:
       - com.eml.admintool.updater
   pga:
     image: dpage/pgadmin4
+    networks:
+      - network
     restart: unless-stopped
     environment:
       PGADMIN_DEFAULT_EMAIL: admintool@eml.com

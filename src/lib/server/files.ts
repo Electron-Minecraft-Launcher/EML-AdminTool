@@ -19,11 +19,11 @@ export async function getCachedFiles(domain: string, dir: Dir) {
   const target = sanitizePath('files', 'cache', `${dir}.json`)
   let cache
   try {
-    cache = await fs.readFile(target, 'utf-8')
+    cache = (await fs.readFile(target, 'utf-8')).replaceAll('{{url}}', domain)
   } catch (err) {
     console.warn('Cache file not found, generating new cache:', err)
-    await cacheFiles(domain, 'files-updater')
-    cache = await fs.readFile(target, 'utf-8')
+    await cacheFiles('files-updater')
+    cache = (await fs.readFile(target, 'utf-8')).replaceAll('{{url}}', domain)
   }
 
   return cache
@@ -195,8 +195,8 @@ export function sanitizePath(...path: string[]): string {
   return sanitizedPath
 }
 
-export async function cacheFiles(domain: string, dir: Dir) {
-  const files = await getFiles(domain, dir)
+export async function cacheFiles(dir: Dir) {
+  const files = await getFiles('{{url}}', dir)
   await fs.mkdir(path_.join(root, 'files', 'cache'), { recursive: true })
   await fs.writeFile(path_.join(root, 'files', 'cache', `${dir}.json`), JSON.stringify(files, null, 2))
 }

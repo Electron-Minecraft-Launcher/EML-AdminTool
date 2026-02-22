@@ -1,4 +1,4 @@
-FROM node:24-alpine AS build
+FROM node:25-alpine AS build
 
 WORKDIR /app
 
@@ -8,14 +8,16 @@ RUN npm i --ignore-scripts
 RUN npx prisma generate --no-hints
 
 RUN npm run build
+RUN npx tsc --project tsconfig.scripts.json
 
-FROM node:24-alpine
+FROM node:25-alpine
 
 WORKDIR /app
 
 RUN apk add --no-cache docker-cli
 
 COPY --from=build /app/dist .
+COPY --from=build /app/dist-scripts ./migration-scripts
 COPY --from=build /app/env ./env
 COPY --from=build /app/prisma ./prisma
 

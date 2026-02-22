@@ -10,17 +10,13 @@ import { NotificationCode } from '$lib/utils/notifications'
 import { type User } from '$lib/utils/db'
 import { defaultPgURL } from '$lib/server/setup'
 import path from 'node:path'
-import fs from 'node:fs'
+import fs from 'node:fs/promises'
 import mime from 'mime-types'
 import { dev } from '$app/environment'
 import { sequence } from '@sveltejs/kit/hooks'
 import '$lib/utils/prototypes'
 
-const DEFAULT_ORIGINS = [
-  'http://localhost:8080',
-  'http://127.0.0.1:8080',
-  'http://localhost:5173'
-]
+const DEFAULT_ORIGINS = ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:5173']
 
 const filesDir = path.resolve(process.cwd(), 'files')
 
@@ -29,7 +25,7 @@ const app: Handle = async ({ event, resolve }) => {
   if (securityResponse) return securityResponse
 
   if (event.url.pathname.startsWith('/files/')) {
-    return serveStaticFile(event.url.pathname)
+    return await serveStaticFile(event.url.pathname)
   }
 
   if (event.url.pathname !== '/api/ping') {
@@ -165,7 +161,7 @@ function injectCorsHeaders(response: Response, event: RequestEvent): Response {
   return response
 }
 
-function serveStaticFile(pathname: string) {
+async function serveStaticFile(pathname: string) {
   let relativePath = pathname.substring('/files/'.length)
 
   try {
@@ -180,7 +176,7 @@ function serveStaticFile(pathname: string) {
     return new Response('Forbidden', { status: 403 })
   }
 
-  if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isFile()) {
+  try {
     const extension = path.extname(resolvedPath).toLowerCase()
     let mimeType: string
 
@@ -190,7 +186,7 @@ function serveStaticFile(pathname: string) {
       mimeType = mime.lookup(resolvedPath) || 'application/octet-stream'
     }
 
-    const fileContent = fs.readFileSync(resolvedPath)
+    const fileContent = await fs.readFile(resolvedPath, { encoding: 'utf-8' })
     return new Response(fileContent, {
       status: 200,
       headers: {
@@ -198,9 +194,14 @@ function serveStaticFile(pathname: string) {
         'X-Content-Type-Options': 'nosniff'
       }
     })
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'code' in err && err.code === 'ENOENT') {
+      return new Response('File not found', { status: 404 })
+    } else {
+      console.error('Error serving file:', err)
+      return new Response('Internal Server Error', { status: 500 })
+    }
   }
-
-  return new Response('File not found', { status: 404 })
 }
 
 async function loadApplicationContext(event: RequestEvent) {
@@ -273,8 +274,3 @@ function getUserInfo(user: User) {
     isAdmin: user.isAdmin
   }
 }
-
-
-
-
-

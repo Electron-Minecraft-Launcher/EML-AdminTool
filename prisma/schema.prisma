@@ -155,3 +155,8 @@ model ExpiredToken {
   token     String   @unique
   expiredAt DateTime @default(now())
 }
+
+model SystemMigration {
+  id        String   @id
+  appliedAt DateTime @default(now())
+}

@@ -29,7 +29,7 @@ services:
       - network
     env_file:
       - path: .env
-        require: false
+        required: false
     environment:
       NODE_ENV: 'production'
       BODY_SIZE_LIMIT: 'Infinity'
@@ -53,9 +53,13 @@ services:
     volumes:
       - database:/var/lib/postgresql
   upd:
-    image: ghcr.io/electron-minecraft-launcher/eml-admintool-updater:latest
+    image: ghcr.io/electron-minecraft-launcher/eml-admintool-updater:1.1.0
+    restart: unless-stopped
     networks:
       - network
+    environment:
+      - ENVIRONMENT=production
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./docker-compose.prod.yml:/app/compose/docker-compose.prod.yml
       - ./.env:/app/compose/.env:ro
