@@ -53,7 +53,8 @@ services:
     volumes:
       - database:/var/lib/postgresql
   upd:
-    image: ghcr.io/electron-minecraft-launcher/eml-admintool-updater:latest
+    image: ghcr.io/electron-minecraft-launcher/eml-admintool-updater:1.1.0
+    restart: unless-stopped
     networks:
       - network
     environment:
