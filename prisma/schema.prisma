@@ -163,10 +163,3 @@ model SystemMigration {
   id        String   @id
   appliedAt DateTime @default(now())
 }
-
-// test only
-
-model Instance {
-  id   String @id @default(cuid(2))
-  name String
-}
