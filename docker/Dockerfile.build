@@ -1,4 +1,4 @@
-FROM node:25-alpine AS build
+FROM node:25-bookworm-slim AS build
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN npx prisma generate --no-hints
 RUN npm run build
 RUN npx tsc --project tsconfig.scripts.json
 
-FROM node:25-alpine
+FROM node:25-bookworm-slim
 
 WORKDIR /app
 
