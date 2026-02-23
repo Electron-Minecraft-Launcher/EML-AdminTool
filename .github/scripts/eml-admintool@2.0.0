@@ -1,0 +1,216 @@
+#!/bin/bash
+# Copyright (c) 2026, GoldFrite
+# This script is under the GPL-3.0 license.
+#
+# This script is used to install EML AdminTool v2.0.0.
+
+if command -v tput >/dev/null 2>&1; then
+    BOLD=$(tput bold)
+    RED=$(tput setaf 1)
+    GREEN=$(tput setaf 2)
+    YELLOW=$(tput setaf 3)
+    RESET=$(tput sgr0)
+else
+    BOLD="\033[1m"
+    RED="\033[31m"
+    GREEN="\033[32m"
+    YELLOW="\033[33m"
+    RESET="\033[0m"
+fi
+
+echo "                                                                        "
+echo " ______ __  __ _                    _           _    _______          _ "
+echo "|  ____|  \/  | |          /\      | |         (_)  |__   __|        | |"
+echo "| |__  | \  / | |         /  \   __| |_ __ ___  _ _ __ | | ___   ___ | |"
+echo "|  __| | |\/| | |        / /\ \ / _\` | '_ \` _ \| | '_ \| |/ _ \ / _ \| |"
+echo "| |____| |  | | |____   / ____ \ (_| | | | | | | | | | | | (_) | (_) | |"
+echo "|______|_|  |_|______| /_/    \_\__,_|_| |_| |_|_|_| |_|_|\___/ \___/|_|"
+echo "                                                                        "
+echo "                                     _           _        _ _           "
+echo "                                    (_)         | |      | | |          "
+echo "                                     _ _ __  ___| |_ __ _| | | ___ _ __ "
+echo "                                    | | '_ \/ __| __/ _\` | | |/ _ \ '__|"
+echo "                                    | | | | \__ \ || (_| | | |  __/ |   "
+echo "                                    |_|_| |_|___/\__\__,_|_|_|\___|_|   "
+echo "                                                                        "
+echo "                                                                        "
+echo "EML AdminTool v2.0.0 Installer"
+echo "Copyright (c) 2026, GoldFrite"
+echo "This script is under the GPL-3.0 license."
+echo ""
+echo "Having trouble installing? Join our Discord support server: https://discord.gg/YVB4k6HzAY"
+
+# Check OS
+echo ""
+echo "${BOLD}• Checking OS...${RESET}"
+echo ""
+
+os=""
+arch=""
+platform=""
+
+if [ "$(uname -m)" == "x86_64" ]; then
+  arch="x86_64"
+elif [ "$(uname -m)" == "aarch64" ] || [ "$(uname -m)" == "arm64" ]; then
+  arch="aarch64"
+else
+  echo "${RED}This script is not compatible with your OS. Exiting.${RESET}"
+  exit 1
+fi
+
+if [ "$(uname)" == "Darwin" ]; then
+  os="mac"
+  platform="darwin"
+  echo "Running on macOS $arch."
+elif [ "$(uname)" == "Linux" ]; then
+  os="linux"
+  platform="linux"
+  echo "Running on Linux $arch."
+else
+  echo "${RED}This script is not compatible with your OS. Exiting.${RESET}"
+  exit 1
+fi
+
+INSTALL_DIR="$HOME/.eml/admintool"
+mkdir -p "$INSTALL_DIR"
+
+# Check Docker and Docker Compose
+echo ""
+echo "${BOLD}• Checking Docker...${RESET}"
+echo ""
+
+if ! [ -x "$(command -v docker)" ]; then
+  echo "${RED}Docker is not installed. Exiting.${RESET}"
+  exit 1
+fi
+if ! docker compose version >/dev/null 2>&1; then
+  echo "${RED}Docker Compose v2 is not installed. Exiting.${RESET}"
+  exit 1
+fi
+echo "Docker and Docker Compose are installed."
+
+# Check wget or curl
+echo ""
+echo "${BOLD}• Checking wget or curl...${RESET}"
+echo ""
+
+fetcher=""
+
+if [ -x "$(command -v curl)" ]; then
+  fetcher="curl"
+  echo "Using curl."
+elif [ -x "$(command -v wget)" ]; then
+  fetcher="wget"
+  echo "Using wget."
+else
+  echo "${RED}Neither wget nor curl is installed. Exiting.${RESET}"
+  exit 1
+fi
+
+# Configuration
+echo ""
+echo "${BOLD}• Network configuration...${RESET}"
+echo ""
+
+LOCAL_IP="127.0.0.1"
+if [ "$os" == "mac" ]; then
+  LOCAL_IP=$(ipconfig getifaddr en0 2>/dev/null || echo "127.0.0.1")
+else
+  LOCAL_IP=$(hostname -I 2>/dev/null | tr ' ' '\n' | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1 || echo "127.0.0.1")
+fi
+echo "Local IP detected:    $LOCAL_IP"
+
+PUBLIC_IP=""
+printf "Public IP detected:   "
+if [ "$fetcher" == "wget" ]; then
+  PUBLIC_IP=$(wget -4 -qO- --timeout=3 https://ifconfig.me 2>/dev/null)
+else
+  PUBLIC_IP=$(curl -4 -s --max-time 3 https://ifconfig.me 2>/dev/null)
+fi
+
+if [ -n "$PUBLIC_IP" ]; then
+  echo "$PUBLIC_IP"
+else
+  echo "Failed (offline or blocked). Skipping."
+fi
+
+echo ""
+echo "Do you have a custom domain pointing to this server?"
+echo "Example: admintool.myserver.com (enter ${BOLD}without${RESET} http:// or https://)"
+# Read compatiblity fix for zsh/bash
+if [ -n "$BASH_VERSION" ]; then
+    read -p "Domain (leave empty if none): " CUSTOM_DOMAIN < /dev/tty
+else
+    printf "Domain (leave empty if none): "
+    read CUSTOM_DOMAIN < /dev/tty
+fi
+
+if [ -n "$CUSTOM_DOMAIN" ]; then
+  CUSTOM_DOMAIN=$(echo "$CUSTOM_DOMAIN" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+fi
+
+ORIGINS="http://localhost:8080,http://127.0.0.1:8080,http://$LOCAL_IP:8080"
+
+if [ -n "$PUBLIC_IP" ]; then
+  ORIGINS="$ORIGINS,http://$PUBLIC_IP:8080,https://$PUBLIC_IP:8080"
+fi
+
+if [ -n "$CUSTOM_DOMAIN" ]; then
+  ORIGINS="$ORIGINS,http://$CUSTOM_DOMAIN,https://$CUSTOM_DOMAIN"
+  PRIMARY_ORIGIN="https://$CUSTOM_DOMAIN"
+elif [ -n "$PUBLIC_IP" ]; then
+  PRIMARY_ORIGIN="http://$PUBLIC_IP:8080"
+else
+  PRIMARY_ORIGIN="http://$LOCAL_IP:8080"
+fi
+
+ENV_FILE="$INSTALL_DIR/.env"
+
+echo "# EML AdminTool Environment Configuration" > "$ENV_FILE"
+echo "NODE_ENV=production" >> "$ENV_FILE"
+echo "ORIGIN=$PRIMARY_ORIGIN" >> "$ENV_FILE"
+echo "ALLOWED_ORIGINS=$ORIGINS" >> "$ENV_FILE"
+
+echo ""
+echo "Configuration saved to $ENV_FILE"
+echo "Allowed origins: $ORIGINS"
+
+# Install EML AdminTool
+echo ""
+echo "${BOLD}• Installing EML AdminTool...${RESET}"
+
+URL="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/download/v2.0.0/docker-compose.prod.yml"
+
+if [ "$fetcher" == "curl" ]; then
+  curl -sSL "$URL" -o "$INSTALL_DIR/docker-compose.prod.yml"
+else
+  wget -qO "$INSTALL_DIR/docker-compose.prod.yml" "$URL"
+fi
+
+cd "$INSTALL_DIR" || exit 1
+
+start_docker() {
+  if docker compose -f docker-compose.prod.yml up -d 2>/dev/null; then
+    return 0
+  fi
+  
+  echo "${YELLOW}Docker permissions denied. Trying with sudo...${RESET}"
+  
+  if sudo docker compose -f docker-compose.prod.yml up -d; then
+    return 0
+  fi
+  
+  return 1
+}
+
+if start_docker; then
+  echo ""
+  echo "${GREEN}EML AdminTool is successfully installed and running!${RESET}"
+  echo "Access it at ${BOLD}http://localhost:8080${RESET} or at ${BOLD}$PRIMARY_ORIGIN${RESET} if your reverse proxy is set up."
+  echo ""
+  echo "⭐️ Don't forget to star the GitHub repository! "
+else
+  echo ""
+  echo "${RED}Failed to start Docker containers.${RESET}"
+  echo "Please ensure Docker is running and you have permissions."
+fi
