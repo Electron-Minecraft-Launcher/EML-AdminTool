@@ -183,8 +183,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 <section class="section">
   <h3>{$l.dashboard.emlatSettings.update.title}</h3>
 
-  <!-- TODO Uncomment this for stable release -->
-  <!-- {#if data.update.currentVersion.includes('beta') || data.update.latestVersion.includes('alpha')}
+  {#if data.update.currentVersion.includes('beta') || data.update.latestVersion.includes('alpha')}
     <div class="no-update">
       <p><i class="fa-solid fa-times-circle"></i></p>
       <p>
@@ -192,45 +191,45 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         <br /> Please see <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/" target="_blank">GitHub</a> to get the latest version.
       </p>
     </div>
-  {:else} -->
-  <div class="container">
-    <div>
-      <p class="label">{$l.dashboard.emlatSettings.update.currentVersion}</p>
-      <p>EML AdminTool {data.update.currentVersion}</p>
-    </div>
-
-    <div>
-      <p class="label">{$l.dashboard.emlatSettings.update.latestVersion}</p>
-      <p>EML AdminTool {data.update.latestVersion}</p>
-    </div>
-  </div>
-
-  {#if data.update.currentVersion != data.update.latestVersion}
-    <div class="updater">
-      <div style="line-height: 1;">
-        <img src={data.update.logoUrl} alt="Version logo" />
-      </div>
+  {:else}
+    <div class="container">
       <div>
-        <p class="release-name"><b>EML AdminTool {data.update.latestVersion}</b></p>
-        <p class="release-date">
-          {$l({ date: new Date(data.update.releaseDate).toLocaleDateString() }).dashboard.emlatSettings.update.releasedOn}
-          –
-          <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/tag/v{data.update.latestVersion}" target="_blank">
-            {$l.dashboard.emlatSettings.update.openGithub}&nbsp;&nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 12px"></i>
-          </a>
-        </p>
+        <p class="label">{$l.dashboard.emlatSettings.update.currentVersion}</p>
+        <p>EML AdminTool {data.update.currentVersion}</p>
       </div>
-      <div class="actions">
-        <button class="secondary" onclick={runUpdate}>{$l.dashboard.emlatSettings.update.runUpdate}</button>
+
+      <div>
+        <p class="label">{$l.dashboard.emlatSettings.update.latestVersion}</p>
+        <p>EML AdminTool {data.update.latestVersion}</p>
       </div>
     </div>
-    <div class="changelogs">
-      <div class="changelogs-in">
-        <Markdown source={data.update.changelogs} />
+
+    {#if data.update.currentVersion != data.update.latestVersion}
+      <div class="updater">
+        <div style="line-height: 1;">
+          <img src={data.update.logoUrl} alt="Version logo" />
+        </div>
+        <div>
+          <p class="release-name"><b>EML AdminTool {data.update.latestVersion}</b></p>
+          <p class="release-date">
+            {$l({ date: new Date(data.update.releaseDate).toLocaleDateString() }).dashboard.emlatSettings.update.releasedOn}
+            –
+            <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/tag/v{data.update.latestVersion}" target="_blank">
+              {$l.dashboard.emlatSettings.update.openGithub}&nbsp;&nbsp;<i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 12px"></i>
+            </a>
+          </p>
+        </div>
+        <div class="actions">
+          <button class="secondary" onclick={runUpdate}>{$l.dashboard.emlatSettings.update.runUpdate}</button>
+        </div>
       </div>
-    </div>
+      <div class="changelogs">
+        <div class="changelogs-in">
+          <Markdown source={data.update.changelogs} />
+        </div>
+      </div>
+    {/if}
   {/if}
-  <!-- {/if} -->
 </section>
 
 <section class="section">
