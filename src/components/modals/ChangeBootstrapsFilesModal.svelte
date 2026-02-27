@@ -1,16 +1,18 @@
 <script lang="ts">
   import { l } from '$lib/stores/language'
   import ModalTemplate from './__ModalTemplate.svelte'
-  import type { File as File_ } from '$lib/utils/types'
   import getEnv from '$lib/utils/env'
-  import semver from 'semver'
   import { enhance } from '$app/forms'
   import type { SubmitFunction } from '@sveltejs/kit'
   import { applyAction } from '$app/forms'
   import { addNotification } from '$lib/stores/notifications'
   import { NotificationCode } from '$lib/utils/notifications'
+  import semver from 'semver'
   import LoadingSplash from '../layouts/LoadingSplash.svelte'
   import type { PageData } from '../../routes/(app)/dashboard/bootstraps/$types'
+  import { smartUpload } from '$lib/utils/uploader'
+  import { invalidateAll } from '$app/navigation'
+  import { extractVersionFromYaml } from '$lib/utils/utils'
 
   interface Props {
     show: boolean
@@ -86,27 +88,89 @@
     }
   }
 
-  const enhanceForm: SubmitFunction = ({ formData }) => {
+  async function handleSubmit(e: Event) {
+    e.preventDefault()
     showLoader = true
-    formData.set('name', env.name)
 
-    winFiles.forEach((f) => formData.append('win-files', f))
-    macFiles.forEach((f) => formData.append('mac-files', f))
-    linFiles.forEach((f) => formData.append('lin-files', f))
+    const metadata: Record<string, any> = {}
+    let maxVersion = bootstraps?.version ?? '0.0.0'
 
-    return async ({ result, update }) => {
-      await update({ reset: false })
-      showLoader = false
+    // 1. Validation locale avant upload
+    const validatePlatform = async (files: File[], platform: string, yamlName: string) => {
+      if (files.length === 0) return true
 
-      if (result.type === 'failure') {
-        const message = $l.notifications[result.data?.failure as NotificationCode] ?? $l.notifications.INTERNAL_SERVER_ERROR
-        addNotification('ERROR', message)
-      } else if (result.type === 'success') {
-        show = false
+      const yamlFile = files.find((f) => f.name === yamlName)
+      if (!yamlFile) {
+        addNotification('ERROR', `Missing ${yamlName} for ${platform}`)
+        return false
       }
 
-      await applyAction(result)
+      const content = await yamlFile.text()
+      const version = extractVersionFromYaml(content)
+
+      if (!version || !semver.valid(version)) {
+        addNotification('ERROR', `Invalid version in ${yamlName}`)
+        return false
+      }
+
+      if (semver.gt(version, maxVersion)) maxVersion = version
+
+      const mainFile = files.find((f) => f.name.endsWith('.exe') || f.name.endsWith('.dmg') || f.name.endsWith('.AppImage'))
+
+      metadata[platform] = {
+        mainFileName: mainFile?.name ?? files[0].name,
+        keepFiles: files.map((f) => f.name)
+      }
+
+      return true
     }
+
+    const isValid =
+      (await validatePlatform(winFiles, 'win', 'latest.yml')) &&
+      (await validatePlatform(macFiles, 'mac', 'latest-mac.yml')) &&
+      (await validatePlatform(linFiles, 'lin', 'latest-linux.yml'))
+
+    if (!isValid) {
+      showLoader = false
+      return
+    }
+
+    let uploadSuccess = true
+    const processUpload = async (files: File[], osName: string) => {
+      if (files.length === 0 || !uploadSuccess) return
+      uploadSuccess = await smartUpload(files, {
+        context: 'bootstraps',
+        mode: 'ALL_OR_NOTHING',
+        currentPath: osName,
+        onError: (fileName, message) => addNotification('ERROR', `Error on ${fileName}: ${message}`)
+      })
+    }
+
+    await processUpload(winFiles, 'win')
+    await processUpload(macFiles, 'mac')
+    await processUpload(linFiles, 'lin')
+
+    if (uploadSuccess) {
+      const formData = new FormData()
+      formData.set('version', maxVersion)
+      formData.set('metadata', JSON.stringify(metadata))
+
+      const res = await fetch('?/finalizeBootstraps', {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await res.json()
+
+      if (result.type === 'success') {
+        await invalidateAll()
+        show = false
+      } else {
+        addNotification('ERROR', 'Failed to update database')
+      }
+    }
+
+    showLoader = false
   }
 </script>
 
@@ -115,7 +179,7 @@
     <LoadingSplash transparent />
   {/if}
 
-  <form method="POST" action="?/changeBootstraps" use:enhance={enhanceForm} enctype="multipart/form-data">
+  <form onsubmit={handleSubmit}>
     <h2>Change bootstraps</h2>
 
     <p class="desc">You <b>must</b> upload 3 files files for each platform for which you want to update the bootstrap:</p>

@@ -86,11 +86,6 @@ export const registerSchema = z.object({
   pin: z.string().length(3, NotificationCode.REGISTER_PIN_INVALID)
 })
 
-export const uploadFilesSchema = z.object({
-  currentPath: z.string(),
-  files: z.array(z.instanceof(File))
-})
-
 export const renameFileSchema = z.object({
   path: z.string(),
   name: z.string().min(1, NotificationCode.INVALID_INPUT).max(255, NotificationCode.INVALID_INPUT),
@@ -126,24 +121,31 @@ export const loaderSchema = z.object({
   loaderVersion: z.string()
 })
 
-export const bootstrapsSchema = z
-  .object({
-    winFiles: z.array(z.instanceof(File)).optional().default([]),
-    macFiles: z.array(z.instanceof(File)).optional().default([]),
-    linFiles: z.array(z.instanceof(File)).optional().default([])
-  })
-  .refine((data) => isValidPlatformBatch(data.winFiles, ['.exe']), {
-    message: NotificationCode.BOOTSTRAPS_INVALID_FILES,
-    path: ['winFiles']
-  })
-  .refine((data) => isValidPlatformBatch(data.macFiles, ['.dmg', '.zip']), {
-    message: NotificationCode.BOOTSTRAPS_INVALID_FILES,
-    path: ['macFiles']
-  })
-  .refine((data) => isValidPlatformBatch(data.linFiles, ['.AppImage']), {
-    message: NotificationCode.BOOTSTRAPS_INVALID_FILES,
-    path: ['linFiles']
-  })
+const platformMetadataSchema = z.object({
+  mainFileName: z.string(),
+  keepFiles: z.array(z.string())
+})
+
+export const finalizeBootstrapsSchema = z.object({
+  version: z.string().min(1, { message: NotificationCode.INVALID_INPUT }),
+  metadata: z
+    .string()
+    .transform((str, ctx) => {
+      try {
+        return JSON.parse(str)
+      } catch (e) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: NotificationCode.INVALID_INPUT })
+        return z.NEVER
+      }
+    })
+    .pipe(
+      z.object({
+        win: platformMetadataSchema.optional(),
+        mac: platformMetadataSchema.optional(),
+        lin: platformMetadataSchema.optional()
+      })
+    )
+})
 
 export const maintenanceSchema = z
   .object({
@@ -218,3 +220,4 @@ export const backgroundSchema = z
   .refine((schema) => !(!schema.backgroundId && !schema.file), {
     message: NotificationCode.MISSING_INPUT
   })
+

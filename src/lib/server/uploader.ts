@@ -2,21 +2,6 @@ import { randomUUID, randomBytes } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-interface InitUploadResponse {
-  results: {
-    id: string
-    status: 'ACCEPTED' | 'REJECTED'
-    reason?: 'FILE_ALREADY_EXISTS' | 'LOCKED_BY_OTHER_USER' | 'FORBIDDEN_PATH' | 'QUOTA_EXCEEDED'
-    uuid?: string
-    token?: string
-  }[]
-}
-
-interface CommitUploadResponse {
-  status: 'SUCCESS' | 'FAILURE'
-  reason?: 'CHECKSUM_MISMATCH' | 'SIZE_MISMATCH' | 'FILE_NOT_FOUND' | 'SERVER_ERROR'
-}
-
 export interface UploadLock {
   userId: string
   context: string

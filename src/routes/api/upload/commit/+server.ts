@@ -4,8 +4,9 @@ import { createReadStream } from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 import { activeUploads, STAGING_DIR } from '$lib/server/uploader'
-import { cacheFiles } from '$lib/server/files'
+import { cacheFiles, getCachedFilesParsed } from '$lib/server/files'
 import type { RequestHandler } from './$types'
+import type { Context } from '$lib/utils/types'
 
 async function getFileSha256(filePath: string) {
   const hash = crypto.createHash('sha256')
@@ -23,8 +24,8 @@ async function abortAndCleanup(targetPathKey: string, partPath: string) {
   await fs.unlink(partPath).catch(() => {})
 }
 
-export const POST: RequestHandler = async ({ request }) => {
-  const { uuid, token, context } = await request.json()
+export const POST: RequestHandler = async ({ request, url }) => {
+  const { uuid, token, context }: { uuid: string; token: string; context: Context } = await request.json()
 
   if (!uuid || !token || !context) {
     return json({ status: 'FAILURE', reason: 'BAD_REQUEST' }, { status: 400 })
@@ -64,13 +65,24 @@ export const POST: RequestHandler = async ({ request }) => {
     await fs.rename(partPath, lock.targetPath)
 
     activeUploads.delete(targetPathKey)
-    await cacheFiles(context as any)
+    await cacheFiles(context)
 
-    return json({ status: 'SUCCESS' })
+    const domain = url.origin
+    const allFiles = await getCachedFilesParsed(domain, context as any)
+
+    const relativePath = lock.targetPath.split(`files/${context}/`)[1]
+    const dirPath = path.dirname(relativePath)
+    const formattedDirPath = dirPath === '.' ? '' : `${dirPath}/`.replace(/\\/g, '/')
+    const fileName = path.basename(relativePath)
+
+    const newlyCreatedFile = allFiles.find((f) => f.name === fileName && f.path === formattedDirPath)
+
+    return json({ status: 'SUCCESS', file: newlyCreatedFile })
   } catch (err) {
-    console.error("Error during commit:", err)
+    console.error('Error during commit:', err)
     await abortAndCleanup(targetPathKey, partPath)
     return json({ status: 'FAILURE', reason: 'SERVER_ERROR' }, { status: 500 })
   }
 }
+
 

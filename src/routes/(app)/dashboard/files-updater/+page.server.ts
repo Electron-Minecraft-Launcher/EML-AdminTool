@@ -2,14 +2,13 @@ import { error, redirect, type Actions } from '@sveltejs/kit'
 import { fail } from '$lib/server/action'
 import type { PageServerLoad } from './$types'
 import { NotificationCode } from '$lib/utils/notifications'
-import { createFileSchema, editFileSchema, renameFileSchema, loaderSchema, uploadFilesSchema } from '$lib/utils/validations'
-import { cacheFiles, createFile, deleteFile, editFile, getCachedFilesParsed, getFiles, renameFile, uploadFile } from '$lib/server/files'
+import { createFileSchema, editFileSchema, renameFileSchema, loaderSchema } from '$lib/utils/validations'
+import { cacheFiles, createFile, deleteFile, editFile, getCachedFilesParsed, getFiles, renameFile } from '$lib/server/files'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { db } from '$lib/server/db'
 import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
 import type { Loader, LoaderFormat } from '@prisma/client'
 import { updateLoader } from '$lib/server/loader'
-import path_ from 'node:path'
 import { checkVanillaLoader, getVanillaVersions } from '$lib/server/loaders/vanilla'
 import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forgelike'
 import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
@@ -93,49 +92,6 @@ export const actions: Actions = {
 
       const files = await getFiles(domain, 'files-updater')
       return { files }
-    } catch (err) {
-      if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
-      if (err instanceof ServerError) throw error(err.httpStatus, { message: err.message })
-
-      console.error('Unknown error:', err)
-      throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
-    }
-  },
-
-  uploadFiles: async (event) => {
-    const domain = event.url.origin
-    const user = event.locals.user
-
-    if (!user?.p_filesUpdater) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
-    }
-
-    const form = await event.request.formData()
-    const raw = {
-      currentPath: form.get('current-path'),
-      files: form.getAll('files')
-    }
-
-    const result = uploadFilesSchema.safeParse(raw)
-
-    if (!result.success) {
-      return error(400, { message: JSON.parse(result.error.message)[0].message })
-    }
-
-    const { currentPath, files } = result.data
-
-    try {
-      for (const file of files) {
-        if (!(file instanceof File)) continue
-
-        const path = path_.join(currentPath, path_.dirname(file.webkitRelativePath ?? file.name))
-
-        await uploadFile('files-updater', path, file)
-        await cacheFiles('files-updater')
-      }
-
-      const cache = await getCachedFilesParsed(domain, 'files-updater')
-      return { files: cache }
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.message })

@@ -5,13 +5,14 @@ import { sanitizePath } from '$lib/server/files'
 import { activeUploads, createLock, LOCK_TIMEOUT_MS, STAGING_DIR } from '$lib/server/uploader'
 import type { RequestHandler } from './$types'
 import { NotificationCode } from '$lib/utils/notifications'
+import type { Context } from '$lib/utils/types'
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   const user = locals.user
   if (!user) return json({ message: NotificationCode.UNAUTHORIZED }, { status: 401 })
 
   const body = await request.json()
-  const { context, files } = body
+  const { context, files }: { context: Context, files: any[] } = body
 
   if (context === 'files-updater' && !user.p_filesUpdater) {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
@@ -19,7 +20,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   } else if (context === 'backgrounds' && !user.p_backgrounds) {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
-  } else if (context === 'news' && !user.p_news) {
+  } else if (context === 'images' && !user.p_news) {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   }
 

@@ -125,3 +125,8 @@ export function getFileIcon(file: File_) {
       return 'fa-solid fa-file'
   }
 }
+
+export function extractVersionFromYaml(content: string) {
+  const match = content.match(/^version:\s*(.+)$/m)
+  return match ? match[1].trim() : null
+}

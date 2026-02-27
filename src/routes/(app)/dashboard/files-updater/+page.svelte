@@ -11,6 +11,8 @@
   import { addNotification } from '$lib/stores/notifications'
   import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
   import type { Loader } from '@prisma/client'
+  import { invalidateAll } from '$app/navigation'
+  import { smartUpload } from '$lib/utils/uploader'
 
   let { data }: PageProps = $props()
 
@@ -50,47 +52,48 @@
 
   async function getData() {
     filesReady = false
-    try {
-      const response = await fetch('/api/files-updater')
-      if (!response.ok) {
-        console.error('Failed to download file:', response.statusText)
-        const message = $l.notifications.INTERNAL_SERVER_ERROR
-        addNotification('ERROR', message)
-        return
-      }
-      files = (await response.json()).files as File_[]
-      filesReady = true
-    } catch (err) {
-      console.error('Failed to download file:', err)
-      const message = $l.notifications.INTERNAL_SERVER_ERROR
-      addNotification('ERROR', message)
-    }
+    await invalidateAll()
+    filesReady = true
   }
 
   async function handleDrop(e: DragEvent) {
     e.preventDefault()
     isDragOver = false
-    filesReady = false
 
     if (!e.dataTransfer || e.dataTransfer.items.length === 0) return
-    const items = await getAllEntries(e.dataTransfer.items)
+    filesReady = false
 
+    const items = await getAllEntries(e.dataTransfer.items)
     let entries: File[] = []
 
     for (const item of items) {
       await new Promise<void>((resolve) => {
         item.file((file) => {
-          entries.push(new File([file.slice(0, file.size)], item.fullPath, { type: file.type }))
+          entries.push(new File([file.slice(0, file.size)], item.fullPath.replace(/^\/+/, ''), { type: file.type }))
           resolve()
         })
       })
     }
 
-    const formData = new FormData()
-    formData.append('current-path', currentPath)
-    for (const file of entries) formData.append('files', file)
+    if (entries.length > 0) {
+      const success = await smartUpload(entries, {
+        context: 'files-updater',
+        mode: 'BEST_EFFORT',
+        currentPath: currentPath,
+        promptOverwrite: async (fileName) => confirm(`Overwrite ${fileName}?`),
+        onFileComplete: (newFile) => {
+          const index = files.findIndex((f) => f.name === newFile.name && f.path === newFile.path)
+          if (index !== -1) {
+            files[index] = newFile
+          } else {
+            files = [...files, newFile]
+          }
+        },
+        onError: (fileName, message) => addNotification('ERROR', `Error on ${fileName}: ${message}`)
+      })
 
-    files = await callAction({ url: '/dashboard/files-updater', action: 'uploadFiles', formData }, $l).then((res) => res.data.files as File_[])
+      if (success) await invalidateAll()
+    }
 
     filesReady = true
   }
@@ -138,6 +141,10 @@
       return []
     }
   }
+
+  $effect(() => {
+    files = data.files
+  })
 
   $effect(() => {
     if (oldPath !== path!.innerHTML) {

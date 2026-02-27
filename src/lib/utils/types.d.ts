@@ -62,6 +62,7 @@ export interface File {
 }
 
 export type Dir = 'files-updater' | 'loader' | 'bootstraps' | 'backgrounds' | 'images' | 'cache'
+export type Context = 'files-updater' | 'bootstraps' | 'backgrounds' | 'images'
 
 export interface LoaderVersion {
   majorVersion: string

@@ -11,6 +11,8 @@
   import EditFileModal from '../modals/EditFileModal.svelte'
   import { callAction } from '$lib/utils/call'
   import { addNotification } from '$lib/stores/notifications'
+  import { smartUpload } from '$lib/utils/uploader'
+  import { invalidateAll } from '$app/navigation'
 
   interface Props {
     currentPath: string
@@ -44,20 +46,49 @@
   })
 
   async function uploadItems(e: Event) {
-    ready = false
     const target = e.target as HTMLInputElement
     if (!target.files || target.files.length === 0) return
 
-    const formData = new FormData()
-    formData.set('/action', 'uploadFiles')
-    formData.set('current-path', currentPath)
-    for (const file of target.files ?? []) formData.append('files', file)
+    ready = false
 
-    files = (await callAction({ url: '/dashboard/files-updater', action: 'uploadFiles', formData }, $l)).data.files as File_[]
-    folderUpload.value = ''
-    folderUpload.files = null
-    filesUpload.value = ''
-    filesUpload.files = null
+    const filesArray = Array.from(target.files)
+
+    const success = await smartUpload(filesArray, {
+      context: 'files-updater',
+      mode: 'BEST_EFFORT',
+      currentPath: currentPath,
+      promptOverwrite: async (fileName) => {
+        return confirm(`A file named "${fileName}" already exists in this location. Do you want to overwrite it?`)
+      },
+      onProgress: (fileName, progress) => {
+        console.log(`Upload : ${fileName} (${progress}%)`)
+      },
+      onFileComplete: (newFile) => {
+        const index = files.findIndex((f) => f.name === newFile.name && f.path === newFile.path)
+        if (index !== -1) {
+          files[index] = newFile
+        } else {
+          files = [...files, newFile]
+        }
+      },
+      onError: (fileName, message) => {
+        addNotification('ERROR', `Error on ${fileName}: ${message}`)
+      }
+    })
+
+    if (success) {
+      await invalidateAll()
+    }
+
+    if (folderUpload) {
+      folderUpload.value = ''
+      folderUpload.files = null
+    }
+    if (filesUpload) {
+      filesUpload.value = ''
+      filesUpload.files = null
+    }
+
     ready = true
   }
 
