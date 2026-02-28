@@ -76,6 +76,37 @@
     }
 
     if (entries.length > 0) {
+      const optimisticFolders: File_[] = []
+
+      entries.forEach((file) => {
+        const parts = file.name.split('/')
+        parts.pop()
+
+        let buildPath = currentPath
+
+        parts.forEach((folderName) => {
+          const alreadyExists =
+            files.some((f) => f.type === 'FOLDER' && f.path === buildPath && f.name === folderName) ||
+            optimisticFolders.some((f) => f.type === 'FOLDER' && f.path === buildPath && f.name === folderName)
+
+          if (!alreadyExists) {
+            optimisticFolders.push({
+              name: folderName,
+              path: buildPath,
+              type: 'FOLDER',
+              size: 0,
+              sha1: '',
+              url: ''
+            })
+          }
+          buildPath += `${folderName}/`
+        })
+      })
+
+      if (optimisticFolders.length > 0) {
+        files = [...files, ...optimisticFolders]
+      }
+
       const success = await smartUpload(entries, {
         context: 'files-updater',
         mode: 'BEST_EFFORT',

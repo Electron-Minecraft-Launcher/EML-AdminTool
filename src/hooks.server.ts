@@ -178,6 +178,7 @@ async function serveStaticFile(pathname: string) {
 
   try {
     const extension = path.extname(resolvedPath).toLowerCase()
+    const fileName = path.basename(resolvedPath)
     let mimeType: string
 
     if (['.ts', '.js', '.jsx', '.tsx', '.svelte', '.vue', '.css', '.html'].includes(extension)) {
@@ -186,12 +187,15 @@ async function serveStaticFile(pathname: string) {
       mimeType = mime.lookup(resolvedPath) || 'application/octet-stream'
     }
 
-    const fileContent = await fs.readFile(resolvedPath, { encoding: 'utf-8' })
+    const fileContent = await fs.readFile(resolvedPath)
+
     return new Response(fileContent, {
       status: 200,
       headers: {
         'Content-Type': mimeType,
-        'X-Content-Type-Options': 'nosniff'
+        'X-Content-Type-Options': 'nosniff',
+        'Cache-Control': 'no-transform',
+        'Content-Disposition': `inline; filename="${fileName}"`
       }
     })
   } catch (err: unknown) {
@@ -274,3 +278,4 @@ function getUserInfo(user: User) {
     isAdmin: user.isAdmin
   }
 }
+
