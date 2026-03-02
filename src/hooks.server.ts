@@ -60,9 +60,9 @@ const logger: Handle = async ({ event, resolve }) => {
       username = ` ${user.username}`
     }
 
-    let color = '\x1b[32m' // Green
-    if (status >= 300) color = '\x1b[33m' // Yellow
-    if (status >= 400) color = '\x1b[31m' // Red
+    let color = '\x1b[32m' // green
+    if (status >= 300) color = '\x1b[33m' // yellow
+    if (status >= 400) color = '\x1b[31m' // red
     const reset = '\x1b[0m'
 
     console.log(`[${date}] ${host} - [${ip}${username}] ${method} ${url} ${color}${status}${reset} (${duration}ms)`)
@@ -71,7 +71,7 @@ const logger: Handle = async ({ event, resolve }) => {
   return response
 }
 
-export const handleError: HandleServerError = ({ error, event, status, message }) => {
+export const handleError: HandleServerError = ({ error, status, message }) => {
   if (status >= 404) {
     return {
       message: 'Not Found',
@@ -88,7 +88,7 @@ export const handleError: HandleServerError = ({ error, event, status, message }
   }
 }
 
-export const handle = sequence(app, logger)
+export const handle: Handle = sequence(app, logger)
 
 function getAllowedOrigins() {
   const envValue = process.env.ALLOWED_ORIGINS

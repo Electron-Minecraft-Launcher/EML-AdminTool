@@ -1,27 +1,14 @@
-import { IUserStatus } from '$lib/utils/db'
-import { writable, derived, type Readable } from 'svelte/store'
+import { IUserStatus, type UserInfo } from '$lib/utils/db'
+import type { UserStatus } from '@prisma/client'
+import { writable, derived, type Readable, type Writable } from 'svelte/store'
 
-interface User {
-  id: string
-  username: string
-  isAdmin: boolean
-  p_filesUpdater: 0 | 1 | 2
-  p_bootstraps: 0 | 1
-  p_maintenance: 0 | 1
-  p_news: 0 | 1 | 2
-  p_newsCategories: 0 | 1
-  p_newsTags: 0 | 1
-  p_backgrounds: 0 | 1
-  p_stats: 0 | 1 | 2
-}
+export const currentUser: Writable<UserInfo> = writable<UserInfo>()
 
-export const currentUser = writable<User>()
-
-export const user: Readable<User> = derived(currentUser, ($currentUser) => {
+export const user: Readable<UserInfo> = derived(currentUser, ($currentUser) => {
   return $currentUser
 })
 
-export const emptyUser = {
+export const emptyUser: UserInfo & { status: UserStatus; createdAt: Date; updatedAt: Date } = {
   id: '0',
   username: '',
   isAdmin: false,
@@ -37,4 +24,3 @@ export const emptyUser = {
   createdAt: new Date(),
   updatedAt: new Date()
 }
-

@@ -4,7 +4,7 @@ import { XMLParser } from 'fast-xml-parser'
 
 const parser = new XMLParser()
 
-export async function fetchJson(url: string, errorMsg: string) {
+export async function fetchJson(url: string, errorMsg: string): Promise<any> {
   try {
     const response = await fetch(url)
     if (!response.ok) {
@@ -18,7 +18,7 @@ export async function fetchJson(url: string, errorMsg: string) {
   }
 }
 
-export async function fetchXml(url: string, errorMsg: string) {
+export async function fetchXml(url: string, errorMsg: string): Promise<any> {
   try {
     const response = await fetch(url)
     if (!response.ok) {
@@ -33,7 +33,7 @@ export async function fetchXml(url: string, errorMsg: string) {
   }
 }
 
-export async function getRemoteFileSize(url: string, errorMsg: string) {
+export async function getRemoteFileSize(url: string, errorMsg: string): Promise<number> {
   try {
     const response = await fetch(url, { method: 'HEAD', headers: { Connection: 'close' } })
     if (!response.ok) {
@@ -47,7 +47,7 @@ export async function getRemoteFileSize(url: string, errorMsg: string) {
   }
 }
 
-export async function getRemoteFileSha1(url: string, errorMsg: string) {
+export async function getRemoteFileSha1(url: string, errorMsg: string): Promise<string> {
   try {
     const response = await fetch(url, { headers: { Connection: 'close' } })
     if (!response.ok) {
@@ -61,7 +61,7 @@ export async function getRemoteFileSha1(url: string, errorMsg: string) {
   }
 }
 
-export function getMajorVersion(version: string, fallback = 'Latest') {
+export function getMajorVersion(version: string, fallback = 'Latest'): string {
   const match = version.match(/^(1\.\d+)|^(\d+\.)/)
   let majorVersion = ''
   if (match) majorVersion = match[0].replace(/\.$/, '')

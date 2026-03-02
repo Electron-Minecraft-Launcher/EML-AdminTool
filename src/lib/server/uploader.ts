@@ -13,15 +13,15 @@ export interface UploadLock {
   lastActivity: number
 }
 
-export const activeUploads = new Map<string, UploadLock>()
-export const STAGING_DIR = path.join(process.cwd(), 'files', '.staging')
+export const activeUploads: Map<string, UploadLock> = new Map<string, UploadLock>()
+export const STAGING_DIR: string = path.join(process.cwd(), 'files', '.staging')
 
-export const LOCK_TIMEOUT_MS = 2 * 60 * 1000
+export const LOCK_TIMEOUT_MS: number = 2 * 60 * 1000
 const globalStore = globalThis as unknown as { __uploadGCStarted?: boolean }
 
 fs.mkdir(STAGING_DIR, { recursive: true }).catch(console.error)
 
-export function createLock(data: Omit<UploadLock, 'uuid' | 'token' | 'lastActivity'>) {
+export function createLock(data: Omit<UploadLock, 'uuid' | 'token' | 'lastActivity'>): { uuid: string; token: string } {
   const uuid = randomUUID()
   const token = randomBytes(32).toString('hex')
 

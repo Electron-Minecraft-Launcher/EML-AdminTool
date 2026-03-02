@@ -6,7 +6,7 @@ import { fetchJson, getMajorVersion } from './utils'
 
 const VANILLA_VERSION_MANIFEST_URL = 'https://piston-meta.mojang.com/mc/game/version_manifest.json'
 
-export async function getVanillaVersions() {
+export async function getVanillaVersions(): Promise<LoaderVersion[]> {
   return getOrSet('vanilla-versions', async () => {
     const response = await fetchJson(VANILLA_VERSION_MANIFEST_URL, 'Failed to fetch Minecraft versions')
 
@@ -33,7 +33,7 @@ export async function getVanillaVersions() {
   })
 }
 
-export async function checkVanillaLoader(minecraftVersion: string, loaderVersion: string) {
+export async function checkVanillaLoader(minecraftVersion: string, loaderVersion: string): Promise<void> {
   if (loaderVersion !== minecraftVersion) {
     console.warn('Loader version and Minecraft version mismatch:', loaderVersion, minecraftVersion)
     throw new BusinessError('Loader version and Minecraft version mismatch', NotificationCode.FILESUPDATER_VERSIONS_MISMATCH, 400)

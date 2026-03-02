@@ -1,10 +1,10 @@
-import { goto } from '$app/navigation'
 import type { File as File_ } from '$lib/utils/types'
 
 /**
+ * Pauses execution for a specified duration.
  * @param duration Sleep duration in ms.
  */
-export function sleep(duration: number) {
+export function sleep(duration: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, duration))
 }
 
@@ -14,7 +14,7 @@ export function sleep(duration: number) {
  * @param reload Whether to reload the page upon successful ping. If a string is provided, it will redirect to that URL instead. Default is `true`.
  * @param oldVersion The old version string to compare against. If provided, the function will only reload/redirect if the server version has changed.
  */
-export async function waitForServerRestart(retrying: number = 10, reload: boolean | string = true, oldVersion?: string) {
+export async function waitForServerRestart(retrying: number = 10, reload: boolean | string = true, oldVersion?: string): Promise<void> {
   let delay = 1000
 
   for (let i = 0; i < retrying; i++) {
@@ -53,7 +53,7 @@ export async function waitForServerRestart(retrying: number = 10, reload: boolea
  * Returns the appropriate FontAwesome icon class for a given file based on its type or extension.
  * @param file The file object containing its name and type.
  */
-export function getFileIcon(file: File_) {
+export function getFileIcon(file: File_): string {
   if (file.type === 'FOLDER') return 'fa-solid fa-folder'
   switch (file.name.split('.').slice(-1)[0]) {
     case 'pdf':
@@ -126,7 +126,7 @@ export function getFileIcon(file: File_) {
   }
 }
 
-export function extractVersionFromYaml(content: string) {
+export function extractVersionFromYaml(content: string): string | null {
   const match = content.match(/^version:\s*(.+)$/m)
   return match ? match[1].trim() : null
 }

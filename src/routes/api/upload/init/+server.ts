@@ -48,7 +48,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
           results.push({ id: file.id, status: 'REJECTED', reason: 'FILE_ALREADY_EXISTS' })
           continue
         } catch {
-          // File doesn't exist, we can proceed
+          // file doesn't exist, we can proceed
         }
       }
 
