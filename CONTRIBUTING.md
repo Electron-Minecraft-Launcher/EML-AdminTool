@@ -62,7 +62,22 @@ npm install
 npm run docker
 ```
 
-You can access the application at [http://localhost:5173](http://localhost:5173) and pgAdmin at [http://localhost:5050](http://localhost:5050) (email: `admintool@eml.com`, password: `eml`).
+You can access the application at [http://localhost:5173](http://localhost:5173) and pgAdmin at [http://localhost:5050](http://localhost:5050).
+
+<details>
+<summary>How to connect to pgAdmin?</summary>
+To connect to pgAdmin, you can use the following information:
+
+- **Email**: `admintool@eml.com`
+- **Password**: `eml`
+
+Then, you can add a new server with the following information:
+
+- **Host**: `dbs`
+- **Port**: `5432`
+- **Username**: `eml`
+- **Password**: the value of `DATABASE_PASSWORD` in the `.env` file
+</details>
 
 ## Code guidelines
 

@@ -39,50 +39,7 @@ You can download the previous major version of the [EML AdminTool](https://githu
 
 ## Contributing
 
-### Translation
-
-You can help to translate EML AdminTool!
-
-The languages files are [here](./client/src/lib/locales/). You can create another file with your translation. Please make sure to provide a correct translation!
-
-Then, you can submit your translation file as an [issue](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues/new?template=translation.md), by using the _Language_ issue template. Your file needs to be checked and approved by two other persons.
-
-### Development
-
-Install [Node.js](https://nodejs.org/en/download/package-manager) and [Docker](https://www.docker.com/get-started) [^3].
-
-Then, download the code and run the command:
-
-```bash
-cd EML-AdminTool
-npm i
-```
-
-You can now start the development server:
-
-```bash
-cd docker
-docker-compose -f docker-compose.dev.yml up
-```
-
-The application is accessible at [http://localhost:5173](http://localhost:5173). You can also access pgAdmin at [https://localhost:5050](http://localhost:5050).
-
-<details>
-<summary>How to connect to pgAdmin?</summary>
-To connect to pgAdmin, you can use the following information:
-
-- **Email**: `admintool@eml.com`
-- **Password**: `eml`
-
-Then, you can add a new server with the following information:
-
-- **Host**: `dbs`
-- **Port**: `5432`
-- **Username**: `eml`
-- **Password**: the value of `DATABASE_PASSWORD` in the `.env` file
-</details>
-
-You can now make pull requests!
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to contribute to this project.
 
 ## Important information
 
