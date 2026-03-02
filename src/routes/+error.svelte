@@ -7,13 +7,7 @@
 
   const env = getEnv()
 
-  const message = $state(
-    page.status === 404
-      ? $l.notifications.NOT_FOUND
-      : page.error?.message && Object.keys($l.notifications).includes(page.error.message)
-        ? $l.notifications[page.error.message as NotificationCode]
-        : $l.notifications.INTERNAL_SERVER_ERROR
-  )
+  const message = $state(page.status === 404 ? $l.notifications.NOT_FOUND : $l.notifications[page?.error?.message as NotificationCode])
 
   function reload() {
     window.location.reload()

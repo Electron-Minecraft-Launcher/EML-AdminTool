@@ -4,7 +4,7 @@ import type { LoaderVersion } from '$lib/utils/types'
 import { getOrSet } from '../cache'
 import { fetchJson, getMajorVersion } from './utils'
 
-const VANILLA_VERSION_MANIFEST_URL = 'https://launchermeta.mojang.com/mc/game/version_manifest.json'
+const VANILLA_VERSION_MANIFEST_URL = 'https://piston-meta.mojang.com/mc/game/version_manifest.json'
 
 export async function getVanillaVersions() {
   return getOrSet('vanilla-versions', async () => {
