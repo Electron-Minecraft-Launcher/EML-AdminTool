@@ -11,6 +11,9 @@
   import { addNotification } from '$lib/stores/notifications'
   import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
   import type { Loader } from '@prisma/client'
+  import { invalidateAll } from '$app/navigation'
+  import { smartUpload } from '$lib/utils/uploader'
+  import { uploader } from '$lib/stores/upload.svelte'
 
   let { data }: PageProps = $props()
 
@@ -50,49 +53,67 @@
 
   async function getData() {
     filesReady = false
-    try {
-      const response = await fetch('/api/files-updater')
-      if (!response.ok) {
-        console.error('Failed to download file:', response.statusText)
-        const message = $l.notifications.INTERNAL_SERVER_ERROR
-        addNotification('ERROR', message)
-        return
-      }
-      files = (await response.json()).files as File_[]
-      filesReady = true
-    } catch (err) {
-      console.error('Failed to download file:', err)
-      const message = $l.notifications.INTERNAL_SERVER_ERROR
-      addNotification('ERROR', message)
-    }
+    await invalidateAll()
+    filesReady = true
   }
 
   async function handleDrop(e: DragEvent) {
     e.preventDefault()
     isDragOver = false
-    filesReady = false
 
     if (!e.dataTransfer || e.dataTransfer.items.length === 0) return
-    const items = await getAllEntries(e.dataTransfer.items)
 
+    const items = await getAllEntries(e.dataTransfer.items)
     let entries: File[] = []
 
     for (const item of items) {
       await new Promise<void>((resolve) => {
         item.file((file) => {
-          entries.push(new File([file.slice(0, file.size)], item.fullPath, { type: file.type }))
+          entries.push(new File([file.slice(0, file.size)], item.fullPath.replace(/^\/+/, ''), { type: file.type }))
           resolve()
         })
       })
     }
 
-    const formData = new FormData()
-    formData.append('current-path', currentPath)
-    for (const file of entries) formData.append('files', file)
+    if (entries.length > 0) {
+      const optimisticFolders: File_[] = []
 
-    files = await callAction({ url: '/dashboard/files-updater', action: 'uploadFiles', formData }, $l).then((res) => res.data.files as File_[])
+      entries.forEach((file) => {
+        const parts = file.name.split('/')
+        parts.pop()
 
-    filesReady = true
+        let buildPath = currentPath
+
+        parts.forEach((folderName) => {
+          const alreadyExists =
+            files.some((f) => f.type === 'FOLDER' && f.path === buildPath && f.name === folderName) ||
+            optimisticFolders.some((f) => f.type === 'FOLDER' && f.path === buildPath && f.name === folderName)
+
+          if (!alreadyExists) {
+            optimisticFolders.push({
+              name: folderName,
+              path: buildPath,
+              type: 'FOLDER',
+              size: 0,
+              sha1: '',
+              url: ''
+            })
+          }
+          buildPath += `${folderName}/`
+        })
+      })
+
+      if (optimisticFolders.length > 0) {
+        files = [...files, ...optimisticFolders]
+      }
+
+      uploader.startUpload(entries, currentPath, (newFile: File_) => {
+      files = [
+        ...files.filter(f => f.name !== newFile.name || f.path !== newFile.path), 
+        newFile
+      ]
+    })
+    }
   }
 
   async function getAllEntries(items: DataTransferItemList) {
@@ -138,6 +159,10 @@
       return []
     }
   }
+
+  $effect(() => {
+    files = data.files
+  })
 
   $effect(() => {
     if (oldPath !== path!.innerHTML) {

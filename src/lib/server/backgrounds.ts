@@ -4,9 +4,9 @@ import { db } from './db'
 import type { File as File_ } from '../utils/types.d'
 import { Prisma } from '@prisma/client'
 import { IBackgroundStatus } from '$lib/utils/db'
-import type { BackgroundStatus } from '@prisma/client'
+import type { BackgroundStatus, Background } from '@prisma/client'
 
-export async function getActiveBackground() {
+export async function getActiveBackground(): Promise<Background | null> {
   let background
   try {
     background = await db.background.findFirst({ where: { status: IBackgroundStatus.ACTIVE } })
@@ -17,7 +17,7 @@ export async function getActiveBackground() {
   }
 }
 
-export async function getBackgroundById(backgroundId: string) {
+export async function getBackgroundById(backgroundId: string): Promise<Background | null> {
   let background
   try {
     background = await db.background.findUnique({ where: { id: backgroundId } })
@@ -28,7 +28,7 @@ export async function getBackgroundById(backgroundId: string) {
   }
 }
 
-export async function addBackground(name: string, file: File_, status: BackgroundStatus) {
+export async function addBackground(name: string, file: File_, status: BackgroundStatus): Promise<void> {
   if (status === IBackgroundStatus.ACTIVE) {
     await disableAllBackgrounds()
   }
@@ -51,7 +51,7 @@ export async function addBackground(name: string, file: File_, status: Backgroun
   }
 }
 
-export async function enableBackground(backgroundId: string) {
+export async function enableBackground(backgroundId: string): Promise<void> {
   await disableAllBackgrounds()
 
   try {
@@ -69,7 +69,7 @@ export async function enableBackground(backgroundId: string) {
   }
 }
 
-export async function disableAllBackgrounds() {
+export async function disableAllBackgrounds(): Promise<void> {
   try {
     await db.background.updateMany({ data: { status: IBackgroundStatus.INACTIVE } })
   } catch (err) {
@@ -78,7 +78,7 @@ export async function disableAllBackgrounds() {
   }
 }
 
-export async function updateBackground(backgroundId: string, name: string) {
+export async function updateBackground(backgroundId: string, name: string): Promise<void> {
   try {
     await db.background.update({
       where: { id: backgroundId },
@@ -98,7 +98,7 @@ export async function updateBackground(backgroundId: string, name: string) {
   }
 }
 
-export async function deleteBackground(backgroundId: string) {
+export async function deleteBackground(backgroundId: string): Promise<void> {
   try {
     await db.background.delete({ where: { id: backgroundId } })
   } catch (err) {

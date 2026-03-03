@@ -8,7 +8,7 @@ import { Client } from 'pg'
 import { deleteFile } from './files'
 import { Prisma } from '@prisma/client'
 
-export async function resetDatabase() {
+export async function resetDatabase(): Promise<void> {
   console.log('\n-------------- RESETTING DATABASE --------------\n')
   resetProcessEnv()
 
@@ -32,7 +32,7 @@ export async function resetDatabase() {
   await client.end()
 }
 
-export async function deleteAllFiles() {
+export async function deleteAllFiles(): Promise<void> {
   console.log('\n---------------- DELETING FILES ----------------\n')
   try {
     await deleteFile('files-updater', '')
@@ -61,7 +61,7 @@ export async function deleteAllFiles() {
   }
 }
 
-export async function markAsUnconfigured() {
+export async function markAsUnconfigured(): Promise<void> {
   console.log('\n-------------- UPDATING ENV FILE ---------------\n')
   resetProcessEnv()
   const databaseUrl = process.env.DATABASE_URL ?? defaultPgURL

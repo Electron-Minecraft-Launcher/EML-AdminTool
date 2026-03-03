@@ -1,4 +1,4 @@
-import { writable, derived, type Readable } from 'svelte/store'
+import { writable, derived, type Readable, type Writable } from 'svelte/store'
 import en from '../locales/en'
 import fr from '../locales/fr'
 import da from '../locales/da'
@@ -9,7 +9,7 @@ import ja from '../locales/ja'
 const languages = { en, fr, da, de, it, ja }
 
 export type LanguageCode = keyof typeof languages
-export const currentLanguage = writable<LanguageCode>('en')
+export const currentLanguage: Writable<LanguageCode> = writable<LanguageCode>('en')
 
 type TranslationObject = typeof en
 type CallableTranslation<T> = T & {

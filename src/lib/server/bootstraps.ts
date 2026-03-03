@@ -4,7 +4,7 @@ import type { Bootstrap } from '@prisma/client'
 import { db } from './db'
 import { getFiles } from './files'
 
-export async function getBootstraps() {
+export async function getBootstraps(): Promise<Bootstrap | null> {
   try {
     const bootstraps = await db.bootstrap.findUnique({ where: { id: '1' } })
     return bootstraps
@@ -18,7 +18,7 @@ export async function updateBootstraps(
   newVersion: string,
   existingBootstraps: Bootstrap | null,
   filenames: { win?: string; mac?: string; lin?: string }
-) {
+): Promise<void> {
   const files = await getFiles('', 'bootstraps')
 
   const findFileMetadata = (filename: string | undefined, platformSubdir: string) => {

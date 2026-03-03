@@ -15,5 +15,13 @@
   "tabWidth": 2,
   "trailingComma": "none",
   "useTabs": false,
-  "parser": "typescript"
+  "parser": "typescript",
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
 }

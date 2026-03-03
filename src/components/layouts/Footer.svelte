@@ -10,7 +10,8 @@
   <p>
     EML AdminTool v{env.version} – <a href="https://discord.gg/YVB4k6HzAY" target="_blank">Discord</a> –
     <a href="https://emlproject.pages.dev/docs" target="_blank">Docs</a> –
-    <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool" target="_blank">GitHub</a>
+    <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool" target="_blank">GitHub</a> –
+    <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues/new?template=bug.md" target="_blank"><i class="fa-solid fa-bug"></i>&nbsp;Report a bug</a>
   </p>
 </footer>
 
@@ -38,15 +39,7 @@
     margin-bottom: 30px;
   }
 
-  /**
-   * Dev purposes only
-   */
-  input {
-    padding: 3px;
-    font-size: 9px;
-    box-shadow: none;
-    outline: none !important;
-    width: 500px;
-    display: inline;
+  i.fa-solid.fa-bug {
+    font-size: 12px;
   }
 </style>

@@ -3,7 +3,7 @@ import { NotificationCode } from '$lib/utils/notifications'
 import type { Maintenance } from '@prisma/client'
 import { db } from './db'
 
-export async function getMaintenance() {
+export async function getMaintenance(): Promise<Maintenance | null> {
   try {
     const maintenance = await db.maintenance.findUnique({ where: { id: '1' } })
     return maintenance
@@ -14,7 +14,7 @@ export async function getMaintenance() {
 }
 
 
-export async function updateMaintenance(maintenance: Maintenance) {
+export async function updateMaintenance(maintenance: Maintenance): Promise<void> {
   let existingMaintenance
   try {
     existingMaintenance = await db.maintenance.findUnique({ where: { id: '1' } })

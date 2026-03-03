@@ -2,8 +2,9 @@ import { xml } from '@codemirror/lang-xml'
 import { json } from '@codemirror/lang-json'
 import { yaml } from '@codemirror/lang-yaml'
 import { markdown } from '@codemirror/lang-markdown'
+import type { LanguageSupport } from '@codemirror/language'
 
-export const readableFiles = [
+export const readableFiles: string[] = [
   'js',
   'jsx',
   'ts',
@@ -27,7 +28,7 @@ export const readableFiles = [
   'properties'
 ]
 
-export function getFileLanguage(ext: string) {
+export function getFileLanguage(ext: string): string {
   switch (ext) {
     case 'js':
     case 'jsx':
@@ -63,7 +64,7 @@ export function getFileLanguage(ext: string) {
   }
 }
 
-export function getCMLanguage(ext: string) {
+export function getCMLanguage(ext: string): LanguageSupport | [] {
   switch (ext) {
     case 'html':
     case 'xml':
