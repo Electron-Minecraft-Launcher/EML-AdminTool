@@ -95,7 +95,6 @@
     const metadata: Record<string, any> = {}
     let maxVersion = bootstraps?.version ?? '0.0.0'
 
-    // 1. Validation locale avant upload
     const validatePlatform = async (files: File[], platform: string, yamlName: string) => {
       if (files.length === 0) return true
 

@@ -36,6 +36,7 @@ This repository follows a structured workflow:
 
 ### Do:
 
+- Fork the repository and clone it locally.
 - Create a branch from `dev` for your feature or bug fix.
 - Name your branch according to the type of contribution (e.g., `feature/new-dashboard`, `fix/login-issue`).
 - Open a pull request to `dev` when your work is ready for review.
@@ -151,7 +152,7 @@ If you discover a security vulnerability:
 
 ## Versioning
 
-This project follows Semantic Versioning. Version numbers are in the format `x.y.z` where:
+This project follows Semantic Versioning (SemVer). Version numbers are in the format `x.y.z` where:
 
 | Type          | Description               |
 | ------------- | ------------------------- |
