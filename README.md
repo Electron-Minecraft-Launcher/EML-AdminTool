@@ -6,7 +6,7 @@
 
 [<img src="https://img.shields.io/badge/Discord-EML-5561e6?&style=for-the-badge">](https://discord.gg/YVB4k6HzAY)
 [<img src="https://img.shields.io/badge/platforms-Docker-0077DA?style=for-the-badge&color=0077DA">](#platforms)
-[<img src="https://img.shields.io/badge/version-2.0.0-orangered?style=for-the-badge&color=orangered">](package.json)
+[<img src="https://img.shields.io/badge/version-2.0.1-orangered?style=for-the-badge&color=orangered">](package.json)
 
 <p>
 <center>
@@ -35,7 +35,7 @@ Please follow [this guide](https://emlproject.pages.dev/docs/).
 
 ### If you won't use a VPS
 
-You can download the previous major version of the [EML AdminTool](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool). However, be careful, this version is no longer maintained and has security vulnerabilities.
+You can download the previous major version of the [EML AdminTool](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool-old). However, be careful, this version is no longer maintained and has security vulnerabilities.
 
 ## Contributing
 
