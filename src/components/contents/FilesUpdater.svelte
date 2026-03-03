@@ -11,8 +11,7 @@
   import EditFileModal from '../modals/EditFileModal.svelte'
   import { callAction } from '$lib/utils/call'
   import { addNotification } from '$lib/stores/notifications'
-  import { smartUpload } from '$lib/utils/uploader'
-  import { invalidateAll } from '$app/navigation'
+  import { uploader } from '$lib/stores/upload.svelte'
 
   interface Props {
     currentPath: string
@@ -49,8 +48,6 @@
     const target = e.target as HTMLInputElement
     if (!target.files || target.files.length === 0) return
 
-    ready = false
-
     const filesArray = Array.from(target.files)
 
     const optimisticFolders: File_[] = []
@@ -85,32 +82,12 @@
       files = [...files, ...optimisticFolders]
     }
 
-    const success = await smartUpload(filesArray, {
-      context: 'files-updater',
-      mode: 'BEST_EFFORT',
-      currentPath: currentPath,
-      promptOverwrite: async (fileName) => {
-        return confirm(`A file named "${fileName}" already exists in this location. Do you want to overwrite it?`)
-      },
-      onProgress: (fileName, progress) => {
-        console.log(`Upload : ${fileName} (${progress}%)`)
-      },
-      onFileComplete: (newFile) => {
-        const index = files.findIndex((f) => f.name === newFile.name && f.path === newFile.path)
-        if (index !== -1) {
-          files[index] = newFile
-        } else {
-          files = [...files, newFile]
-        }
-      },
-      onError: (fileName, message) => {
-        addNotification('ERROR', `Error on ${fileName}: ${message}`)
-      }
+    uploader.startUpload(filesArray, currentPath, (newFile: File_) => {
+      files = [
+        ...files.filter(f => f.name !== newFile.name || f.path !== newFile.path), 
+        newFile
+      ]
     })
-
-    if (success) {
-      await invalidateAll()
-    }
 
     if (folderUpload) {
       folderUpload.value = ''
@@ -120,8 +97,6 @@
       filesUpload.value = ''
       filesUpload.files = null
     }
-
-    ready = true
   }
 
   async function openItem(file: File_) {

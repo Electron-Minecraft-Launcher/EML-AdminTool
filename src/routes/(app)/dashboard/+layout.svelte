@@ -4,6 +4,7 @@
   import LeftPanel from '../../../components/layouts/LeftPanel.svelte'
   import Footer from '../../../components/layouts/Footer.svelte'
   import getEnv from '$lib/utils/env'
+  import UploadWidget from '../../../components/layouts/UploadWidget.svelte'
 
   interface Props {
     data: LayoutData
@@ -18,6 +19,8 @@
 
   let leftPanelOpen = $state(true)
 </script>
+
+<UploadWidget />
 
 <div class="container">
   <div class="nav" class:closed={!leftPanelOpen}>

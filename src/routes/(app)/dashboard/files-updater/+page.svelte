@@ -13,6 +13,7 @@
   import type { Loader } from '@prisma/client'
   import { invalidateAll } from '$app/navigation'
   import { smartUpload } from '$lib/utils/uploader'
+  import { uploader } from '$lib/stores/upload.svelte'
 
   let { data }: PageProps = $props()
 
@@ -61,7 +62,6 @@
     isDragOver = false
 
     if (!e.dataTransfer || e.dataTransfer.items.length === 0) return
-    filesReady = false
 
     const items = await getAllEntries(e.dataTransfer.items)
     let entries: File[] = []
@@ -107,26 +107,13 @@
         files = [...files, ...optimisticFolders]
       }
 
-      const success = await smartUpload(entries, {
-        context: 'files-updater',
-        mode: 'BEST_EFFORT',
-        currentPath: currentPath,
-        promptOverwrite: async (fileName) => confirm(`Overwrite ${fileName}?`),
-        onFileComplete: (newFile) => {
-          const index = files.findIndex((f) => f.name === newFile.name && f.path === newFile.path)
-          if (index !== -1) {
-            files[index] = newFile
-          } else {
-            files = [...files, newFile]
-          }
-        },
-        onError: (fileName, message) => addNotification('ERROR', `Error on ${fileName}: ${message}`)
-      })
-
-      if (success) await invalidateAll()
+      uploader.startUpload(entries, currentPath, (newFile: File_) => {
+      files = [
+        ...files.filter(f => f.name !== newFile.name || f.path !== newFile.path), 
+        newFile
+      ]
+    })
     }
-
-    filesReady = true
   }
 
   async function getAllEntries(items: DataTransferItemList) {

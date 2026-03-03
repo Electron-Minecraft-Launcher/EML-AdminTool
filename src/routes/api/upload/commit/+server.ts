@@ -84,5 +84,3 @@ export const POST: RequestHandler = async ({ request, url }) => {
     return json({ status: 'FAILURE', reason: 'SERVER_ERROR' }, { status: 500 })
   }
 }
-
-

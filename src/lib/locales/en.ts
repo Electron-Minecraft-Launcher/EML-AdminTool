@@ -82,6 +82,7 @@ export default {
     [NotificationCode.BACKGROUND_INVALID_STATUS]: `Background status is invalid.`,
     [NotificationCode.BACKGROUND_ALREADY_EXISTS]: `Background with this name already exists.`,
 
+    [NotificationCode.NOT_FOUND_ERROR]: `Not found.`,
     [NotificationCode.DATABASE_ERROR]: `Database error.`,
     [NotificationCode.UPDATER_ERROR]: `Updater error.`,
     [NotificationCode.FILE_SYSTEM_ERROR]: `File system error.`,

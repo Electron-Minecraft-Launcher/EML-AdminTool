@@ -14,7 +14,7 @@ Please make sure to:
 
 If you plan to implement a significant feature, open an issue first to discuss it
 
-## Branching Strategy
+## Branching strategy
 
 This repository follows a structured workflow:
 
@@ -66,6 +66,7 @@ You can access the application at [http://localhost:5173](http://localhost:5173)
 
 <details>
 <summary>How to connect to pgAdmin?</summary>
+
 To connect to pgAdmin, you can use the following information:
 
 - **Email**: `admintool@eml.com`
