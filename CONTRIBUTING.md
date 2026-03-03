@@ -8,7 +8,7 @@ This project aims to provide a reliable, secure and maintainable administration 
 
 Please make sure to:
 
-- Read the README.md.
+- Read the [README.md](./README.md).
 - Check existing issues and pull requests.
 - Join the Discord server if you need clarification.
 
@@ -18,7 +18,7 @@ If you plan to implement a significant feature, open an issue first to discuss i
 
 This repository follows a structured workflow:
 
-| Branch Name | Purpose                                                  |
+| Branch name | Purpose                                                  |
 | ----------- | -------------------------------------------------------- |
 | `main`      | Currently published version (production-ready)           |
 | `dev`       | Next version under preparation                           |
@@ -45,9 +45,9 @@ This repository follows a structured workflow:
 
 ### Requirements
 
-- Node.js (LTS version recommended)
-- Docker Engine and Docker Compose (you can use Docker Desktop)
-- Git
+- Node.js (LTS version recommended).
+- Docker Engine and Docker Compose (you can use Docker Desktop).
+- Git.
 
 ### Installation
 
