@@ -60,9 +60,9 @@ const logger: Handle = async ({ event, resolve }) => {
       username = ` ${user.username}`
     }
 
-    let color = '\x1b[32m' // Green
-    if (status >= 300) color = '\x1b[33m' // Yellow
-    if (status >= 400) color = '\x1b[31m' // Red
+    let color = '\x1b[32m' // green
+    if (status >= 300) color = '\x1b[33m' // yellow
+    if (status >= 400) color = '\x1b[31m' // red
     const reset = '\x1b[0m'
 
     console.log(`[${date}] ${host} - [${ip}${username}] ${method} ${url} ${color}${status}${reset} (${duration}ms)`)
@@ -71,7 +71,7 @@ const logger: Handle = async ({ event, resolve }) => {
   return response
 }
 
-export const handleError: HandleServerError = ({ error, event, status, message }) => {
+export const handleError: HandleServerError = ({ error, status, message }) => {
   if (status >= 404) {
     return {
       message: 'Not Found',
@@ -88,7 +88,7 @@ export const handleError: HandleServerError = ({ error, event, status, message }
   }
 }
 
-export const handle = sequence(app, logger)
+export const handle: Handle = sequence(app, logger)
 
 function getAllowedOrigins() {
   const envValue = process.env.ALLOWED_ORIGINS
@@ -178,6 +178,7 @@ async function serveStaticFile(pathname: string) {
 
   try {
     const extension = path.extname(resolvedPath).toLowerCase()
+    const fileName = path.basename(resolvedPath)
     let mimeType: string
 
     if (['.ts', '.js', '.jsx', '.tsx', '.svelte', '.vue', '.css', '.html'].includes(extension)) {
@@ -186,12 +187,15 @@ async function serveStaticFile(pathname: string) {
       mimeType = mime.lookup(resolvedPath) || 'application/octet-stream'
     }
 
-    const fileContent = await fs.readFile(resolvedPath, { encoding: 'utf-8' })
+    const fileContent = await fs.readFile(resolvedPath)
+
     return new Response(fileContent, {
       status: 200,
       headers: {
         'Content-Type': mimeType,
-        'X-Content-Type-Options': 'nosniff'
+        'X-Content-Type-Options': 'nosniff',
+        'Cache-Control': 'no-transform',
+        'Content-Disposition': `inline; filename="${fileName}"`
       }
     })
   } catch (err: unknown) {
@@ -274,3 +278,4 @@ function getUserInfo(user: User) {
     isAdmin: user.isAdmin
   }
 }
+

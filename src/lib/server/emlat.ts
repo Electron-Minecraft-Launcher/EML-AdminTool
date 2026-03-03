@@ -3,7 +3,7 @@ import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { db } from './db'
 
-export async function editEMLAT(name: string, language: LanguageCode, pin: string) {
+export async function editEMLAT(name: string, language: LanguageCode, pin: string): Promise<void> {
   try {
     await db.environment.update({
       where: { id: '1' },
@@ -28,7 +28,7 @@ export async function editEMLAT(name: string, language: LanguageCode, pin: strin
 /**
  * This function **does not** update the admin username.
  */
-export async function editEMLATName(name: string) {
+export async function editEMLATName(name: string): Promise<void> {
   try {
     await db.environment.update({
       where: { id: '1' },

@@ -20,7 +20,7 @@ const V = {
   }
 }
 
-export async function getFabricLikeGameVersions(loader: FabricLikeLoader) {
+export async function getFabricLikeGameVersions(loader: FabricLikeLoader): Promise<LoaderVersion[]> {
   const cacheKey = loader === ILoaderType.FABRIC ? 'fabric-game-versions' : 'quilt-game-versions'
 
   return getOrSet(cacheKey, async () => {
@@ -47,7 +47,7 @@ export async function getFabricLikeGameVersions(loader: FabricLikeLoader) {
   })
 }
 
-export async function getFabricLikeLoaderVersions(loader: FabricLikeLoader) {
+export async function getFabricLikeLoaderVersions(loader: FabricLikeLoader): Promise<string[]> {
   const cacheKey = loader === ILoaderType.FABRIC ? 'fabric-loader-versions' : 'quilt-loader-versions'
 
   return getOrSet(cacheKey, async () => {
@@ -60,7 +60,7 @@ export async function getFabricLikeLoaderVersions(loader: FabricLikeLoader) {
   })
 }
 
-export async function checkFabricLikeLoader(loader: FabricLikeLoader, minecraftVersion: string, loaderVersion: string) {
+export async function checkFabricLikeLoader(loader: FabricLikeLoader, minecraftVersion: string, loaderVersion: string): Promise<void> {
   const gameVersions = await getFabricLikeGameVersions(loader)
   const existsGame = gameVersions.find((gv) => gv.minecraftVersion === minecraftVersion)
   if (!existsGame) {

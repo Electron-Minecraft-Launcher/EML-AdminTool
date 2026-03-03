@@ -1,8 +1,14 @@
-import { ServerError } from '$lib/utils/errors';
-import { NotificationCode } from '$lib/utils/notifications';
+import { ServerError } from '$lib/utils/errors'
+import { NotificationCode } from '$lib/utils/notifications'
 import pkg from '../../../package.json'
 
-export async function getUpdate() {
+export async function getUpdate(): Promise<{
+  currentVersion: string
+  latestVersion: string
+  releaseDate: string
+  logoUrl: string
+  changelogs: string
+}> {
   let data
 
   try {
@@ -28,7 +34,7 @@ export async function getUpdate() {
   return { currentVersion, latestVersion, releaseDate, logoUrl, changelogs }
 }
 
-export async function update() {
+export async function update(): Promise<void> {
   const updaterHost = `http://upd:4000`
   const apiToken = process.env.UPDATER_HTTP_API_TOKEN
 
@@ -40,7 +46,7 @@ export async function update() {
   try {
     const response = await fetch(`${updaterHost}/update`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${apiToken}` }
+      headers: { Authorization: `Bearer ${apiToken}` }
     })
 
     if (!response.ok) {
@@ -52,7 +58,3 @@ export async function update() {
     throw new ServerError('Could not reach the update service', err, NotificationCode.UPDATER_ERROR)
   }
 }
-
-
-
-

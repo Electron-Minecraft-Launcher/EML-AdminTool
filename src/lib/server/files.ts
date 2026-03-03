@@ -8,14 +8,24 @@ import { createReadStream } from 'node:fs'
 
 const root = path_.join(process.cwd())
 
-export async function getFiles(domain: string, dir: Dir) {
+/**
+ * Get files in a directory.
+ * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
+ * @param dir Directory to get files from.
+ */
+export async function getFiles(domain: string, dir: Dir): Promise<File_[]> {
   await fs.mkdir(path_.join(root, 'files', dir), { recursive: true })
   const filesArray: File_[] = []
   await browse(filesArray, dir, '', domain)
   return filesArray
 }
 
-export async function getCachedFiles(domain: string, dir: Dir) {
+/**
+ * Get cached files for a directory. If the cache does not exist, it will be generated.
+ * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
+ * @param dir Directory to get cached files from.
+ */
+export async function getCachedFiles(domain: string, dir: Dir): Promise<string> {
   const target = sanitizePath('files', 'cache', `${dir}.json`)
   let cache
   try {
@@ -29,7 +39,12 @@ export async function getCachedFiles(domain: string, dir: Dir) {
   return cache
 }
 
-export async function getCachedFilesParsed(domain: string, dir: Dir) {
+/**
+ * Get cached files for a directory and parse them. If the cache does not exist, it will be generated.
+ * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
+ * @param dir Directory to get cached files from.
+ */
+export async function getCachedFilesParsed(domain: string, dir: Dir): Promise<File_[]> {
   const cache = await getCachedFiles(domain, dir)
   try {
     return JSON.parse(cache) as File_[]
@@ -40,11 +55,12 @@ export async function getCachedFilesParsed(domain: string, dir: Dir) {
 }
 
 /**
+ * Upload a file to the server.
  * @param dir Directory to upload the file to.
  * @param path Path to the file, relative to the directory, without the file name.
  * @param file File object to upload.
  */
-export async function uploadFile(dir: Dir, path: string, file: File) {
+export async function uploadFile(dir: Dir, path: string, file: File): Promise<void> {
   if (!file) return
 
   let target, name, buffer
@@ -72,7 +88,7 @@ export async function uploadFile(dir: Dir, path: string, file: File) {
  * @param path Path to the file, relative to the directory, without the file name.
  * @param name Name of the file to create.
  */
-export async function createFile(dir: Dir, path: string, name: string | undefined) {
+export async function createFile(dir: Dir, path: string, name: string | undefined): Promise<void> {
   let target
   try {
     target = sanitizePath('files', dir, path)
@@ -100,12 +116,13 @@ export async function createFile(dir: Dir, path: string, name: string | undefine
 }
 
 /**
+ * Edit a file's content.
  * @param dir Directory where the file to edit is.
  * @param path Path to the file, relative to the directory, without the file name.
  * @param name Name of the file to edit.
  * @param content New content for the file.
  */
-export async function editFile(dir: Dir, path: string, name: string, content: string) {
+export async function editFile(dir: Dir, path: string, name: string, content: string): Promise<void> {
   let fullPath
   try {
     name = name.removeUnwantedFilenameChars()
@@ -163,10 +180,11 @@ export async function renameFile(dir: Dir, path: string, name: string, newName: 
 }
 
 /**
+ * Delete a file or folder.
  * @param dir Directory where the file to delete is.
  * @param path Path to the file, relative to the directory, **including** the file name.
  */
-export async function deleteFile(dir: Dir, path: string) {
+export async function deleteFile(dir: Dir, path: string): Promise<void> {
   try {
     path = sanitizePath('files', dir, path)
   } catch (err) {
@@ -189,13 +207,22 @@ export async function deleteFile(dir: Dir, path: string) {
   }
 }
 
+/**
+ * Sanitize a path by resolving it and ensuring it is within the root directory. This prevents directory traversal attacks.
+ * @param path Segments of the path to sanitize. They will be joined together and resolved.
+ */
 export function sanitizePath(...path: string[]): string {
   const sanitizedPath = path_.resolve(root, path_.join(...path).replace(/^\\+/, ''))
   if (!sanitizedPath.startsWith(root)) throw new Error('Invalid path')
   return sanitizedPath
 }
 
-export async function cacheFiles(dir: Dir) {
+/**
+ * Generate a cache file for a directory by browsing the directory and saving the file metadata in a JSON file.
+ * The cache file will be saved in `files/cache/{dir}.json`.
+ * @param dir Directory to generate the cache for. This should be the same directory used in `getCachedFiles` and `getCachedFilesParsed`.
+ */
+export async function cacheFiles(dir: Dir): Promise<void> {
   const files = await getFiles('{{url}}', dir)
   await fs.mkdir(path_.join(root, 'files', 'cache'), { recursive: true })
   await fs.writeFile(path_.join(root, 'files', 'cache', `${dir}.json`), JSON.stringify(files, null, 2))
@@ -208,7 +235,7 @@ export async function cacheFiles(dir: Dir) {
  * @param subdir Subdirectory to browse.
  * @param domain Domain to use for file URLs.
  */
-async function browse(filesArray: File_[], dir: Dir, subdir: string, domain: string) {
+async function browse(filesArray: File_[], dir: Dir, subdir: string, domain: string): Promise<void> {
   const fullDir = subdir === '' ? dir : `${dir}/${subdir}`
   const absDir = `${root}/files/${fullDir}`
 
@@ -235,6 +262,10 @@ async function browse(filesArray: File_[], dir: Dir, subdir: string, domain: str
   }
 }
 
+/**
+ * Get the type of a file based on its path.
+ * @param path Path to the file.
+ */
 async function getType(path: string): Promise<'FOLDER' | 'ASSET' | 'LIBRARY' | 'MOD' | 'CONFIG' | 'BOOTSTRAP' | 'BACKGROUND' | 'IMAGE' | 'OTHER'> {
   if ((await fs.stat(path)).isDirectory()) return 'FOLDER'
   if (path.includes('assets')) return 'ASSET'
@@ -247,9 +278,13 @@ async function getType(path: string): Promise<'FOLDER' | 'ASSET' | 'LIBRARY' | '
   return 'OTHER'
 }
 
-async function getFileSha1(filePath: string): Promise<string> {
+/**
+ * Get the SHA-1 hash of a file. This is used to check if a file has changed without having to read the entire file content.
+ * @param path Path to the file.
+ */
+async function getFileSha1(path: string): Promise<string> {
   const hash = crypto.createHash('sha1')
-  const stream = createReadStream(filePath)
+  const stream = createReadStream(path)
 
   return new Promise((resolve, reject) => {
     stream.on('data', (chunk) => hash.update(chunk))
@@ -257,4 +292,3 @@ async function getFileSha1(filePath: string): Promise<string> {
     stream.on('error', reject)
   })
 }
-

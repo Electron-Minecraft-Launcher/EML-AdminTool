@@ -7,7 +7,7 @@ import type { RequestEvent } from '@sveltejs/kit'
  * @param status The [HTTP status code](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses). Must be in the range 400-599.
  * @param data Data associated with the failure (e.g. validation errors).
  */
-export function fail(event: RequestEvent, status: number, data?: Record<string, unknown>) {
+export function fail(event: RequestEvent, status: number, data?: Record<string, unknown>): ReturnType<typeof svelteFail> {
   event.locals.logStatus = status
 
   return svelteFail(status, data ?? {})

@@ -11,7 +11,7 @@ type CallActionOptions = {
   notify?: boolean
 }
 
-export async function callAction({ url, action, formData, apply = true, notify = true }: CallActionOptions, $l: typeof en) {
+export async function callAction({ url, action, formData, apply = true, notify = true }: CallActionOptions, $l: typeof en): Promise<any> {
   let response: Response
   try {
     response = await fetch(`${url}?/${action}`, { method: 'POST', body: formData })

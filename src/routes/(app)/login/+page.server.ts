@@ -18,7 +18,7 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
   login: async (event) => {
-    await sleep(1000) // Prevent brute-force attacks by adding a delay
+    await sleep(1000) // prevent brute-force attacks by adding a delay
 
     const form = await event.request.formData()
 

@@ -11,6 +11,7 @@
   import EditFileModal from '../modals/EditFileModal.svelte'
   import { callAction } from '$lib/utils/call'
   import { addNotification } from '$lib/stores/notifications'
+  import { uploader } from '$lib/stores/upload.svelte'
 
   interface Props {
     currentPath: string
@@ -44,21 +45,58 @@
   })
 
   async function uploadItems(e: Event) {
-    ready = false
     const target = e.target as HTMLInputElement
     if (!target.files || target.files.length === 0) return
 
-    const formData = new FormData()
-    formData.set('/action', 'uploadFiles')
-    formData.set('current-path', currentPath)
-    for (const file of target.files ?? []) formData.append('files', file)
+    const filesArray = Array.from(target.files)
 
-    files = (await callAction({ url: '/dashboard/files-updater', action: 'uploadFiles', formData }, $l)).data.files as File_[]
-    folderUpload.value = ''
-    folderUpload.files = null
-    filesUpload.value = ''
-    filesUpload.files = null
-    ready = true
+    const optimisticFolders: File_[] = []
+
+    filesArray.forEach((file) => {
+      const relativePath = file.webkitRelativePath || file.name
+      const parts = relativePath.split('/')
+      parts.pop()
+
+      let buildPath = currentPath
+
+      parts.forEach((folderName) => {
+        const alreadyExists =
+          files.some((f) => f.type === 'FOLDER' && f.path === buildPath && f.name === folderName) ||
+          optimisticFolders.some((f) => f.type === 'FOLDER' && f.path === buildPath && f.name === folderName)
+
+        if (!alreadyExists) {
+          optimisticFolders.push({
+            name: folderName,
+            path: buildPath,
+            type: 'FOLDER',
+            size: 0,
+            sha1: '',
+            url: ''
+          })
+        }
+        buildPath += `${folderName}/`
+      })
+    })
+
+    if (optimisticFolders.length > 0) {
+      files = [...files, ...optimisticFolders]
+    }
+
+    uploader.startUpload(filesArray, currentPath, (newFile: File_) => {
+      files = [
+        ...files.filter(f => f.name !== newFile.name || f.path !== newFile.path), 
+        newFile
+      ]
+    })
+
+    if (folderUpload) {
+      folderUpload.value = ''
+      folderUpload.files = null
+    }
+    if (filesUpload) {
+      filesUpload.value = ''
+      filesUpload.files = null
+    }
   }
 
   async function openItem(file: File_) {
@@ -92,6 +130,7 @@
       const a = document.createElement('a')
       a.href = downloadUrl
       a.download = file.name
+      console.log(file.name)
       a.click()
       window.URL.revokeObjectURL(downloadUrl)
       selectedItems = [file]

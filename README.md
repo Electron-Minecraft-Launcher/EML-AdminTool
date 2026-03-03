@@ -20,18 +20,18 @@
 
 ## Features
 
-* **Files Updater**: Update your Minecraft files and loader (Vanilla, Forge or Fabric).
-* **Bootstraps**: Auto-update your Minecraft Launcher.
-* **Maintenance**: Manage your Minecraft Launcher.
-* **News**: Manage your Minecraft Launcher news.
-* **Background**: Manage your Minecraft Launcher background.
-* **Stats**: See stats about your Launcher.
-* The Admin of the server can manage the users permissions.
-* And more...
+- **Files Updater**: Update your Minecraft files and loader (Vanilla, Forge or Fabric).
+- **Bootstraps**: Auto-update your Minecraft Launcher.
+- **Maintenance**: Manage your Minecraft Launcher.
+- **News**: Manage your Minecraft Launcher news.
+- **Background**: Manage your Minecraft Launcher background.
+- **Stats**: See stats about your Launcher.
+- The Admin of the server can manage the users permissions.
+- And more...
 
 ## Installation
 
-Please follow [this guide](https://emlproject.pages.dev/docs/). 
+Please follow [this guide](https://emlproject.pages.dev/docs/).
 
 ### If you won't use a VPS
 
@@ -39,53 +39,13 @@ You can download the previous major version of the [EML AdminTool](https://githu
 
 ## Contributing
 
-### Translation
-
-You can help to translate EML AdminTool!
-
-The languages files are [here](./client/src/lib/locales/). You can create another file with your translation. Please make sure to provide a correct translation!
-
-Then, you can submit your translation file as an [issue](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues/new?template=translation.md), by using the *Language* issue template. Your file needs to be checked and approved by two other persons.
-
-### Development
-
-Install [Node.js](https://nodejs.org/en/download/package-manager) and [Docker](https://www.docker.com/get-started) [^3].
-
-Then, download the code and run the command:
-```bash
-cd EML-AdminTool
-npm i
-```
-
-You can now start the development server:
-```bash
-cd docker
-docker-compose -f docker-compose.dev.yml up
-```
-
-The application is accessible at [http://localhost:5173](http://localhost:5173). You can also access pgAdmin at [https://localhost:5050](http://localhost:5050).
-
-<details>
-<summary>How to connect to pgAdmin?</summary>
-To connect to pgAdmin, you can use the following information:
-
-* **Email**: `admintool@eml.com`
-* **Password**: `eml`
-
-Then, you can add a new server with the following information:
-* **Host**: `dbs`
-* **Port**: `5432`
-* **Username**: `eml`
-* **Password**: the value of `DATABASE_PASSWORD` in the `.env` file
-</details>
-
-You can now make pull requests!
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to contribute to this project.
 
 ## Important information
 
-* This repository contains a `.env` file. All the information in this file is fake (random strings), and will be replaced by the real information when you install EML AdminTool.
-* This Web software is under the `GNU AGPLv3` license; to get more information, please read the file `LICENSE`. It is legally obligatory to respect this license.
-* If you need some help, you can join [this Discord](https://discord.gg/YVB4k6HzAY).
+- This repository contains a `.env` file. All the information in this file is fake (random strings), and will be replaced by the real information when you install EML AdminTool.
+- This Web software is under the `GNU AGPLv3` license; to get more information, please read the file `LICENSE`. It is legally obligatory to respect this license.
+- If you need some help, you can join [this Discord](https://discord.gg/YVB4k6HzAY).
 
 <br>
 
