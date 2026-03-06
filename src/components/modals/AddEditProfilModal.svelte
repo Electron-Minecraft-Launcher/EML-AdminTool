@@ -2,21 +2,21 @@
   import { applyAction, enhance } from '$app/forms'
   import { l } from '$lib/stores/language'
   import { addNotification } from '$lib/stores/notifications'
-  import type { PageData, SubmitFunction } from '../../routes/(app)/dashboard/emlat-settings/$types'
+  import type { PageData, SubmitFunction } from '../../routes/(app)/dashboard/profils/$types'
   import ModalTemplate from './__ModalTemplate.svelte'
   import type { NotificationCode } from '$lib/utils/notifications'
   import LoadingSplash from '../layouts/LoadingSplash.svelte'
-  import type { Instance } from '@prisma/client'
+  import type { Profil } from '@prisma/client'
 
   interface Props {
     show: boolean
-    selectedInstanceId: string
+    selectedProfilId: string
     action: 'ADD' | 'EDIT'
     data: PageData
     scroll?: HTMLDivElement | null
   }
 
-  const emptyInstance: Instance = {
+  const emptyProfil: Profil = {
     id: '',
     name: '',
     slug: '',
@@ -28,25 +28,25 @@
     createdAt: new Date()
   }
 
-  let { show = $bindable(), selectedInstanceId = $bindable(), action, data, scroll = $bindable(null) }: Props = $props()
+  let { show = $bindable(), selectedProfilId = $bindable(), action, data, scroll = $bindable(null) }: Props = $props()
 
-  let selectedInstance = $state(data.instances.find((instance) => instance.id === selectedInstanceId) ?? emptyInstance)
-  let name = $state(selectedInstance.name)
+  let selectedProfil = $state(data.profils.find((profil) => profil.id === selectedProfilId) ?? emptyProfil)
+  let name = $state(selectedProfil.name)
   let slug = $derived.by(() => {
     return name
       .toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '')
   })
-  let ip = $state(selectedInstance.ip)
-  let port = $state(selectedInstance.port ?? 25565)
-  let tcpProtocol = $state(selectedInstance.tcpProtocol ?? 'modern')
+  let ip = $state(selectedProfil.ip)
+  let port = $state(selectedProfil.port ?? 25565)
+  let tcpProtocol = $state(selectedProfil.tcpProtocol ?? 'modern')
 
   let showLoader = $state(false)
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
     showLoader = true
-    formData.set('user-id', selectedInstanceId)
+    formData.set('user-id', selectedProfilId)
 
     return async ({ result, update }) => {
       await update({ reset: false })
@@ -69,18 +69,18 @@
     <LoadingSplash transparent />
   {/if}
 
-  <form method="POST" action="?/addEditInstance" use:enhance={enhanceForm}>
+  <form method="POST" action="?/addEditProfil" use:enhance={enhanceForm}>
     <h2>
-      {action === 'ADD' ? $l.dashboard.emlatSettings.instanceManagement.modal.addInstance : $l.dashboard.emlatSettings.instanceManagement.modal.title}
+      {action === 'ADD' ? $l.dashboard.emlatSettings.profilManagement.modal.addProfil : $l.dashboard.emlatSettings.profilManagement.modal.title}
     </h2>
 
     <div class="flex">
       <div>
-        <label for="name" style="margin-top: 0">{$l.dashboard.emlatSettings.instanceManagement.modal.instanceName}</label>
+        <label for="name" style="margin-top: 0">{$l.dashboard.emlatSettings.profilManagement.modal.profilName}</label>
         <input type="text" id="name" name="name" bind:value={name} />
       </div>
       <div>
-        <label for="slug" style="margin-top: 0">{$l.dashboard.emlatSettings.instanceManagement.modal.instanceSlug}</label>
+        <label for="slug" style="margin-top: 0">{$l.dashboard.emlatSettings.profilManagement.modal.profilSlug}</label>
         <input type="text" id="slug" name="slug" bind:value={slug} disabled />
       </div>
     </div>
@@ -88,23 +88,23 @@
     <div class="flex">
       <div style="display: flex; flex: 1; gap: 7px; align-items: flex-end">
         <div style="flex: 1">
-          <label for="ip">{$l.dashboard.emlatSettings.instanceManagement.modal.ip}</label>
+          <label for="ip">{$l.dashboard.emlatSettings.profilManagement.modal.ip}</label>
           <input type="text" id="ip" name="ip" bind:value={ip} />
         </div>
         <div style="width: 5px; flex: 0; align-self: self-end; margin-bottom: 10px">
           <p class="port-separator">:</p>
         </div>
         <div style="flex: 0.5">
-          <label for="port">{$l.dashboard.emlatSettings.instanceManagement.modal.port}</label>
+          <label for="port">{$l.dashboard.emlatSettings.profilManagement.modal.port}</label>
           <input type="number" id="port" name="port" bind:value={port} min="1" max="65535" />
         </div>
       </div>
       <div style="flex: 0.5;">
         <label for="mc-version"
-          >{$l.dashboard.emlatSettings.instanceManagement.modal.minecraftVersion}&nbsp;&nbsp;<i
+          >{$l.dashboard.emlatSettings.profilManagement.modal.minecraftVersion}&nbsp;&nbsp;<i
             class="fa-solid fa-circle-question"
             style="cursor: help"
-            title={$l.dashboard.emlatSettings.instanceManagement.modal.minecraftVersionInfo}
+            title={$l.dashboard.emlatSettings.profilManagement.modal.minecraftVersionInfo}
           ></i></label
         >
         <select id="mc-version" name="minecraftVersion" bind:value={tcpProtocol} style="width: 100%">

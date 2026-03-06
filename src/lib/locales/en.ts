@@ -36,8 +36,8 @@ export default {
     [NotificationCode.EMLAT_UPDATE_FAILED]: `Failed to update EML AdminTool. Please see the logs for more details.`,
     [NotificationCode.EMLAT_RESET_FAILED]: `Failed to reset EML AdminTool. Please see the logs for more details.`,
 
-    [NotificationCode.INSTANCE_NAME_TOO_SHORT]: `Instance name must be at least 1 character long.`,
-    [NotificationCode.INSTANCE_NAME_TOO_LONG]: `Instance name must be at most 64 characters long.`,
+    [NotificationCode.PROFIL_NAME_TOO_SHORT]: `Profil name must be at least 1 character long.`,
+    [NotificationCode.PROFIL_NAME_TOO_LONG]: `Profil name must be at most 64 characters long.`,
 
     [NotificationCode.EDIT_USER_USERNAME_TOO_SHORT]: `Username must be at least 2 characters long.`,
     [NotificationCode.EDIT_USER_USERNAME_TOO_LONG]: `Username must be at most 64 characters long.`,
@@ -136,6 +136,7 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
   },
   leftPanel: {
     settings: `Settings`,
+    profils: `Profils`,
     features: `Features`,
     logout: `Log out`
   },
@@ -184,20 +185,20 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           permissions: `Permissions`
         }
       },
-      instanceManagement: {
-        title: `Instance management`,
-        instances: `Instances`,
-        defaultInstance: `Default instance`,
-        instanceName: `Instance name`,
-        instanceSlug: `Instance ID`,
+      profilManagement: {
+        title: `Profil management`,
+        profils: `Profils`,
+        defaultProfil: `Default profil`,
+        profilName: `Profil name`,
+        profilSlug: `Profil ID`,
         ip: `IP address`,
         port: `Port`,
         minecraftVersion: `Minecraft version`,
         modal: {
-          title: `Edit instance information`,
-          addInstance: `Add instance`,
-          instanceName: `Instance name`,
-          instanceSlug: `Instance ID`,
+          title: `Edit profil information`,
+          addProfil: `Add profil`,
+          profilName: `Profil name`,
+          profilSlug: `Profil ID`,
           ip: `IP address or domain name`,
           port: `Port`,
           minecraftVersion: `Minecraft version`,
@@ -237,6 +238,29 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
         }
       }
     },
+    profils: {
+      title: `Profils`,
+      profilManagement: {
+        title: `Profil management`,
+        profils: `Profils`,
+        defaultProfil: `Default profil`,
+        profilName: `Profil name`,
+        profilSlug: `Profil ID`,
+        ip: `IP address`,
+        port: `Port`,
+        minecraftVersion: `Minecraft version`,
+        modal: {
+          title: `Edit profil information`,
+          addProfil: `Add profil`,
+          profilName: `Profil name`,
+          profilSlug: `Profil ID`,
+          ip: `IP address or domain name`,
+          port: `Port`,
+          minecraftVersion: `Minecraft version`,
+          minecraftVersionInfo: `If your Minecraft server is compatible with multiple Minecraft versions, you should choose the highest Minecraft version it is compatible with.`
+        }
+      }
+    },
     account: {
       title: `Account settings`,
       info: {
@@ -266,4 +290,3 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
     }
   }
 }
-

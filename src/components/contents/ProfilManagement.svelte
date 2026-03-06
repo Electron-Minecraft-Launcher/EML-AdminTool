@@ -4,18 +4,18 @@
   import { addNotification } from '$lib/stores/notifications'
   import type { NotificationCode } from '$lib/utils/notifications'
   import type { SubmitFunction } from '@sveltejs/kit'
-  import type { PageData } from '../../routes/(app)/dashboard/emlat-settings/$types'
-  import AddEditInstanceModal from '../modals/AddEditInstanceModal.svelte'
+  import type { PageData } from '../../routes/(app)/dashboard/profils/$types'
+  import AddEditProfilModal from '../modals/AddEditProfilModal.svelte'
 
   interface Props {
-    selectedInstanceId: string
+    selectedProfilId: string
     data: PageData
   }
 
-  let { selectedInstanceId = $bindable(), data }: Props = $props()
+  let { selectedProfilId = $bindable(), data }: Props = $props()
 
-  let showEditInstanceModal = $state(false)
-  let selectedInstance = $derived.by(() => data.instances.find((instance) => instance.id === selectedInstanceId))!
+  let showEditProfilModal = $state(false)
+  let selectedProfil = $derived.by(() => data.profils.find((profil) => profil.id === selectedProfilId))!
   let action: 'ADD' | 'EDIT' = $state('ADD')
 
   const enhanceForm: SubmitFunction = ({ action, formData, cancel }) => {
@@ -30,7 +30,7 @@
       return
     }
 
-    formData.set('user-id', selectedInstanceId)
+    formData.set('user-id', selectedProfilId)
     return async ({ result, update }) => {
       await update({ reset: false })
       if (result.type === 'failure') {
@@ -38,7 +38,7 @@
         addNotification('ERROR', message)
       } else if (result.type === 'success') {
         if (action.search === '?/deleteUserForever') {
-          selectedInstanceId = data.instances[0]?.id ?? ''
+          selectedProfilId = data.profils[0]?.id ?? ''
         }
       }
 
@@ -47,49 +47,49 @@
   }
 </script>
 
-{#if showEditInstanceModal}
-  <AddEditInstanceModal bind:show={showEditInstanceModal} bind:selectedInstanceId={selectedInstanceId} {action} {data} />
+{#if showEditProfilModal}
+  <AddEditProfilModal bind:show={showEditProfilModal} bind:selectedProfilId={selectedProfilId} {action} {data} />
 {/if}
 
-{#if !selectedInstance.isDefault}
-  <form method="POST" action="?/deleteInstance" use:enhance={enhanceForm}>
-    <button type="submit" class="secondary right refuse" aria-label="Delete instance"><i class="fa-solid fa-trash"></i></button>
+{#if !selectedProfil.isDefault}
+  <form method="POST" action="?/deleteProfil" use:enhance={enhanceForm}>
+    <button type="submit" class="secondary right refuse" aria-label="Delete profil"><i class="fa-solid fa-trash"></i></button>
   </form>
 {/if}
 <button
   class="secondary right"
   onclick={() => {
-    showEditInstanceModal = true
+    showEditProfilModal = true
     action = 'EDIT'
   }}
-  aria-label="Edit instance"
+  aria-label="Edit profil"
 >
   <i class="fa-solid fa-pen"></i>
 </button>
 
 <div class="info">
-  <h4 style="margin-bottom: 0">{selectedInstance.name}{@html selectedInstance.isDefault ? ' (default instance)' : ''}</h4>
+  <h4 style="margin-bottom: 0">{selectedProfil.name}{@html selectedProfil.isDefault ? ' (default profil)' : ''}</h4>
 
   <div class="container" style="margin-top: 0;">
     <div>
-      <p class="label">{$l.dashboard.emlatSettings.instanceManagement.instanceName}</p>
-      <p>{selectedInstance.name}</p>
+      <p class="label">{$l.dashboard.emlatSettings.profilManagement.profilName}</p>
+      <p>{selectedProfil.name}</p>
     </div>
     <div>
-      <p class="label">{$l.dashboard.emlatSettings.instanceManagement.instanceSlug}</p>
-      <p>{selectedInstance.slug}</p>
+      <p class="label">{$l.dashboard.emlatSettings.profilManagement.profilSlug}</p>
+      <p>{selectedProfil.slug}</p>
     </div>
     <div class="flex">
       <div class="ip">
-        <p class="label">{$l.dashboard.emlatSettings.instanceManagement.ip}</p>
-        <p>{selectedInstance.ip ?? '-'}</p>
+        <p class="label">{$l.dashboard.emlatSettings.profilManagement.ip}</p>
+        <p>{selectedProfil.ip ?? '-'}</p>
       </div>
       <div class="separator">
         <p>:</p>
       </div>
       <div class="port">
-        <p class="label">{$l.dashboard.emlatSettings.instanceManagement.port}</p>
-        <p>{selectedInstance.port ?? '-'}</p>
+        <p class="label">{$l.dashboard.emlatSettings.profilManagement.port}</p>
+        <p>{selectedProfil.port ?? '-'}</p>
       </div>
     </div>
   </div>

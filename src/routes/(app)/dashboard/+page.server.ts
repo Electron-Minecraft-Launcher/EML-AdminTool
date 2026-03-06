@@ -6,7 +6,7 @@ import { getServerStatus, type ServerStatus as ServerStatus_ } from '$lib/server
 import { db } from '$lib/server/db'
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import type { Instance } from '@prisma/client'
+import type { Profil } from '@prisma/client'
 
 type ServerStatus = ServerStatus_ & { name: string }
 type LauncherStatus = {
@@ -19,16 +19,16 @@ export const load = (async (event) => {
   let timeInfo = { time: Date.now(), zone: Intl.DateTimeFormat().resolvedOptions().timeZone }
   let serverStatus: ServerStatus | null = null
   let launcherStatus: LauncherStatus | null = null
-  let instance: Instance | null = null
+  let profil: Profil | null = null
   let maintenance
   let bootstraps
 
   try {
     try {
-      instance = await db.instance.findFirst({ where: { isDefault: true } })
+      profil = await db.profil.findFirst({ where: { isDefault: true } })
     } catch (err) {
-      console.error('Failed to load default instance:', err)
-      throw new ServerError('Failed to load default instance', err, NotificationCode.DATABASE_ERROR, 500)
+      console.error('Failed to load default profil:', err)
+      throw new ServerError('Failed to load default profil', err, NotificationCode.DATABASE_ERROR, 500)
     }
 
     try {
@@ -46,16 +46,16 @@ export const load = (async (event) => {
     }
 
     const pingServer = async () => {
-      if (instance?.ip && instance?.port && instance?.tcpProtocol) {
+      if (profil?.ip && profil?.port && profil?.tcpProtocol) {
         try {
           return {
-            ...(await getServerStatus(instance.ip, instance.port, instance.tcpProtocol as 'modern' | '1.6' | '1.4-1.5')),
-            name: instance.name
+            ...(await getServerStatus(profil.ip, profil.port, profil.tcpProtocol as 'modern' | '1.6' | '1.4-1.5')),
+            name: profil.name
           }
         } catch (err) {
           console.error('Failed to get server status:', err)
           return {
-            name: instance.name,
+            name: profil.name,
             ping: Infinity,
             version: '',
             motd: '',
@@ -82,9 +82,9 @@ export const load = (async (event) => {
       }
     }
 
-    if (instance?.ip && instance?.port && instance?.tcpProtocol) {
+    if (profil?.ip && profil?.port && profil?.tcpProtocol) {
       serverStatus = {
-        name: instance?.name ?? 'N/A',
+        name: profil?.name ?? 'N/A',
         ping: -1,
         version: 'N/A',
         motd: 'N/A',

@@ -33,9 +33,9 @@ export const editEMLATSchema = z.object({
   regeneratePin: z.boolean()
 })
 
-export const editInstanceSchema = z.object({
-  instanceId: z.string(),
-  name: z.string().min(1, NotificationCode.INSTANCE_NAME_TOO_SHORT).max(64, NotificationCode.INSTANCE_NAME_TOO_LONG),
+export const editProfilSchema = z.object({
+  profilId: z.string(),
+  name: z.string().min(1, NotificationCode.PROFIL_NAME_TOO_SHORT).max(64, NotificationCode.PROFIL_NAME_TOO_LONG),
   ip: z.string().optional(),
   port: z.number().optional(),
   tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3']).optional()

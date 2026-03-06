@@ -6,7 +6,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getOS, getStorage } from '$lib/server/vps'
 import { getUpdate, update } from '$lib/server/update'
-import { editEMLATSchema, editInstanceSchema, editUserSchema } from '$lib/utils/validations'
+import { editEMLATSchema, editProfilSchema, editUserSchema } from '$lib/utils/validations'
 import { editEMLAT } from '$lib/server/emlat'
 import { generateRandomPin, getPin } from '$lib/server/pin'
 import type { LanguageCode } from '$lib/stores/language'
@@ -26,7 +26,7 @@ export const load = (async (event) => {
   }
 
   try {
-    let environment, instances, users, vps, update, minecraftVersions
+    let environment, profils, users, vps, update, minecraftVersions
 
     try {
       environment = (await db.environment.findFirst())!
@@ -36,10 +36,10 @@ export const load = (async (event) => {
     }
 
     try {
-      instances = await db.instance.findMany({ orderBy: { name: 'asc' } })
+      profils = await db.profil.findMany({ orderBy: { name: 'asc' } })
     } catch (err) {
-      console.error('Failed to load instances:', err)
-      throw new ServerError('Failed to load instances', err, NotificationCode.DATABASE_ERROR, 500)
+      console.error('Failed to load profils:', err)
+      throw new ServerError('Failed to load profils', err, NotificationCode.DATABASE_ERROR, 500)
     }
 
     try {
@@ -64,7 +64,7 @@ export const load = (async (event) => {
 
     minecraftVersions = await getVanillaVersions()
 
-    return { environment, instances, users, vps, update, minecraftVersions }
+    return { environment, profils, users, vps, update, minecraftVersions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -114,7 +114,7 @@ export const actions: Actions = {
     }
   },
 
-  editInstance: async (event) => {
+  editProfil: async (event) => {
     const user = event.locals.user
 
     if (!user?.isAdmin) {
@@ -124,28 +124,28 @@ export const actions: Actions = {
     const form = await event.request.formData()
 
     const raw = {
-      instanceId: form.get('instance-id'),
+      profilId: form.get('profil-id'),
       name: form.get('name'),
       ip: form.get('ip'),
       port: form.get('port'),
       tcpProtocol: form.get('tcp-protocol')
     }
 
-    const result = editInstanceSchema.safeParse(raw)
+    const result = editProfilSchema.safeParse(raw)
 
     if (!result.success) {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { instanceId, name, ip, port, tcpProtocol } = result.data
+    const { profilId, name, ip, port, tcpProtocol } = result.data
     const slug = name
       .toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '')
 
       try {
-      await db.instance.update({
-        where: { id: instanceId },
+      await db.profil.update({
+        where: { id: profilId },
         data: {
           name,
           slug,
