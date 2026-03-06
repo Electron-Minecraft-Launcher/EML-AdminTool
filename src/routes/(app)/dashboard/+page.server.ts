@@ -6,7 +6,7 @@ import { getServerStatus, type ServerStatus as ServerStatus_ } from '$lib/server
 import { db } from '$lib/server/db'
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import type { Profil } from '@prisma/client'
+import type { Profile } from '@prisma/client'
 
 type ServerStatus = ServerStatus_ & { name: string }
 type LauncherStatus = {
@@ -19,16 +19,16 @@ export const load = (async (event) => {
   let timeInfo = { time: Date.now(), zone: Intl.DateTimeFormat().resolvedOptions().timeZone }
   let serverStatus: ServerStatus | null = null
   let launcherStatus: LauncherStatus | null = null
-  let profil: Profil | null = null
+  let profile: Profile | null = null
   let maintenance
   let bootstraps
 
   try {
     try {
-      profil = await db.profil.findFirst({ where: { isDefault: true } })
+      profile = await db.profile.findFirst({ where: { isDefault: true } })
     } catch (err) {
-      console.error('Failed to load default profil:', err)
-      throw new ServerError('Failed to load default profil', err, NotificationCode.DATABASE_ERROR, 500)
+      console.error('Failed to load default profile:', err)
+      throw new ServerError('Failed to load default profile', err, NotificationCode.DATABASE_ERROR, 500)
     }
 
     try {
@@ -46,16 +46,16 @@ export const load = (async (event) => {
     }
 
     const pingServer = async () => {
-      if (profil?.ip && profil?.port && profil?.tcpProtocol) {
+      if (profile?.ip && profile?.port && profile?.tcpProtocol) {
         try {
           return {
-            ...(await getServerStatus(profil.ip, profil.port, profil.tcpProtocol as 'modern' | '1.6' | '1.4-1.5')),
-            name: profil.name
+            ...(await getServerStatus(profile.ip, profile.port, profile.tcpProtocol as 'modern' | '1.6' | '1.4-1.5')),
+            name: profile.name
           }
         } catch (err) {
           console.error('Failed to get server status:', err)
           return {
-            name: profil.name,
+            name: profile.name,
             ping: Infinity,
             version: '',
             motd: '',
@@ -82,9 +82,9 @@ export const load = (async (event) => {
       }
     }
 
-    if (profil?.ip && profil?.port && profil?.tcpProtocol) {
+    if (profile?.ip && profile?.port && profile?.tcpProtocol) {
       serverStatus = {
-        name: profil?.name ?? 'N/A',
+        name: profile?.name ?? 'N/A',
         ping: -1,
         version: 'N/A',
         motd: 'N/A',

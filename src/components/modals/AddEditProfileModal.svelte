@@ -2,51 +2,57 @@
   import { applyAction, enhance } from '$app/forms'
   import { l } from '$lib/stores/language'
   import { addNotification } from '$lib/stores/notifications'
-  import type { PageData, SubmitFunction } from '../../routes/(app)/dashboard/profils/$types'
+  import type { PageData, SubmitFunction } from '../../routes/(app)/dashboard/profiles/$types'
   import ModalTemplate from './__ModalTemplate.svelte'
   import type { NotificationCode } from '$lib/utils/notifications'
   import LoadingSplash from '../layouts/LoadingSplash.svelte'
-  import type { Profil } from '@prisma/client'
+  import type { Profile } from '@prisma/client'
 
   interface Props {
     show: boolean
-    selectedProfilId: string
+    selectedProfileId: string
     action: 'ADD' | 'EDIT'
     data: PageData
     scroll?: HTMLDivElement | null
   }
 
-  const emptyProfil: Profil = {
+  const emptyProfile: Profile = {
     id: '',
     name: '',
     slug: '',
     isDefault: false,
     ip: '',
-    port: 25565,
+    port: null,
     tcpProtocol: '',
     updatedAt: new Date(),
     createdAt: new Date()
   }
 
-  let { show = $bindable(), selectedProfilId = $bindable(), action, data, scroll = $bindable(null) }: Props = $props()
+  let { show = $bindable(), selectedProfileId = $bindable(), action, data, scroll = $bindable(null) }: Props = $props()
 
-  let selectedProfil = $state(data.profils.find((profil) => profil.id === selectedProfilId) ?? emptyProfil)
-  let name = $state(selectedProfil.name)
+  let selectedProfile = $state(data.profiles.find((profile) => profile.id === selectedProfileId) ?? emptyProfile)
+  let name = $state(selectedProfile.name)
   let slug = $derived.by(() => {
     return name
       .toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '')
   })
-  let ip = $state(selectedProfil.ip)
-  let port = $state(selectedProfil.port ?? 25565)
-  let tcpProtocol = $state(selectedProfil.tcpProtocol ?? 'modern')
+  let ip = $state(selectedProfile.ip)
+  let port = $state(selectedProfile.port)
+  let tcpProtocol = $state(selectedProfile.tcpProtocol ?? 'modern')
+
+  let disabled = $derived.by(() => {
+    if (data.profiles.some((profile) => (profile.slug === slug || profile.name === name) && profile.id !== selectedProfileId)) {
+      return true
+    }
+  })
 
   let showLoader = $state(false)
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
     showLoader = true
-    formData.set('user-id', selectedProfilId)
+    formData.set('profile-id', selectedProfileId)
 
     return async ({ result, update }) => {
       await update({ reset: false })
@@ -69,18 +75,18 @@
     <LoadingSplash transparent />
   {/if}
 
-  <form method="POST" action="?/addEditProfil" use:enhance={enhanceForm}>
+  <form method="POST" action="?/addEditProfile" use:enhance={enhanceForm}>
     <h2>
-      {action === 'ADD' ? $l.dashboard.emlatSettings.profilManagement.modal.addProfil : $l.dashboard.emlatSettings.profilManagement.modal.title}
+      {action === 'ADD' ? $l.dashboard.emlatSettings.profileManagement.modal.addProfile : $l.dashboard.emlatSettings.profileManagement.modal.title}
     </h2>
 
     <div class="flex">
       <div>
-        <label for="name" style="margin-top: 0">{$l.dashboard.emlatSettings.profilManagement.modal.profilName}</label>
+        <label for="name" style="margin-top: 0">{$l.dashboard.emlatSettings.profileManagement.modal.profileName}</label>
         <input type="text" id="name" name="name" bind:value={name} />
       </div>
       <div>
-        <label for="slug" style="margin-top: 0">{$l.dashboard.emlatSettings.profilManagement.modal.profilSlug}</label>
+        <label for="slug" style="margin-top: 0">{$l.dashboard.emlatSettings.profileManagement.modal.profileSlug}</label>
         <input type="text" id="slug" name="slug" bind:value={slug} disabled />
       </div>
     </div>
@@ -88,30 +94,31 @@
     <div class="flex">
       <div style="display: flex; flex: 1; gap: 7px; align-items: flex-end">
         <div style="flex: 1">
-          <label for="ip">{$l.dashboard.emlatSettings.profilManagement.modal.ip}</label>
+          <label for="ip">{$l.dashboard.emlatSettings.profileManagement.modal.ip}</label>
           <input type="text" id="ip" name="ip" bind:value={ip} />
         </div>
         <div style="width: 5px; flex: 0; align-self: self-end; margin-bottom: 10px">
           <p class="port-separator">:</p>
         </div>
         <div style="flex: 0.5">
-          <label for="port">{$l.dashboard.emlatSettings.profilManagement.modal.port}</label>
-          <input type="number" id="port" name="port" bind:value={port} min="1" max="65535" />
+          <label for="port">{$l.dashboard.emlatSettings.profileManagement.modal.port}</label>
+          <input type="number" id="port" name="port" bind:value={port} min="1" max="65535" placeholder="25565"/>
         </div>
       </div>
       <div style="flex: 0.5;">
-        <label for="mc-version"
-          >{$l.dashboard.emlatSettings.profilManagement.modal.minecraftVersion}&nbsp;&nbsp;<i
+        <label for="tcp-protocol"
+          >{$l.dashboard.emlatSettings.profileManagement.modal.minecraftVersion}&nbsp;&nbsp;<i
             class="fa-solid fa-circle-question"
             style="cursor: help"
-            title={$l.dashboard.emlatSettings.profilManagement.modal.minecraftVersionInfo}
+            title={$l.dashboard.emlatSettings.profileManagement.modal.minecraftVersionInfo}
           ></i></label
         >
-        <select id="mc-version" name="minecraftVersion" bind:value={tcpProtocol} style="width: 100%">
+        <select id="tcp-protocol" name="tcp-protocol" bind:value={tcpProtocol} style="width: 100%">
           <option value="modern">Modern (1.7+)</option>
           <option value="1.6">Legacy (1.6.x)</option>
           <option value="1.4-1.5">Legacy (1.4.x to 1.5.x)</option>
           <option value="beta1.8-1.3">Legacy (beta 1.8 to 1.3)</option>
+        </select>
       </div>
     </div>
 

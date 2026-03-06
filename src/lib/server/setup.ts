@@ -176,7 +176,7 @@ export async function setLanguage(language: string) {
   console.log('Language set successfully to:', language)
 }
 
-export async function setDefaultProfil(name: string) {
+export async function setDefaultProfile(name: string) {
   console.log('\n------------ SETTING DEFAULT PROFIL ------------\n')
   resetProcessEnv()
 
@@ -190,18 +190,18 @@ export async function setDefaultProfil(name: string) {
 
   try {
     await client.query(
-      `INSERT INTO "Profil" ("id", "name", "isDefault", "slug", "createdAt", "updatedAt") VALUES ($1, $2, true, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
+      `INSERT INTO "Profile" ("id", "name", "isDefault", "slug", "createdAt", "updatedAt") VALUES ($1, $2, true, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
       [1, name, slug]
     )
   } catch (err) {
-    console.error('Error setting default profil:', err)
+    console.error('Error setting default profile:', err)
     await client.end()
-    throw new ServerError('Failed to set default profil', err, NotificationCode.DATABASE_ERROR, 500)
+    throw new ServerError('Failed to set default profile', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
   await client.end()
 
-  console.log('Default profil set successfully.')
+  console.log('Default profile set successfully.')
 }
 
 export async function markAsConfigured() {

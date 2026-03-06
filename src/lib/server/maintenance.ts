@@ -13,7 +13,6 @@ export async function getMaintenance() {
   }
 }
 
-
 export async function updateMaintenance(maintenance: Maintenance) {
   let existingMaintenance
   try {
@@ -34,5 +33,3 @@ export async function updateMaintenance(maintenance: Maintenance) {
     throw new ServerError('Failed to update maintenance', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
-
-

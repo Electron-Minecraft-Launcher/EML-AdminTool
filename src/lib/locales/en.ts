@@ -36,8 +36,11 @@ export default {
     [NotificationCode.EMLAT_UPDATE_FAILED]: `Failed to update EML AdminTool. Please see the logs for more details.`,
     [NotificationCode.EMLAT_RESET_FAILED]: `Failed to reset EML AdminTool. Please see the logs for more details.`,
 
-    [NotificationCode.PROFIL_NAME_TOO_SHORT]: `Profil name must be at least 1 character long.`,
-    [NotificationCode.PROFIL_NAME_TOO_LONG]: `Profil name must be at most 64 characters long.`,
+    [NotificationCode.PROFIL_NAME_TOO_SHORT]: `Profile name must be at least 1 character long.`,
+    [NotificationCode.PROFIL_NAME_TOO_LONG]: `Profile name must be at most 64 characters long.`,
+    [NotificationCode.PROFIL_ALREADY_EXISTS]: `Profile with this ID already exists.`,
+    [NotificationCode.PROFIL_PORT_WITHOUT_IP]: `Port cannot be specified without an IP address.`,
+    [NotificationCode.PROFIL_INVALID_TCP_PROTOCOL]: `TCP protocol must be one of the following: modern, 1.6, 1.4-1.5, beta1.8-1.3.`,
 
     [NotificationCode.EDIT_USER_USERNAME_TOO_SHORT]: `Username must be at least 2 characters long.`,
     [NotificationCode.EDIT_USER_USERNAME_TOO_LONG]: `Username must be at most 64 characters long.`,
@@ -136,7 +139,7 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
   },
   leftPanel: {
     settings: `Settings`,
-    profils: `Profils`,
+    profiles: `Profiles`,
     features: `Features`,
     logout: `Log out`
   },
@@ -185,20 +188,20 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           permissions: `Permissions`
         }
       },
-      profilManagement: {
-        title: `Profil management`,
-        profils: `Profils`,
-        defaultProfil: `Default profil`,
-        profilName: `Profil name`,
-        profilSlug: `Profil ID`,
+      profileManagement: {
+        title: `Profile management`,
+        profiles: `Profiles`,
+        defaultProfile: `Default profile`,
+        profileName: `Profile name`,
+        profileSlug: `Profile ID`,
         ip: `IP address`,
         port: `Port`,
         minecraftVersion: `Minecraft version`,
         modal: {
-          title: `Edit profil information`,
-          addProfil: `Add profil`,
-          profilName: `Profil name`,
-          profilSlug: `Profil ID`,
+          title: `Edit profile information`,
+          addProfile: `Add profile`,
+          profileName: `Profile name`,
+          profileSlug: `Profile ID`,
           ip: `IP address or domain name`,
           port: `Port`,
           minecraftVersion: `Minecraft version`,
@@ -238,22 +241,22 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
         }
       }
     },
-    profils: {
-      title: `Profils`,
-      profilManagement: {
-        title: `Profil management`,
-        profils: `Profils`,
-        defaultProfil: `Default profil`,
-        profilName: `Profil name`,
-        profilSlug: `Profil ID`,
+    profiles: {
+      title: `Profiles`,
+      profileManagement: {
+        title: `Profile management`,
+        profiles: `Profiles`,
+        defaultProfile: `Default profile`,
+        profileName: `Profile name`,
+        profileSlug: `Profile ID`,
         ip: `IP address`,
         port: `Port`,
         minecraftVersion: `Minecraft version`,
         modal: {
-          title: `Edit profil information`,
-          addProfil: `Add profil`,
-          profilName: `Profil name`,
-          profilSlug: `Profil ID`,
+          title: `Edit profile information`,
+          addProfile: `Add profile`,
+          profileName: `Profile name`,
+          profileSlug: `Profile ID`,
           ip: `IP address or domain name`,
           port: `Port`,
           minecraftVersion: `Minecraft version`,

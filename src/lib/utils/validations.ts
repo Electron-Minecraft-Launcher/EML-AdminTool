@@ -33,13 +33,22 @@ export const editEMLATSchema = z.object({
   regeneratePin: z.boolean()
 })
 
-export const editProfilSchema = z.object({
-  profilId: z.string(),
-  name: z.string().min(1, NotificationCode.PROFIL_NAME_TOO_SHORT).max(64, NotificationCode.PROFIL_NAME_TOO_LONG),
-  ip: z.string().optional(),
-  port: z.number().optional(),
-  tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3']).optional()
-})
+export const profileSchema = z
+  .object({
+    profileId: z.string().optional(),
+    name: z.string().min(1, NotificationCode.PROFIL_NAME_TOO_SHORT).max(64, NotificationCode.PROFIL_NAME_TOO_LONG),
+    ip: z.string().optional(),
+    port: z.number().optional(),
+    tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFIL_INVALID_TCP_PROTOCOL).optional()
+  })
+  .transform((data) => {
+    if (data.ip && !data.port) {
+      data.port = 25565
+    }
+    console.log(data)
+    return data
+  })
+  .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFIL_PORT_WITHOUT_IP, path: ['port'] })
 
 export const editUserSchema = z.object({
   userId: z.string(),
@@ -226,4 +235,3 @@ export const backgroundSchema = z
   .refine((schema) => !(!schema.backgroundId && !schema.file), {
     message: NotificationCode.MISSING_INPUT
   })
-

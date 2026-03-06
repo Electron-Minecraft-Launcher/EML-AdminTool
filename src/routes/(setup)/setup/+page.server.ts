@@ -2,7 +2,7 @@ import { error, type Actions } from '@sveltejs/kit'
 import { fail } from '$lib/server/action'
 import type { PageServerLoad } from './$types'
 import { setupSchema } from '$lib/utils/validations'
-import { initDatabase, changeDatabasePassword, setAdminUser, setLanguage, setPin, markAsConfigured, restartServer, restartUpdater, setDefaultProfil } from '$lib/server/setup'
+import { initDatabase, changeDatabasePassword, setAdminUser, setLanguage, setPin, markAsConfigured, restartServer, restartUpdater, setDefaultProfile } from '$lib/server/setup'
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 
@@ -37,7 +37,7 @@ export const actions: Actions = {
       await changeDatabasePassword(dbPassword)
       await initDatabase()
       await setAdminUser(adminUsername, adminPassword)
-      await setDefaultProfil(adminUsername)
+      await setDefaultProfile(adminUsername)
       await setPin()
       await setLanguage(language)
     } catch (err) {

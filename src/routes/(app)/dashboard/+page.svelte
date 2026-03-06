@@ -97,19 +97,19 @@
           {:else}
             <p>{$l.dashboard.undefinedServer}</p>
             {#if user.isAdmin}
-              <a class="not-a" href="/dashboard/emlat-settings"><button class="primary">Go to settings</button></a>
+              <a class="not-a" href="/dashboard/profiles"><button class="primary">Go to Profiles settings</button></a>
             {/if}
           {/if}
         {:catch error}
           <p>{$l.dashboard.undefinedServer}</p>
           {#if user.isAdmin}
-            <a class="not-a" href="/dashboard/emlat-settings"><button class="primary">Go to settings</button></a>
+            <a class="not-a" href="/dashboard/profiles"><button class="primary">Go to Profiles settings</button></a>
           {/if}
         {/await}
       {:else}
         <p>{$l.dashboard.undefinedServer}</p>
         {#if user.isAdmin}
-          <a class="not-a" href="/dashboard/emlat-settings"><button class="primary">Go to settings</button></a>
+          <a class="not-a" href="/dashboard/profiles"><button class="primary">Go to Profiles settings</button></a>
         {/if}
       {/if}
     </div>
@@ -294,7 +294,7 @@
         }
 
         &.server-status-indicator {
-          width: 40px;
+          width: 50px;
           font-weight: 600;
           text-align: center;
           font-size: 11px;

@@ -69,8 +69,8 @@
     <a href="/dashboard/emlat-settings" class:active={page.url.pathname == '/dashboard/emlat-settings'}>
       <i class="fa-solid fa-gear"></i>{$l.leftPanel.settings}
     </a>
-    <a href="/dashboard/profils" class:active={page.url.pathname == '/dashboard/profils'}>
-      <i class="fa-solid fa-window-restore"></i>{$l.leftPanel.profils}
+    <a href="/dashboard/profiles" class:active={page.url.pathname == '/dashboard/profiles'}>
+      <i class="fa-solid fa-window-restore"></i>{$l.leftPanel.profiles}
     </a>
   {/if}
 
