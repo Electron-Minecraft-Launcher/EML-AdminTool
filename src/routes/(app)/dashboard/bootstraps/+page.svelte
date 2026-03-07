@@ -69,12 +69,12 @@
   <h3>Bootstraps and Launcher version</h3>
 
   <div class="container">
-    <div>
+    <div style="width: 100%">
       <p class="label">Version</p>
       <p class="no-link">{data.bootstraps.version ?? '-'}</p>
     </div>
 
-    <div>
+    <div class="files-container">
       <p class="label"><i class="fa-brands fa-microsoft"></i>&nbsp;&nbsp;Windows Bootstrap</p>
       <div class="buttons">
         {#if data.bootstraps.winFiles && data.bootstraps.winFiles.length > 0}
@@ -86,7 +86,7 @@
             {/each}
           </div>
           <button class="remove" onclick={() => deleteBootstrap('win')} aria-label="Delete All Windows Files">
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-solid fa-trash"></i>&nbsp;&nbsp;Delete all
           </button>
         {:else}
           <p class="no-link">-</p>
@@ -94,7 +94,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="files-container">
       <p class="label"><i class="fa-brands fa-apple"></i>&nbsp;&nbsp;macOS Bootstrap</p>
       <div class="buttons">
         {#if data.bootstraps.macFiles && data.bootstraps.macFiles.length > 0}
@@ -106,7 +106,7 @@
             {/each}
           </div>
           <button class="remove" onclick={() => deleteBootstrap('mac')} aria-label="Delete All macOS Files">
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-solid fa-trash"></i>&nbsp;&nbsp;Delete all
           </button>
         {:else}
           <p class="no-link">-</p>
@@ -114,7 +114,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="files-container">
       <p class="label"><i class="fa-brands fa-linux"></i>&nbsp;&nbsp;Linux Bootstrap</p>
       <div class="buttons">
         {#if data.bootstraps.linFiles && data.bootstraps.linFiles.length > 0}
@@ -126,7 +126,7 @@
             {/each}
           </div>
           <button class="remove" onclick={() => deleteBootstrap('lin')} aria-label="Delete All Linux Files">
-            <i class="fa-solid fa-trash"></i>
+            <i class="fa-solid fa-trash"></i>&nbsp;&nbsp;Delete all
           </button>
         {:else}
           <p class="no-link">-</p>
@@ -141,19 +141,20 @@
 
   div.container {
     div.files-container {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
+      width: auto !important;
+      flex: 1;
     }
 
     div.file-list {
       display: flex;
       flex-direction: column;
+      width: auto;
       gap: 5px;
     }
 
     div.buttons {
-      display: flex;
+      width: 100%;
+      gap: 0;
     }
 
     button {
@@ -166,7 +167,7 @@
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      max-width: 350px;
+      max-width: 100%;
       vertical-align: bottom;
       font-family: 'Poppins';
       background: none;
@@ -177,7 +178,6 @@
       }
 
       &.remove {
-        display: inline-block;
         border-bottom: none;
         position: relative;
         background: none;
@@ -185,6 +185,7 @@
         vertical-align: middle;
         align-self: flex-start;
         text-overflow: clip;
+        width: 100%;
 
         &:hover {
           background: #faeeee;
