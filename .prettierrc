@@ -16,6 +16,9 @@
   "trailingComma": "none",
   "useTabs": false,
   "parser": "typescript",
+  "plugins": [
+    "prettier-plugin-svelte"
+  ],
   "overrides": [
     {
       "files": "*.md",

@@ -58,37 +58,37 @@
 
     <p class="label">{$l.dashboard.emlatSettings.info.modal.language}</p>
     <div class="language">
-      <button type="button" class="secondary" class:selected={language === 'en'} id="en-button" onclick={() => language = 'en'}>
+      <button type="button" class="secondary" class:selected={language === 'en'} id="en-button" onclick={() => (language = 'en')}>
         <p>
           <img src="/images/flags/en.png" alt="English flag" />
           English
         </p>
       </button>
-      <button type="button" class="secondary" class:selected={language === 'fr'} id="fr-button" onclick={() => language = 'fr'}>
+      <button type="button" class="secondary" class:selected={language === 'fr'} id="fr-button" onclick={() => (language = 'fr')}>
         <p>
           <img src="/images/flags/fr.png" alt="French flag" />
           Français
         </p>
       </button>
-      <button type="button" class="secondary" class:selected={language === 'de'} id="de-button" onclick={() => language = 'de'}>
+      <button type="button" class="secondary" class:selected={language === 'de'} id="de-button" onclick={() => (language = 'de')}>
         <p>
           <img src="/images/flags/de.png" alt="German flag" />
           Deutsch
         </p>
       </button>
-      <button type="button" class="secondary" class:selected={language === 'it'} id="it-button" onclick={() => language = 'it'}>
+      <button type="button" class="secondary" class:selected={language === 'it'} id="it-button" onclick={() => (language = 'it')}>
         <p>
           <img src="/images/flags/it.png" alt="Italian flag" />
           Italiano
         </p>
       </button>
-      <button type="button" class="secondary" class:selected={language === 'da'} id="da-button" onclick={() => language = 'da'}>
+      <button type="button" class="secondary" class:selected={language === 'da'} id="da-button" onclick={() => (language = 'da')}>
         <p>
           <img src="/images/flags/da.png" alt="Danish flag" />
           Dansk
         </p>
       </button>
-      <button type="button" class="secondary" class:selected={language === 'ja'} id="ja-button" onclick={() => language = 'ja'}>
+      <button type="button" class="secondary" class:selected={language === 'ja'} id="ja-button" onclick={() => (language = 'ja')}>
         <p>
           <img src="/images/flags/ja.png" alt="Japanese flag" />
           日本語

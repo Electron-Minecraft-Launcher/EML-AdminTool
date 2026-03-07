@@ -95,6 +95,18 @@ model Loader {
   updatedAt        DateTime     @updatedAt
 }
 
+model Profile {
+  id          String   @id @default(cuid(2))
+  name        String
+  isDefault   Boolean  @default(false)
+  slug        String   @unique
+  ip          String?
+  port        Int?
+  tcpProtocol String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model Bootstrap {
   id        String   @id @default(cuid(2))
   winFile   Json?

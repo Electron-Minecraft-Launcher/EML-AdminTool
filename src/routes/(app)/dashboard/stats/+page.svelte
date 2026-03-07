@@ -16,11 +16,18 @@
 <div class="wip">
   <p class="wip">We are still building the Stats feature!</p>
   <p class="sub-wip">You will be able to use it in a future update.</p>
-  <p class="sub-wip">You can submit your suggestions for this feature via <a target="_blank" href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues">GitHub Issues</a>.</p>
+  <p class="sub-wip">
+    You can submit your suggestions for this feature via <a
+      target="_blank"
+      href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues"
+    >
+      GitHub Issues
+    </a>.
+  </p>
 </div>
 
 <style lang="scss">
-   @use '../../../../../static/scss/dashboard.scss';
+  @use '../../../../../static/scss/dashboard.scss';
 
   div.wip {
     border-radius: 10px;

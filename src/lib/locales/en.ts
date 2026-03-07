@@ -36,6 +36,12 @@ export default {
     [NotificationCode.EMLAT_UPDATE_FAILED]: `Failed to update EML AdminTool. Please see the logs for more details.`,
     [NotificationCode.EMLAT_RESET_FAILED]: `Failed to reset EML AdminTool. Please see the logs for more details.`,
 
+    [NotificationCode.PROFIL_NAME_TOO_SHORT]: `Profile name must be at least 1 character long.`,
+    [NotificationCode.PROFIL_NAME_TOO_LONG]: `Profile name must be at most 64 characters long.`,
+    [NotificationCode.PROFIL_ALREADY_EXISTS]: `Profile with this ID already exists.`,
+    [NotificationCode.PROFIL_PORT_WITHOUT_IP]: `Port cannot be specified without an IP address.`,
+    [NotificationCode.PROFIL_INVALID_TCP_PROTOCOL]: `TCP protocol must be one of the following: modern, 1.6, 1.4-1.5, beta1.8-1.3.`,
+
     [NotificationCode.EDIT_USER_USERNAME_TOO_SHORT]: `Username must be at least 2 characters long.`,
     [NotificationCode.EDIT_USER_USERNAME_TOO_LONG]: `Username must be at most 64 characters long.`,
 
@@ -87,7 +93,8 @@ export default {
     [NotificationCode.UPDATER_ERROR]: `Updater error.`,
     [NotificationCode.FILE_SYSTEM_ERROR]: `File system error.`,
     [NotificationCode.INTERNAL_SERVER_ERROR]: `Unexpected error.`,
-    [NotificationCode.EXTERNAL_API_ERROR]: `External API error.`
+    [NotificationCode.EXTERNAL_API_ERROR]: `External API error.`,
+    [NotificationCode.NETWORK_ERROR]: `Network error. Please check your internet connection and try again.`
   },
   setup: {
     setup: `Setup`,
@@ -133,11 +140,18 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
   },
   leftPanel: {
     settings: `Settings`,
+    profiles: `Profiles`,
     features: `Features`,
     logout: `Log out`
   },
   dashboard: {
     welcome: `Welcome, {{username}}!`,
+    time: `Server time`,
+    serverStatus: `Server status`,
+    undefinedServer: `The Minecraft server information is not defined.`,
+    launcherStatus: `Launcher status`,
+    news: `News`,
+    noNews: `No news yet.`,
     emlatSettings: {
       title: `EML AdminTool settings`,
       info: {
@@ -155,8 +169,8 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           regeneratePin: `Regenerate PIN`
         }
       },
-      usersManagement: {
-        title: `Users management`,
+      userManagement: {
+        title: `User management`,
         users: `Users`,
         pendingUsers: `Pending users`,
         wrongPinUsers: `Wrong-PIN users`,
@@ -173,6 +187,26 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
           title: `Edit user information`,
           acceptUser: `Accept user`,
           permissions: `Permissions`
+        }
+      },
+      profileManagement: {
+        title: `Profile management`,
+        profiles: `Profiles`,
+        defaultProfile: `Default profile`,
+        profileName: `Profile name`,
+        profileSlug: `Profile ID`,
+        ip: `IP address`,
+        port: `Port`,
+        minecraftVersion: `Minecraft version`,
+        modal: {
+          title: `Edit profile information`,
+          addProfile: `Add profile`,
+          profileName: `Profile name`,
+          profileSlug: `Profile ID`,
+          ip: `IP address or domain name`,
+          port: `Port`,
+          minecraftVersion: `Minecraft version`,
+          minecraftVersionInfo: `If your Minecraft server is compatible with multiple Minecraft versions, you should choose the highest Minecraft version it is compatible with.`
         }
       },
       update: {
@@ -193,7 +227,42 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
         reset: `Reset EML AdminTool`,
         resetEMLATWarning: `Are you sure you want to reset EML AdminTool? All the data will be lost and EML AdminTool will be reset to its initial state. This action is irreversible.
 Moreover, be sure that nobody can access EML AdminTool during the reset: EML AdminTool is not protected during the setup!`,
-        areYouSure: `Are you sure?`
+        areYouSure: `Are you sure?`,
+        uninstall: `How to uninstall EML AdminTool?`,
+        modal: {
+          title: `How to properly uninstall/reinstall EML AdminTool?`,
+          content: `<p>To properly uninstall EML AdminTool, you need to follow these steps:</p>
+<ol>
+  <li>If EML AdminTool is installed on a VPS, access your EML AdminTool VPS via SSH.</li>
+  <li>Navigate to the EML AdminTool configuration directory (usually <code>~/.eml/admintool</code>).</li>
+  <li>Remove the EML AdminTool containers with <code>docker compose -f docker-compose.prod.yml down --rmi all -v</code>.</li>
+  <li>Delete the EML AdminTool configuration directory with <code>rm -rf ~/.eml</code>.</li>
+</ol>
+<p>After that, EML AdminTool will be completely removed from your system. You can then reinstall it by following the <a href="https://emlproject.pages.dev/docs/install-eml-admintool" target="_blank">installation guide</a>.</p>`
+        }
+      }
+    },
+    profiles: {
+      title: `Profiles`,
+      profileManagement: {
+        title: `Profile management`,
+        profiles: `Profiles`,
+        defaultProfile: `Default profile`,
+        profileName: `Profile name`,
+        profileSlug: `Profile ID`,
+        ip: `IP address`,
+        port: `Port`,
+        minecraftVersion: `Minecraft version`,
+        modal: {
+          title: `Edit profile information`,
+          addProfile: `Add profile`,
+          profileName: `Profile name`,
+          profileSlug: `Profile ID`,
+          ip: `IP address or domain name`,
+          port: `Port`,
+          minecraftVersion: `Minecraft version`,
+          minecraftVersionInfo: `If your Minecraft server is compatible with multiple Minecraft versions, you should choose the highest Minecraft version it is compatible with.`
+        }
       }
     },
     account: {

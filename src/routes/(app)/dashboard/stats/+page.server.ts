@@ -7,4 +7,3 @@ export const load = (async (event) => {
     throw redirect(303, '/dashboard')
   }
 }) satisfies PageServerLoad
-

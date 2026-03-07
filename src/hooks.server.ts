@@ -278,4 +278,3 @@ function getUserInfo(user: User) {
     isAdmin: user.isAdmin
   }
 }
-

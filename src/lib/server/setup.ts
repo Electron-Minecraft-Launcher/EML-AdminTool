@@ -176,6 +176,34 @@ export async function setLanguage(language: string): Promise<void> {
   console.log('Language set successfully to:', language)
 }
 
+export async function setDefaultProfile(name: string): Promise<void> {
+  console.log('\n------------ SETTING DEFAULT PROFIL ------------\n')
+  resetProcessEnv()
+
+  const client = new Client({ connectionString: process.env.DATABASE_URL })
+  await client.connect()
+
+  const slug = name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+
+  try {
+    await client.query(
+      `INSERT INTO "Profile" ("id", "name", "isDefault", "slug", "createdAt", "updatedAt") VALUES ($1, $2, true, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
+      [1, name, slug]
+    )
+  } catch (err) {
+    console.error('Error setting default profile:', err)
+    await client.end()
+    throw new ServerError('Failed to set default profile', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+
+  await client.end()
+
+  console.log('Default profile set successfully.')
+}
+
 export async function markAsConfigured(): Promise<void> {
   console.log('\n-------------- UPDATING ENV FILE ---------------\n')
   resetProcessEnv()

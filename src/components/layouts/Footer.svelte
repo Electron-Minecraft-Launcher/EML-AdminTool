@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Env } from "$lib/utils/types"
-  import { getContext } from "svelte"
+  import type { Env } from '$lib/utils/types'
+  import { getContext } from 'svelte'
 
   const env = getContext<Env>('env')
 </script>
@@ -8,7 +8,7 @@
 <footer>
   <hr />
   <p>
-    EML AdminTool v{env.version} – <a href="https://discord.gg/YVB4k6HzAY" target="_blank">Discord</a> –
+    EML AdminTool {env.version} – <a href="https://discord.gg/VbR86WchH9" target="_blank">Discord</a> –
     <a href="https://emlproject.pages.dev/docs" target="_blank">Docs</a> –
     <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool" target="_blank">GitHub</a> –
     <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues/new?template=bug.md" target="_blank"><i class="fa-solid fa-bug"></i>&nbsp;Report a bug</a>
