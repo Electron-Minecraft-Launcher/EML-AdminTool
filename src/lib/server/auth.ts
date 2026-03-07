@@ -4,9 +4,10 @@ import { db } from './db'
 import bcrypt from 'bcrypt'
 import { checkSession } from './jwt'
 import { checkPin } from './pin'
-import { Prisma, UserStatus } from '@prisma/client'
+import { Prisma, type User } from '@prisma/client'
+import { IUserStatus } from '$lib/utils/db'
 
-export async function login(username: string, password: string) {
+export async function login(username: string, password: string): Promise<User> {
   let user
   try {
     user = await db.user.findUnique({ where: { username } })
@@ -15,7 +16,7 @@ export async function login(username: string, password: string) {
     throw new ServerError('Failed to fetch user', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
-  if (!user || user.status == UserStatus.DELETED) {
+  if (!user || user.status == IUserStatus.DELETED) {
     console.warn('User not found or deleted:', username)
     throw new BusinessError('User not found', NotificationCode.LOGIN_BAD_CREDENTIALS, 401)
   }
@@ -29,7 +30,7 @@ export async function login(username: string, password: string) {
   return user
 }
 
-export async function verify(session: string) {
+export async function verify(session: string): Promise<User> {
   const payload = await checkSession(session)
 
   let existing
@@ -48,9 +49,9 @@ export async function verify(session: string) {
   return existing
 }
 
-export async function register(username: string, password: string, pin: string) {
+export async function register(username: string, password: string, pin: string): Promise<User> {
   const hashedPassword = await bcrypt.hash(password, 10)
-  const status = (await checkPin(pin)) ? UserStatus.PENDING : UserStatus.SPAM
+  const status = (await checkPin(pin)) ? IUserStatus.PENDING : IUserStatus.SPAM
 
   let user
   try {
@@ -70,7 +71,7 @@ export async function register(username: string, password: string, pin: string) 
   return user
 }
 
-export async function logout(session: string) {
+export async function logout(session: string): Promise<void> {
   try {
     await checkSession(session)
   } catch (err) {
@@ -85,4 +86,3 @@ export async function logout(session: string) {
     throw new ServerError('Failed to log out user', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
-

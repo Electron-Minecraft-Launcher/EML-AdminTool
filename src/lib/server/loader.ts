@@ -1,9 +1,10 @@
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { db } from './db'
-import { ILoaderFormat, ILoaderType, type Loader } from '$lib/utils/db'
+import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
+import type { Loader } from '@prisma/client'
 
-export async function getLoader() {
+export async function getLoader(): Promise<Loader | null> {
   let loader
   try {
     loader = await db.loader.findFirst()
@@ -14,7 +15,7 @@ export async function getLoader() {
   }
 }
 
-export async function updateLoader(loader: Partial<Loader>) {
+export async function updateLoader(loader: Partial<Loader>): Promise<void> {
   let existingLoader
   try {
     existingLoader = await db.loader.findUnique({ where: { id: '1' } })

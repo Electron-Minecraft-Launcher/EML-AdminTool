@@ -6,6 +6,7 @@
 /sonar-project.properties
 /.scannerwork
 /.sonarlint
+/dist-*
 
 /files/files-updater/*
 /files/bootstraps/*

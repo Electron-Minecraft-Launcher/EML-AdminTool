@@ -4,7 +4,7 @@ import { type User } from '@prisma/client'
 import { db } from './db'
 import { Prisma } from '@prisma/client'
 
-export async function getUserById(userId: string) {
+export async function getUserById(userId: string): Promise<User | null> {
   let user
   try {
     user = await db.user.findUnique({ where: { id: userId } })
@@ -21,9 +21,9 @@ export async function getUserById(userId: string) {
 /**
  * @param user.password Must already be **encrypted** if provided.
  */
-export async function updateUser(userId: string, user: Partial<User>) {
-  if (user.id) delete user.id // Ensure we don't update the ID
-  if (user.isAdmin != undefined) delete user.isAdmin // Ensure we don't update the admin status
+export async function updateUser(userId: string, user: Partial<User>): Promise<void> {
+  if (user.id) delete user.id // ensure the ID is not updated
+  if (user.isAdmin != undefined) delete user.isAdmin // ensure the admin status cannot be changed through this function
 
   try {
     await db.user.update({ where: { id: userId }, data: user })
@@ -37,7 +37,7 @@ export async function updateUser(userId: string, user: Partial<User>) {
   }
 }
 
-export async function deleteUser(userId: string) {
+export async function deleteUser(userId: string): Promise<void> {
   const user = await getUserById(userId)
   if (!user) {
     console.warn(`User with ID ${userId} not found`)
@@ -59,4 +59,3 @@ export async function deleteUser(userId: string) {
     throw new ServerError('Error deleting user', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
-

@@ -6,7 +6,7 @@
 
 [<img src="https://img.shields.io/badge/Discord-EML-5561e6?&style=for-the-badge">](https://discord.gg/VbR86WchH9)
 [<img src="https://img.shields.io/badge/platforms-Docker-0077DA?style=for-the-badge&color=0077DA">](#platforms)
-[<img src="https://img.shields.io/badge/version-2.2.0-orangered?style=for-the-badge&color=orangered">](package.json)
+[<img src="https://img.shields.io/badge/version-2.0.1-orangered?style=for-the-badge&color=orangered">](package.json)
 
 <p>
 <center>
@@ -20,52 +20,26 @@
 
 ## Features
 
-* **Files Updater**: Update your Minecraft files and loader (Vanilla, Forge or Fabric).
-* **Bootstraps**: Auto-update your Minecraft Launcher.
-* **Maintenance**: Manage your Minecraft Launcher.
-* **News**: Manage your Minecraft Launcher news.
-* **Background**: Manage your Minecraft Launcher background.
-* **Stats** (coming soon): See stats about your Launcher.
-* The Admin of the server can manage the users permissions.
-* And more...
+- **Files Updater**: Update your Minecraft files and loader (Vanilla, Forge or Fabric).
+- **Bootstraps**: Auto-update your Minecraft Launcher.
+- **Maintenance**: Manage your Minecraft Launcher.
+- **News**: Manage your Minecraft Launcher news.
+- **Background**: Manage your Minecraft Launcher background.
+- **Stats**: See stats about your Launcher.
+- The Admin of the server can manage the users permissions.
+- And more...
 
 ## Installation
 
-Please follow [this guide](https://emlproject.pages.dev/docs/). 
+Please follow [this guide](https://emlproject.pages.dev/docs/).
 
 ### If you won't use a VPS
 
-You can download the previous major version of the [EML AdminTool](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool). However, be careful, this version is no longer maintained and has security vulnerabilities.
+You can download the previous major version of the [EML AdminTool](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool-old). However, be careful, this version is no longer maintained and has security vulnerabilities.
 
 ## Contributing
 
-### Translation
-
-You can help to translate EML AdminTool!
-
-The languages files are [here](./client/src/lib/locales/). You can create another file with your translation. Please make sure to provide a correct translation!
-
-Then, you can submit your translation file as an [issue](https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues/new?template=translation.md), by using the *Language* issue template. Your file needs to be checked and approved by two other persons.
-
-### Development
-
-Install [Node.js](https://nodejs.org/en/download/package-manager) and [Docker](https://www.docker.com/get-started) [^3].
-
-Then, download the code and run the command:
-```bash
-cd EML-AdminTool
-npm i
-```
-
-You can now start the development server:
-```bash
-cd docker
-docker-compose -f dockerfile.dev.yml up
-```
-
-The application is accessible at [http://localhost:5173](http://localhost:5173). You can also access pgAdmin at [https://localhost:5050](http://localhost:5050).
-
-You can now make pull requests!
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to contribute to this project.
 
 ## Important information
 

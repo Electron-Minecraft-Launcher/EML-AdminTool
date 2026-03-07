@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NewsTag } from '$lib/utils/db'
+  import type { NewsTag } from '@prisma/client'
   import AddEditNewsTagModal from '../modals/AddEditNewsTagModal.svelte'
   import { invalidateAll } from '$app/navigation'
   import { callAction } from '$lib/utils/call'

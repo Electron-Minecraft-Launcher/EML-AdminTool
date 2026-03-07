@@ -1,14 +1,15 @@
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import type { BackgroundStatus as BgStatus } from '@prisma/client'
 import { db } from './db'
 import type { File as File_ } from '../utils/types.d'
-import { Prisma, BackgroundStatus } from '@prisma/client'
+import { Prisma } from '@prisma/client'
+import { IBackgroundStatus } from '$lib/utils/db'
+import type { BackgroundStatus, Background } from '@prisma/client'
 
-export async function getActiveBackground() {
+export async function getActiveBackground(): Promise<Background | null> {
   let background
   try {
-    background = await db.background.findFirst({ where: { status: BackgroundStatus.ACTIVE } })
+    background = await db.background.findFirst({ where: { status: IBackgroundStatus.ACTIVE } })
     return background
   } catch (err) {
     console.error('Failed to get active background:', err)
@@ -16,7 +17,7 @@ export async function getActiveBackground() {
   }
 }
 
-export async function getBackgroundById(backgroundId: string) {
+export async function getBackgroundById(backgroundId: string): Promise<Background | null> {
   let background
   try {
     background = await db.background.findUnique({ where: { id: backgroundId } })
@@ -27,8 +28,8 @@ export async function getBackgroundById(backgroundId: string) {
   }
 }
 
-export async function addBackground(name: string, file: File_, status: BgStatus) {
-  if (status === BackgroundStatus.ACTIVE) {
+export async function addBackground(name: string, file: File_, status: BackgroundStatus): Promise<void> {
+  if (status === IBackgroundStatus.ACTIVE) {
     await disableAllBackgrounds()
   }
 
@@ -50,13 +51,13 @@ export async function addBackground(name: string, file: File_, status: BgStatus)
   }
 }
 
-export async function enableBackground(backgroundId: string) {
+export async function enableBackground(backgroundId: string): Promise<void> {
   await disableAllBackgrounds()
 
   try {
     await db.background.update({
       where: { id: backgroundId },
-      data: { status: BackgroundStatus.ACTIVE }
+      data: { status: IBackgroundStatus.ACTIVE }
     })
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
@@ -68,16 +69,16 @@ export async function enableBackground(backgroundId: string) {
   }
 }
 
-export async function disableAllBackgrounds() {
+export async function disableAllBackgrounds(): Promise<void> {
   try {
-    await db.background.updateMany({ data: { status: BackgroundStatus.INACTIVE } })
+    await db.background.updateMany({ data: { status: IBackgroundStatus.INACTIVE } })
   } catch (err) {
     console.error('Failed to set all backgrounds to inactive:', err)
     throw new ServerError('Failed to set all backgrounds to inactive', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
 
-export async function updateBackground(backgroundId: string, name: string) {
+export async function updateBackground(backgroundId: string, name: string): Promise<void> {
   try {
     await db.background.update({
       where: { id: backgroundId },
@@ -97,7 +98,7 @@ export async function updateBackground(backgroundId: string, name: string) {
   }
 }
 
-export async function deleteBackground(backgroundId: string) {
+export async function deleteBackground(backgroundId: string): Promise<void> {
   try {
     await db.background.delete({ where: { id: backgroundId } })
   } catch (err) {
@@ -109,4 +110,3 @@ export async function deleteBackground(backgroundId: string) {
     throw new ServerError('Error deleting background', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
-

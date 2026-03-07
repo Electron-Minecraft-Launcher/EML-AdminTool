@@ -1,15 +1,20 @@
 import { db } from './db'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import { Prisma } from '@prisma/client'
+import { Prisma, type News, type NewsCategory, type NewsTag } from '@prisma/client'
+import type { ExtendedNews } from '$lib/utils/db'
 
-export async function getNews(limit: number = 20) {
+export async function getNews(limit: number = 20): Promise<ExtendedNews[]> {
   let news
   try {
     news = await db.news.findMany({
       take: limit,
       orderBy: { createdAt: 'desc' },
-      include: { author: { select: { id: true, username: true } }, categories: true, tags: true }
+      include: {
+        author: { select: { id: true, username: true } },
+        categories: true,
+        tags: true
+      }
     })
     return news
   } catch (err) {
@@ -18,7 +23,7 @@ export async function getNews(limit: number = 20) {
   }
 }
 
-export async function getNewsById(newsId: string) {
+export async function getNewsById(newsId: string): Promise<News | null> {
   let news
   try {
     news = await db.news.findUnique({ where: { id: newsId } })
@@ -29,7 +34,7 @@ export async function getNewsById(newsId: string) {
   }
 }
 
-export async function addNews(title: string, content: string, authorId: string, categoriesId: string[], tagsId: string[]) {
+export async function addNews(title: string, content: string, authorId: string, categoriesId: string[], tagsId: string[]): Promise<void> {
   try {
     await db.news.create({
       data: {
@@ -46,7 +51,7 @@ export async function addNews(title: string, content: string, authorId: string, 
   }
 }
 
-export async function updateNews(newsId: string, news: { title: string; content: string }, categoriesId: string[], tagsId: string[]) {
+export async function updateNews(newsId: string, news: { title: string; content: string }, categoriesId: string[], tagsId: string[]): Promise<void> {
   try {
     await db.news.update({
       where: { id: newsId },
@@ -67,7 +72,7 @@ export async function updateNews(newsId: string, news: { title: string; content:
   }
 }
 
-export async function deleteNews(newsId: string) {
+export async function deleteNews(newsId: string): Promise<void> {
   try {
     await db.news.delete({ where: { id: newsId } })
   } catch (err) {
@@ -82,7 +87,7 @@ export async function deleteNews(newsId: string) {
 
 //* News Categories
 
-export async function getNewsCategories() {
+export async function getNewsCategories(): Promise<NewsCategory[]> {
   let categories
   try {
     categories = await db.newsCategory.findMany({
@@ -95,7 +100,7 @@ export async function getNewsCategories() {
   }
 }
 
-export async function getNewsCategoryById(categoryId: string) {
+export async function getNewsCategoryById(categoryId: string): Promise<NewsCategory | null> {
   let category
   try {
     category = await db.newsCategory.findUnique({ where: { id: categoryId } })
@@ -106,7 +111,7 @@ export async function getNewsCategoryById(categoryId: string) {
   }
 }
 
-export async function addNewsCategory(name: string) {
+export async function addNewsCategory(name: string): Promise<void> {
   try {
     await db.newsCategory.create({ data: { name } })
   } catch (err) {
@@ -119,7 +124,7 @@ export async function addNewsCategory(name: string) {
   }
 }
 
-export async function updateNewsCategory(categoryId: string, name: string) {
+export async function updateNewsCategory(categoryId: string, name: string): Promise<void> {
   try {
     await db.newsCategory.update({ where: { id: categoryId }, data: { name } })
   } catch (err) {
@@ -136,7 +141,7 @@ export async function updateNewsCategory(categoryId: string, name: string) {
   }
 }
 
-export async function deleteNewsCategory(categoryId: string) {
+export async function deleteNewsCategory(categoryId: string): Promise<void> {
   try {
     await db.newsCategory.update({
       where: { id: categoryId },
@@ -156,7 +161,7 @@ export async function deleteNewsCategory(categoryId: string) {
 
 //* News Tags
 
-export async function getNewsTagById(tagId: string) {
+export async function getNewsTagById(tagId: string): Promise<NewsTag | null> {
   let tag
   try {
     tag = await db.newsTag.findUnique({ where: { id: tagId } })
@@ -167,7 +172,7 @@ export async function getNewsTagById(tagId: string) {
   }
 }
 
-export async function addNewsTag(name: string, color: string = '#000000') {
+export async function addNewsTag(name: string, color: string = '#000000'): Promise<void> {
   try {
     await db.newsTag.create({ data: { name, color } })
   } catch (err) {
@@ -180,7 +185,7 @@ export async function addNewsTag(name: string, color: string = '#000000') {
   }
 }
 
-export async function updateNewsTag(tagId: string, name: string, color: string) {
+export async function updateNewsTag(tagId: string, name: string, color: string): Promise<void> {
   try {
     await db.newsTag.update({ where: { id: tagId }, data: { name, color } })
   } catch (err) {
@@ -197,7 +202,7 @@ export async function updateNewsTag(tagId: string, name: string, color: string) 
   }
 }
 
-export async function deleteNewsTag(tagId: string) {
+export async function deleteNewsTag(tagId: string): Promise<void> {
   try {
     await db.newsTag.update({
       where: { id: tagId },
@@ -214,4 +219,3 @@ export async function deleteNewsTag(tagId: string) {
     throw new ServerError('Error deleting news tag', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
-

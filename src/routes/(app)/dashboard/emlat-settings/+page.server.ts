@@ -82,7 +82,7 @@ export const actions: Actions = {
       throw error(403, { message: NotificationCode.FORBIDDEN })
     }
 
-    const user_ = await verify(session) // Oversecurity measure to ensure the user is still valid
+    const user_ = await verify(session) // oversecurity measure to ensure the user is still valid
     if (!user_?.isAdmin) {
       throw error(403, { message: NotificationCode.FORBIDDEN })
     }

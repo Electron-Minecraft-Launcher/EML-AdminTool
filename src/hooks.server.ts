@@ -7,10 +7,10 @@ import { verify } from '$lib/server/auth'
 import { deleteSession } from '$lib/server/jwt'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import { type User } from '$lib/utils/db'
+import type { User } from '@prisma/client'
 import { defaultPgURL } from '$lib/server/setup'
 import path from 'node:path'
-import fs from 'node:fs'
+import fs from 'node:fs/promises'
 import mime from 'mime-types'
 import { dev } from '$app/environment'
 import { sequence } from '@sveltejs/kit/hooks'
@@ -25,7 +25,7 @@ const app: Handle = async ({ event, resolve }) => {
   if (securityResponse) return securityResponse
 
   if (event.url.pathname.startsWith('/files/')) {
-    return serveStaticFile(event.url.pathname)
+    return await serveStaticFile(event.url.pathname)
   }
 
   if (event.url.pathname !== '/api/ping') {
@@ -60,9 +60,9 @@ const logger: Handle = async ({ event, resolve }) => {
       username = ` ${user.username}`
     }
 
-    let color = '\x1b[32m' // Green
-    if (status >= 300) color = '\x1b[33m' // Yellow
-    if (status >= 400) color = '\x1b[31m' // Red
+    let color = '\x1b[32m' // green
+    if (status >= 300) color = '\x1b[33m' // yellow
+    if (status >= 400) color = '\x1b[31m' // red
     const reset = '\x1b[0m'
 
     console.log(`[${date}] ${host} - [${ip}${username}] ${method} ${url} ${color}${status}${reset} (${duration}ms)`)
@@ -71,7 +71,7 @@ const logger: Handle = async ({ event, resolve }) => {
   return response
 }
 
-export const handleError: HandleServerError = ({ error, event, status, message }) => {
+export const handleError: HandleServerError = ({ error, status, message }) => {
   if (status >= 404) {
     return {
       message: 'Not Found',
@@ -88,7 +88,7 @@ export const handleError: HandleServerError = ({ error, event, status, message }
   }
 }
 
-export const handle = sequence(app, logger)
+export const handle: Handle = sequence(app, logger)
 
 function getAllowedOrigins() {
   const envValue = process.env.ALLOWED_ORIGINS
@@ -161,7 +161,7 @@ function injectCorsHeaders(response: Response, event: RequestEvent): Response {
   return response
 }
 
-function serveStaticFile(pathname: string) {
+async function serveStaticFile(pathname: string) {
   let relativePath = pathname.substring('/files/'.length)
 
   try {
@@ -176,8 +176,9 @@ function serveStaticFile(pathname: string) {
     return new Response('Forbidden', { status: 403 })
   }
 
-  if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isFile()) {
+  try {
     const extension = path.extname(resolvedPath).toLowerCase()
+    const fileName = path.basename(resolvedPath)
     let mimeType: string
 
     if (['.ts', '.js', '.jsx', '.tsx', '.svelte', '.vue', '.css', '.html'].includes(extension)) {
@@ -186,17 +187,25 @@ function serveStaticFile(pathname: string) {
       mimeType = mime.lookup(resolvedPath) || 'application/octet-stream'
     }
 
-    const fileContent = fs.readFileSync(resolvedPath)
+    const fileContent = await fs.readFile(resolvedPath)
+
     return new Response(fileContent, {
       status: 200,
       headers: {
         'Content-Type': mimeType,
-        'X-Content-Type-Options': 'nosniff'
+        'X-Content-Type-Options': 'nosniff',
+        'Cache-Control': 'no-transform',
+        'Content-Disposition': `inline; filename="${fileName}"`
       }
     })
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'code' in err && err.code === 'ENOENT') {
+      return new Response('File not found', { status: 404 })
+    } else {
+      console.error('Error serving file:', err)
+      return new Response('Internal Server Error', { status: 500 })
+    }
   }
-
-  return new Response('File not found', { status: 404 })
 }
 
 async function loadApplicationContext(event: RequestEvent) {

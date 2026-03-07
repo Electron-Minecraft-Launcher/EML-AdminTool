@@ -10,12 +10,12 @@ import { NotificationCode } from '$lib/utils/notifications'
 import { dev } from '$app/environment'
 import { generateRandomPin } from './pin'
 import path from 'path'
-import { cuid2 } from 'zod/v4'
+
 const execAsync = promisify(exec)
 
-export const envPath = path.resolve(process.cwd(), 'env', '.env')
-export const defaultPgURL = 'postgresql://eml:eml@dbs:5432/eml_admintool'
-export const defaultEnvHeader = `# # # # # # # # # # # # # # # # # # # # # # # # # # # #
+export const envPath: string = path.resolve(process.cwd(), 'env', '.env')
+export const defaultPgURL: string = 'postgresql://eml:eml@dbs:5432/eml_admintool'
+export const defaultEnvHeader: string = `# # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #          DO NOT MODIFY OR DELETE THIS FILE          #
 #                                                     #
 # This file contains important environment variables  #
@@ -29,7 +29,7 @@ export const defaultEnvHeader = `# # # # # # # # # # # # # # # # # # # # # # # #
 # than modifying this file directly.                  #
 # Consult the documentation for more information.     #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #`
-export const devWarning = dev
+export const devWarning: string = dev
   ? `
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #       FAKE ENVIRONMENT VARIABLES FOR TESTING        #
@@ -37,7 +37,7 @@ export const devWarning = dev
 `
   : ''
 
-export async function changeDatabasePassword(newPassword: string) {
+export async function changeDatabasePassword(newPassword: string): Promise<void> {
   console.log('\n---------- CHANGING DATABASE PASSWORD ----------\n')
   resetProcessEnv()
 
@@ -60,7 +60,7 @@ export async function changeDatabasePassword(newPassword: string) {
   console.log('Database password changed successfully.')
 }
 
-export async function initDatabase() {
+export async function initDatabase(): Promise<void> {
   console.log('\n------------ INITIALIZING DATABASE -------------\n')
   resetProcessEnv()
 
@@ -106,7 +106,7 @@ export async function initDatabase() {
   console.log('Database initialized successfully.')
 }
 
-export async function setAdminUser(username: string, password: string) {
+export async function setAdminUser(username: string, password: string): Promise<void> {
   console.log('\n------------- CREATING ADMIN USER --------------\n')
   resetProcessEnv()
 
@@ -134,7 +134,7 @@ export async function setAdminUser(username: string, password: string) {
   console.log('Admin user created successfully.')
 }
 
-export async function setPin() {
+export async function setPin(): Promise<void> {
   console.log('\n----------------- SETTING PIN ------------------\n')
   resetProcessEnv()
 
@@ -156,7 +156,7 @@ export async function setPin() {
   console.log('Pin set successfully.')
 }
 
-export async function setLanguage(language: string) {
+export async function setLanguage(language: string): Promise<void> {
   console.log('\n--------------- SETTING LANGUAGE ---------------\n')
   resetProcessEnv()
 
@@ -176,7 +176,7 @@ export async function setLanguage(language: string) {
   console.log('Language set successfully to:', language)
 }
 
-export async function setDefaultProfile(name: string) {
+export async function setDefaultProfile(name: string): Promise<void> {
   console.log('\n------------ SETTING DEFAULT PROFIL ------------\n')
   resetProcessEnv()
 
@@ -250,7 +250,7 @@ BODY_SIZE_LIMIT=Infinity
   console.log('Environment file updated successfully.')
 }
 
-export function resetProcessEnv() {
+export function resetProcessEnv(): void {
   if (process.env.IS_CONFIGURED) delete process.env.IS_CONFIGURED
   if (process.env.DATABASE_URL) delete process.env.DATABASE_URL
   if (process.env.JWT_SECRET_KEY) delete process.env.JWT_SECRET_KEY
@@ -258,46 +258,39 @@ export function resetProcessEnv() {
   config({ path: envPath, quiet: true })
 }
 
-export async function restartUpdater() {
+export async function restartUpdater(): Promise<void> {
   console.log('\n-------------- RESTARTING UPDATER --------------\n')
 
-  let updaterName = 'upd'
-  const filter = 'com.eml.admintool.updater'
-
   try {
-    const { stdout, stderr } = await execAsync(`docker ps --filter "label=${filter}" --format "{{.Names}}"`)
-    if (stderr) {
-      console.error('Error while fetching Updater container name:', stderr)
-      throw new ServerError('Failed to fetch Updater container name', new Error(stderr), NotificationCode.INTERNAL_SERVER_ERROR, 500)
-    }
-    updaterName = stdout.trim() ?? updaterName
-  } catch (err) {
-    console.error('Error while fetching Updater container name:', err)
-    throw new ServerError('Failed to fetch Updater container name', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
-  }
+    const response = await fetch('http://upd:4000/reload', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.UPDATER_HTTP_API_TOKEN}`
+      }
+    })
 
-  try {
-    const { stderr } = await execAsync(`docker restart ${updaterName}`)
-    if (stderr && stderr.trim() !== updaterName) {
-      console.error('Error while restarting Updater:', stderr)
-      throw new ServerError('Failed to restart Updater', new Error(stderr), NotificationCode.INTERNAL_SERVER_ERROR, 500)
+    const data = await response.json()
+
+    if (!response.ok || !data.success) {
+      console.error('Error from Updater:', data.error)
+      throw new ServerError('Failed to reload Updater configuration', new Error(data.error), NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
   } catch (err) {
-    console.error('Error restarting Updater:', err)
-    throw new ServerError('Failed to restart Updater', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+    console.error('Network or execution error while contacting Updater:', err)
+    throw new ServerError('Failed to contact Updater', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
   }
 
-  console.log('Updater restarted successfully.')
+  console.log('Updater configuration reloaded successfully.')
 }
 
-export async function restartServer() {
+export async function restartServer(): Promise<void> {
   console.log('Restarting server...')
   setTimeout(() => {
     process.exit(0)
   }, 1000)
 }
 
-function updateEnv(dbPassword: string) {
+function updateEnv(dbPassword: string): void {
   resetProcessEnv()
   const isConfigured = process.env.IS_CONFIGURED === 'true'
 
@@ -333,4 +326,3 @@ BODY_SIZE_LIMIT=Infinity
 
   resetProcessEnv()
 }
-

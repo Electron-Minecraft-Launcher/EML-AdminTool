@@ -1,11 +1,11 @@
 import { execSync } from 'child_process'
 import os from 'os'
 
-export function getOS() {
+export function getOS(): string {
   return os.type() + ' ' + os.release()
 }
 
-export function getStorage() {
+export function getStorage(): [used: number, total: number] {
   let totalSpaceCommand: string
   let freeSpaceCommand: string
   let unit: 'GB' | 'KB' | 'B'

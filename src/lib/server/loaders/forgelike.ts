@@ -4,6 +4,8 @@ import type { LoaderVersion } from '$lib/utils/types'
 import { getOrSet } from '../cache'
 import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
 import { fetchJson, fetchXml, getMajorVersion, getRemoteFileSha1, getRemoteFileSize } from './utils'
+import type { LoaderFormat } from '@prisma/client'
+import type { File as File_ } from '../../utils/types'
 
 type ForgeLikeLoader = typeof ILoaderType.FORGE | typeof ILoaderType.NEOFORGE
 
@@ -24,7 +26,7 @@ const V = {
   }
 }
 
-export async function getForgeLikeVersions(loader: ForgeLikeLoader) {
+export async function getForgeLikeVersions(loader: ForgeLikeLoader): Promise<LoaderVersion[]> {
   const cacheKey = loader === ILoaderType.FORGE ? 'forge-versions' : 'neoforge-versions'
 
   return getOrSet(cacheKey, async () => {
@@ -97,7 +99,7 @@ export async function getForgeLikeVersions(loader: ForgeLikeLoader) {
   })
 }
 
-export async function checkForgeLikeLoader(loader: ForgeLikeLoader, minecraftVersion: string, loaderVersion: string) {
+export async function checkForgeLikeLoader(loader: ForgeLikeLoader, minecraftVersion: string, loaderVersion: string): Promise<void> {
   const versions = await getForgeLikeVersions(loader)
   const exists = versions.some((v) => v.minecraftVersion === minecraftVersion && v.loaderVersion === loaderVersion)
 
@@ -107,7 +109,10 @@ export async function checkForgeLikeLoader(loader: ForgeLikeLoader, minecraftVer
   }
 }
 
-export async function getForgeLikeFile(loader: typeof ILoaderType.FORGE | typeof ILoaderType.NEOFORGE, loaderVersion: string) {
+export async function getForgeLikeFile(
+  loader: typeof ILoaderType.FORGE | typeof ILoaderType.NEOFORGE,
+  loaderVersion: string
+): Promise<{ format: LoaderFormat; file: File_ }> {
   const v = V[loader]
   let format = 'installer'
   let ext = 'jar'

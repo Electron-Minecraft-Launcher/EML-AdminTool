@@ -6,6 +6,7 @@ on:
       - 'v[0-9]+.[0-9]+.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
       - 'v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+-test'
 
 jobs:
   build:
@@ -76,6 +77,6 @@ jobs:
           tag_name: ${{ github.ref_name }}
           name: EML AdminTool ${{ github.ref_name }}
           draft: false
-          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') }}
+          prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'test') }}
           body_path: .github/changelogs/${{ github.ref_name }}.md
           files: docker/docker-compose.prod.yml
