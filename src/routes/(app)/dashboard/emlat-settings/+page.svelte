@@ -12,6 +12,7 @@
   import { waitForServerRestart, sleep } from '$lib/utils/utils'
   import { callAction } from '$lib/utils/call'
   import Markdown from '../../../../components/layouts/Markdown.svelte'
+  import UninstallModal from '../../../../components/modals/UninstallModal.svelte'
 
   let { data = $bindable() }: PageProps = $props()
 
@@ -22,8 +23,9 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 
   let showLoader = $state(false)
   let showEditAdminToolModal = $state(false)
+  let showUninstallModal = $state(false)
 
-  let selectedUserId = $state(data.users[0].id)
+  let selectedUserId = $state(data.profiles[0].id)
   let updateMessage: string = $state('')
 
   onMount(() => {
@@ -34,7 +36,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     }
   })
 
-  async function editAdminToolModal() {
+  function editAdminToolModal() {
     showEditAdminToolModal = true
   }
 
@@ -103,6 +105,10 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
   <EditEMLAdminToolModal bind:show={showEditAdminToolModal} />
 {/if}
 
+{#if showUninstallModal}
+  <UninstallModal bind:show={showUninstallModal} />
+{/if}
+
 <h2>{$l.dashboard.emlatSettings.title}</h2>
 
 <section class="section">
@@ -127,17 +133,17 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 
     <div>
       <p class="label">{$l.dashboard.emlatSettings.info.nbUsers}</p>
-      <p>{data.users.length}</p>
+      <p>{data.profiles.length}</p>
     </div>
   </div>
 </section>
 
 <section class="section">
-  <h3>{$l.dashboard.emlatSettings.usersManagement.title}</h3>
+  <h3>{$l.dashboard.emlatSettings.userManagement.title}</h3>
 
   <div class="list-container">
     <div class="list">
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.users}</p>
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.users}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.ACTIVE}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
@@ -146,7 +152,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         {/if}
       {/each}
 
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.pendingUsers}</p>
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.pendingUsers}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.PENDING}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
@@ -155,7 +161,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         {/if}
       {/each}
 
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.wrongPinUsers}</p>
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.wrongPinUsers}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.SPAM}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
@@ -164,7 +170,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         {/if}
       {/each}
 
-      <p class="label">{$l.dashboard.emlatSettings.usersManagement.deletedUsers}</p>
+      <p class="label">{$l.dashboard.emlatSettings.userManagement.deletedUsers}</p>
       {#each data.users as u}
         {#if u.status === IUserStatus.DELETED}
           <button class="list" class:active={selectedUserId === u.id} onclick={() => (selectedUserId = u.id)}>
@@ -258,6 +264,9 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     <div>
       <button class="primary danger" onclick={reset}>{$l.dashboard.emlatSettings.dangerZone.reset}</button>
     </div>
+    <div>
+      <button class="secondary danger" onclick={() => (showUninstallModal = true)}>{$l.dashboard.emlatSettings.dangerZone.uninstall}</button>
+    </div>
   </div>
 </section>
 
@@ -319,6 +328,12 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
         color: var(--red-color);
       }
     }
+  }
+
+  i.fa-solid.fa-star {
+    cursor: help;
+    font-size: 10px;
+    color: #5f5f5f;
   }
 
   div.updater {

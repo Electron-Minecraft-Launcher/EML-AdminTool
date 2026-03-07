@@ -12,6 +12,11 @@ div.list-container {
       min-height: 400px;
       max-height: 600px;
       overflow-y: auto;
+
+      &.small {
+        min-height: 200px;
+        max-height: 300px;
+      }
   
       button.list {
         overflow-x: hidden;

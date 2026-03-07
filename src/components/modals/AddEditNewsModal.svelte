@@ -122,7 +122,7 @@
 
   async function deleteImage(imageName: string) {
     if (!confirm('Are you sure you want to delete this image? It will not be available in the news anymore.')) return
-    
+
     const formData = new FormData()
     formData.set('image-name', imageName)
 

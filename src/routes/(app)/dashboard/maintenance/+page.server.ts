@@ -14,9 +14,8 @@ export const load = (async (event) => {
     throw redirect(303, '/dashboard')
   }
 
-  let maintenance
-
   try {
+    let maintenance
     try {
       maintenance = await db.maintenance.findFirst()
     } catch (err) {

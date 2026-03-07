@@ -54,7 +54,7 @@
   {#if showLoader}
     <LoadingSplash transparent />
   {/if}
-  
+
   <form method="POST" action="?/renameFile" use:enhance={enhanceForm}>
     <h2>Rename {type === 'FOLDER' ? 'folder' : 'file'}</h2>
 

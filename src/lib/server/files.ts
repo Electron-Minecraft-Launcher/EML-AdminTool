@@ -153,7 +153,7 @@ export async function editFile(dir: Dir, path: string, name: string, content: st
  * @param name Current name of the file.
  * @param newName New name of the file.
  */
-export async function renameFile(dir: Dir, path: string, name: string, newName: string) {
+export async function renameFile(dir: Dir, path: string, name: string, newName: string): Promise<void> {
   let fullPath, newFullPath
   try {
     name = name.removeUnwantedFilenameChars()

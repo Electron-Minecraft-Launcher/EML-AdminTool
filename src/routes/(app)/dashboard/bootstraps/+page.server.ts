@@ -4,11 +4,9 @@ import type { PageServerLoad } from './$types'
 import { db } from '$lib/server/db'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import type { File as File_ } from '$lib/utils/types'
 import { finalizeBootstrapsSchema } from '$lib/utils/validations'
 import { getBootstraps, updateBootstraps } from '$lib/server/bootstraps'
-import semver from 'semver'
-import { deleteFile, getFiles, uploadFile } from '$lib/server/files'
+import { deleteFile, getFiles } from '$lib/server/files'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -19,7 +17,13 @@ export const load = (async (event) => {
   }
 
   try {
-    let bootstraps = await db.bootstrap.findUnique({ where: { id: '1' } })
+    let bootstraps
+    try {
+      bootstraps = await db.bootstrap.findUnique({ where: { id: '1' } })
+    } catch (err) {
+      console.error('Failed to load bootstraps:', err)
+      throw new ServerError('Failed to load bootstraps', err, NotificationCode.DATABASE_ERROR, 500)
+    }
 
     const allFiles = await getFiles(domain, 'bootstraps')
 
@@ -69,7 +73,7 @@ export const actions: Actions = {
     const cleanOldFiles = async (platform: string, keepFiles: string[]) => {
       try {
         const allFiles = await getFiles('', 'bootstraps')
-        
+
         const platformFiles = allFiles.filter((f) => f.path === `${platform}/` && f.type !== 'FOLDER')
 
         for (const file of platformFiles) {
@@ -144,5 +148,3 @@ export const actions: Actions = {
     }
   }
 }
-
-

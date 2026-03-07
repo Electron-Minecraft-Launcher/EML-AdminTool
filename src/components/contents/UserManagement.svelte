@@ -24,10 +24,10 @@
   const enhanceForm: SubmitFunction = ({ action, formData, cancel }) => {
     const warning =
       action.search === '?/refuseUser'
-        ? $l.dashboard.emlatSettings.usersManagement.refuseUserWarning
+        ? $l.dashboard.emlatSettings.userManagement.refuseUserWarning
         : action.search === '?/deleteUser'
-          ? $l.dashboard.emlatSettings.usersManagement.deleteUserWarning
-          : $l.dashboard.emlatSettings.usersManagement.deleteUserForeverWarning
+          ? $l.dashboard.emlatSettings.userManagement.deleteUserWarning
+          : $l.dashboard.emlatSettings.userManagement.deleteUserForeverWarning
     if (!confirm(warning)) {
       cancel()
       return
@@ -89,13 +89,13 @@
 {/if}
 
 <div class="perms">
-  <h4>{$l({ username: selectedUser.username }).dashboard.emlatSettings.usersManagement.infoOf}</h4>
+  <h4>{$l({ username: selectedUser.username }).dashboard.emlatSettings.userManagement.infoOf}</h4>
 
   <p class="label">{$l.common.username}</p>
   <p>{selectedUser.username}</p>
 
   {#if selectedUser.status === IUserStatus.ACTIVE}
-    <p class="label">{$l.dashboard.emlatSettings.usersManagement.permissions}</p>
+    <p class="label">{$l.dashboard.emlatSettings.userManagement.permissions}</p>
     {#if selectedUser.isAdmin}
       <p>Admin (all permissions)</p>
     {:else}

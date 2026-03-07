@@ -50,7 +50,7 @@
       const files = Array.from(input.files || [])
       if (files.length === 0) return
 
-      const label = files.map((f) => f.name).join(', ')
+      const label = files.map((f) => f.name).join('&nbsp;&nbsp;<span class="file-separator">|</span>&nbsp;&nbsp;')
 
       switch (platform) {
         case 'win':
@@ -195,7 +195,7 @@
         <i class="fa-solid fa-file-arrow-up"></i>&nbsp;&nbsp;Select files...
       </button>
     {:else}
-      <p class="no-link">{winLabel}</p>
+      <p class="no-link">{@html winLabel}</p>
       <button type="button" class="remove" onclick={() => reset('win')} aria-label="Remove Windows Bootstrap">
         <i class="fa-solid fa-circle-xmark"></i>
       </button>
@@ -207,7 +207,7 @@
         <i class="fa-solid fa-file-arrow-up"></i>&nbsp;&nbsp;Select files...
       </button>
     {:else}
-      <p class="no-link">{macLabel}</p>
+      <p class="no-link">{@html macLabel}</p>
       <button type="button" class="remove" onclick={() => reset('mac')} aria-label="Remove macOS Bootstrap">
         <i class="fa-solid fa-circle-xmark"></i>
       </button>
@@ -219,7 +219,7 @@
         <i class="fa-solid fa-file-arrow-up"></i>&nbsp;&nbsp;Select files...
       </button>
     {:else}
-      <p class="no-link">{linLabel}</p>
+      <p class="no-link">{@html linLabel}</p>
       <button type="button" class="remove" onclick={() => reset('lin')} aria-label="Remove Linux Bootstrap">
         <i class="fa-solid fa-circle-xmark"></i>
       </button>
@@ -242,12 +242,16 @@
   p.no-link {
     margin: 0px;
     display: inline-block;
-    max-width: 300px;
+    max-width: 700px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: bottom;
     padding: 8px 0 7px 0;
+
+    :global(.file-separator) {
+      color: #777777;
+    }
   }
 
   button.remove {

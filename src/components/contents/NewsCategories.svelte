@@ -69,37 +69,37 @@
   }
 
   button {
+    display: inline-block;
+    margin-top: 0;
+    border-bottom: none;
+    color: #1e1e1e;
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 230px;
+    vertical-align: bottom;
+    font-family: 'Poppins';
+    background: none;
+    line-height: 15px;
+
+    &:hover {
+      background: #eeeeee;
+    }
+
+    &.remove {
       display: inline-block;
-      margin-top: 0;
       border-bottom: none;
-      color: #1e1e1e;
       position: relative;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      max-width: 230px;
-      vertical-align: bottom;
-      font-family: 'Poppins';
       background: none;
-      line-height: 15px;
+      color: var(--red-color);
+      vertical-align: middle;
 
       &:hover {
-        background: #eeeeee;
-      }
-
-      &.remove {
-        display: inline-block;
-        border-bottom: none;
-        position: relative;
-        background: none;
-        color: var(--red-color);
-        vertical-align: middle;
-
-        &:hover {
-          background: #faeeee;
-        }
+        background: #faeeee;
       }
     }
+  }
 
   span.date {
     color: #909090;

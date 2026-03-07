@@ -6,7 +6,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getOS, getStorage } from '$lib/server/vps'
 import { getUpdate, update } from '$lib/server/update'
-import { editEMLATSchema, editUserSchema } from '$lib/utils/validations'
+import { editEMLATSchema, profileSchema, editUserSchema } from '$lib/utils/validations'
 import { editEMLAT } from '$lib/server/emlat'
 import { generateRandomPin, getPin } from '$lib/server/pin'
 import type { LanguageCode } from '$lib/stores/language'
@@ -16,6 +16,7 @@ import { deleteAllFiles, markAsUnconfigured, resetDatabase } from '$lib/server/r
 import { restartServer } from '$lib/server/setup'
 import { IUserStatus } from '$lib/utils/db'
 import { dev } from '$app/environment'
+import { getVanillaVersions } from '$lib/server/loaders/vanilla'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -25,13 +26,20 @@ export const load = (async (event) => {
   }
 
   try {
-    let environment, users, vps, update
+    let environment, profiles, users, vps, update, minecraftVersions
 
     try {
       environment = (await db.environment.findFirst())!
     } catch (err) {
       console.error('Failed to load environment:', err)
       throw new ServerError('Failed to load environment', err, NotificationCode.DATABASE_ERROR, 500)
+    }
+
+    try {
+      profiles = await db.profile.findMany({ orderBy: { name: 'asc' } })
+    } catch (err) {
+      console.error('Failed to load profiles:', err)
+      throw new ServerError('Failed to load profiles', err, NotificationCode.DATABASE_ERROR, 500)
     }
 
     try {
@@ -54,7 +62,9 @@ export const load = (async (event) => {
       throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
     }
 
-    return { environment, users, vps, update }
+    minecraftVersions = await getVanillaVersions()
+
+    return { environment, profiles, users, vps, update, minecraftVersions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -102,6 +112,49 @@ export const actions: Actions = {
       console.error('Unknown error:', err)
       throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
     }
+  },
+
+  editProfile: async (event) => {
+    const user = event.locals.user
+
+    if (!user?.isAdmin) {
+      throw error(403, { message: NotificationCode.FORBIDDEN })
+    }
+
+    const form = await event.request.formData()
+
+    const raw = {
+      profileId: form.get('profile-id'),
+      name: form.get('name'),
+      ip: form.get('ip'),
+      port: form.get('port'),
+      tcpProtocol: form.get('tcp-protocol')
+    }
+
+    const result = profileSchema.safeParse(raw)
+
+    if (!result.success) {
+      return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
+    }
+
+    const { profileId, name, ip, port, tcpProtocol } = result.data
+    const slug = name
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9\-]/g, '')
+
+    try {
+      await db.profile.update({
+        where: { id: profileId },
+        data: {
+          name,
+          slug,
+          ip,
+          port,
+          tcpProtocol
+        }
+      })
+    } catch (err) {}
   },
 
   editUser: async (event) => {
@@ -307,4 +360,3 @@ function getStatsPermissions(result: any) {
   if (result.data.p_stats_1) return 1
   return 0
 }
-
