@@ -204,7 +204,7 @@ export async function setDefaultProfile(name: string): Promise<void> {
   console.log('Default profile set successfully.')
 }
 
-export async function markAsConfigured() {
+export async function markAsConfigured(): Promise<void> {
   console.log('\n-------------- UPDATING ENV FILE ---------------\n')
   resetProcessEnv()
   const databaseUrl = process.env.DATABASE_URL ?? defaultPgURL

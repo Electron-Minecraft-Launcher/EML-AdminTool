@@ -1,9 +1,9 @@
 import { db } from './db'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import { Prisma } from '@prisma/client'
+import { Prisma, type Profile } from '@prisma/client'
 
-export async function getProfiles(limit: number = 20) {
+export async function getProfiles(limit: number = 20): Promise<Profile[]> {
   let profiles
   try {
     profiles = await db.profile.findMany({
@@ -17,7 +17,7 @@ export async function getProfiles(limit: number = 20) {
   }
 }
 
-export async function getProfileById(profileId: string) {
+export async function getProfileById(profileId: string): Promise<Profile | null> {
   let profile
   try {
     profile = await db.profile.findUnique({ where: { id: profileId } })
@@ -28,7 +28,7 @@ export async function getProfileById(profileId: string) {
   }
 }
 
-export async function addProfile(name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string) {
+export async function addProfile(name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string): Promise<void> {
   try {
     await db.profile.create({
       data: {
@@ -49,7 +49,7 @@ export async function addProfile(name: string, slug: string, ip?: string, port?:
   }
 }
 
-export async function updateProfile(profileId: string, name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string) {
+export async function updateProfile(profileId: string, name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string): Promise<void> {
   try {
     await db.profile.update({
       where: { id: profileId },
@@ -71,7 +71,7 @@ export async function updateProfile(profileId: string, name: string, slug: strin
   }
 }
 
-export async function deleteProfile(profileId: string) {
+export async function deleteProfile(profileId: string): Promise<void> {
   try {
     await db.profile.delete({ where: { id: profileId } })
   } catch (err) {
