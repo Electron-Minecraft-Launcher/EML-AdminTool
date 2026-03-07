@@ -24,10 +24,10 @@
 
   async function deleteBackground(backgroundId: string) {
     if (!confirm('Are you sure you want to delete this image? It will not be available in the news anymore.')) return
-    
+
     const formData = new FormData()
     formData.set('background-id', backgroundId)
-    
+
     await callAction({ url: '/dashboard/backgrounds', action: 'deleteBackground', formData }, $l)
     invalidateAll()
     selectedBackgroundId = null

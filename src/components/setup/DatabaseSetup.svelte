@@ -77,7 +77,9 @@
   </div>
 
   <div class="actions">
-    <button type="submit" class="primary" disabled={pwdStrength[0] < 3 || unwantedCharsPresent}>{$l.common.next}&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i></button>
+    <button type="submit" class="primary" disabled={pwdStrength[0] < 3 || unwantedCharsPresent}
+      >{$l.common.next}&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i></button
+    >
     <button type="button" class="secondary" onclick={() => step--}><i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;{$l.common.back}</button>
   </div>
 </form>

@@ -143,7 +143,7 @@ export const actions: Actions = {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '')
 
-      try {
+    try {
       await db.profile.update({
         where: { id: profileId },
         data: {
@@ -360,9 +360,3 @@ function getStatsPermissions(result: any) {
   if (result.data.p_stats_1) return 1
   return 0
 }
-
-
-
-
-
-

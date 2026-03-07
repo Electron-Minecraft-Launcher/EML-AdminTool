@@ -69,13 +69,13 @@ export const load = (async (event) => {
 
     const fetchNews = async () => {
       try {
-        const response = await fetch('https://emlproject.pages.dev/api/news?get-content&limit=4')
+        const response = await fetch('https://emlproject.pages.dev/api/news?get-content&limit=3')
         if (!response.ok) {
           console.error('Failed to fetch news:', response.statusText)
           return []
         }
         const data = await response.json()
-        return data ?? [] as any[]
+        return data ?? ([] as any[])
       } catch (err) {
         console.error('Failed to fetch news:', err)
         return []
@@ -122,4 +122,3 @@ export const actions: Actions = {
     }
   }
 }
-

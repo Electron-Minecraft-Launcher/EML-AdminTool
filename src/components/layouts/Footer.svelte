@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Env } from "$lib/utils/types"
-  import { getContext } from "svelte"
+  import type { Env } from '$lib/utils/types'
+  import { getContext } from 'svelte'
 
   const env = getContext<Env>('env')
 </script>

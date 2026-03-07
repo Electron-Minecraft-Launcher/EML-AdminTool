@@ -15,5 +15,16 @@
   "tabWidth": 2,
   "trailingComma": "none",
   "useTabs": false,
-  "parser": "typescript"
+  "parser": "typescript",
+  "plugins": [
+    "prettier-plugin-svelte"
+  ],
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
 }

@@ -45,6 +45,6 @@
   @use '../../../static/scss/modals.scss';
 
   button.secondary {
-    margin-top: 30px
+    margin-top: 30px;
   }
 </style>

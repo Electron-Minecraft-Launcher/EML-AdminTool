@@ -267,7 +267,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       <button class="primary danger" onclick={reset}>{$l.dashboard.emlatSettings.dangerZone.reset}</button>
     </div>
     <div>
-      <button class="secondary danger" onclick={() => showUninstallModal = true}>{$l.dashboard.emlatSettings.dangerZone.uninstall}</button>
+      <button class="secondary danger" onclick={() => (showUninstallModal = true)}>{$l.dashboard.emlatSettings.dangerZone.uninstall}</button>
     </div>
   </div>
 </section>

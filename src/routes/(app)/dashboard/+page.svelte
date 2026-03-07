@@ -199,7 +199,7 @@
     .blog-post {
       &:not(:last-child) {
         padding-bottom: 30px;
-        border-bottom: 2px solid var(--border-color2)
+        border-bottom: 2px solid var(--border-color2);
       }
     }
 

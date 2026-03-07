@@ -102,7 +102,7 @@
         </div>
         <div style="flex: 0.5">
           <label for="port">{$l.dashboard.emlatSettings.profileManagement.modal.port}</label>
-          <input type="number" id="port" name="port" bind:value={port} min="1" max="65535" placeholder="25565"/>
+          <input type="number" id="port" name="port" bind:value={port} min="1" max="65535" placeholder="25565" />
         </div>
       </div>
       <div style="flex: 0.5;">

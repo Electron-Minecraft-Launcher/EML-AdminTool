@@ -39,8 +39,8 @@
   })
 
   const purifyConfig = {
-    ADD_TAGS: ['span', 'div', 'p', 'pre', 'code'], 
-    ADD_ATTR: ['class', 'style'],
+    ADD_TAGS: ['span', 'div', 'p', 'pre', 'code'],
+    ADD_ATTR: ['class', 'style']
   }
 </script>
 

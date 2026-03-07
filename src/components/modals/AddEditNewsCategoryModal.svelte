@@ -46,7 +46,7 @@
   {#if showLoader}
     <LoadingSplash transparent />
   {/if}
-  
+
   <form method="POST" action="?/addEditCategory" use:enhance={enhanceForm}>
     <h2>{selectedCategoryId ? 'Edit category' : 'Create a category'}</h2>
 

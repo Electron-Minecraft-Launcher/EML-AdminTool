@@ -59,7 +59,9 @@
   {/if}
 
   <form method="POST" action="?/editUser" use:enhance={enhanceForm}>
-    <h2>{action === 'ACCEPT' ? $l.dashboard.emlatSettings.userManagement.modal.acceptUser : $l.dashboard.emlatSettings.userManagement.modal.title}</h2>
+    <h2>
+      {action === 'ACCEPT' ? $l.dashboard.emlatSettings.userManagement.modal.acceptUser : $l.dashboard.emlatSettings.userManagement.modal.title}
+    </h2>
 
     <label for="username" style="margin-top: 0">{$l.common.username}</label>
     <input type="text" id="username" name="username" bind:value={selectedUser.username} />

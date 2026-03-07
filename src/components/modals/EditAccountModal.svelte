@@ -53,13 +53,12 @@
   <form method="POST" action="?/edit" use:enhance={enhanceForm}>
     <h2>{$l.dashboard.account.info.modal.title}</h2>
 
-    
     <label for="username">{$l.common.username}</label>
     <input type="text" id="username" name="username" bind:value={username} autocomplete="username" />
     {#if user.isAdmin}
-    <p class="warn">{$l.dashboard.account.info.modal.usernameWarn}</p>
+      <p class="warn">{$l.dashboard.account.info.modal.usernameWarn}</p>
     {/if}
-    
+
     <p>{$l.dashboard.account.info.modal.leaveBlankPassword}</p>
 
     <label for="password">{$l.dashboard.account.info.modal.newPassword}</label>
