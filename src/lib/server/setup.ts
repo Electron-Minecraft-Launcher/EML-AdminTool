@@ -191,7 +191,7 @@ export async function setDefaultProfile(name: string): Promise<void> {
   try {
     await client.query(
       `INSERT INTO "Profile" ("id", "name", "isDefault", "slug", "createdAt", "updatedAt") VALUES ($1, $2, true, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
-      [1, name, slug]
+      ['1', name, slug]
     )
   } catch (err) {
     console.error('Error setting default profile:', err)
