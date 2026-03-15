@@ -68,8 +68,6 @@ export const actions: Actions = {
 
     const { profileId, name, ip, port, tcpProtocol } = result.data
 
-    console.log('Received profile data:', { profileId, name, ip, port, tcpProtocol })
-
     const slug = name
       .toLowerCase()
       .replace(/\s+/g, '-')
