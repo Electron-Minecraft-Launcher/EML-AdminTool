@@ -26,27 +26,25 @@ export const load = (async (event) => {
   }
 
   try {
-    let environment, profiles, users, vps, update, minecraftVersions
+    let vps
 
-    try {
-      environment = (await db.environment.findFirst())!
-    } catch (err) {
-      console.error('Failed to load environment:', err)
-      throw new ServerError('Failed to load environment', err, NotificationCode.DATABASE_ERROR, 500)
-    }
+    const [environment, users, update, minecraftVersions] = await Promise.all([
+      db.environment.findFirst().catch((err) => {
+        console.error('Failed to load environment:', err)
+        throw new ServerError('Failed to load environment', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
+      db.user.findMany({ omit: { password: true }, orderBy: { username: 'asc' } }).catch((err) => {
+        console.error('Failed to load users:', err)
+        throw new ServerError('Failed to load users', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
+      getUpdate().catch((err) => {
+        throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
+      }),
+      getVanillaVersions()
+    ])
 
-    try {
-      profiles = await db.profile.findMany({ orderBy: { name: 'asc' } })
-    } catch (err) {
-      console.error('Failed to load profiles:', err)
-      throw new ServerError('Failed to load profiles', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-
-    try {
-      users = await db.user.findMany({ omit: { password: true }, orderBy: { username: 'asc' } })
-    } catch (err) {
-      console.error('Failed to load users:', err)
-      throw new ServerError('Failed to load users', err, NotificationCode.DATABASE_ERROR, 500)
+    if (!environment) {
+      throw new ServerError('Environment configuration not found', null, NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
 
     try {
@@ -56,15 +54,7 @@ export const load = (async (event) => {
       throw new ServerError('Failed to load VPS information', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
 
-    try {
-      update = await getUpdate()
-    } catch (err) {
-      throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
-    }
-
-    minecraftVersions = await getVanillaVersions()
-
-    return { environment, profiles, users, vps, update, minecraftVersions }
+    return { environment, users, vps, update, minecraftVersions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -112,49 +102,6 @@ export const actions: Actions = {
       console.error('Unknown error:', err)
       throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
     }
-  },
-
-  editProfile: async (event) => {
-    const user = event.locals.user
-
-    if (!user?.isAdmin) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
-    }
-
-    const form = await event.request.formData()
-
-    const raw = {
-      profileId: form.get('profile-id'),
-      name: form.get('name'),
-      ip: form.get('ip'),
-      port: form.get('port'),
-      tcpProtocol: form.get('tcp-protocol')
-    }
-
-    const result = profileSchema.safeParse(raw)
-
-    if (!result.success) {
-      return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
-    }
-
-    const { profileId, name, ip, port, tcpProtocol } = result.data
-    const slug = name
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g, '')
-
-    try {
-      await db.profile.update({
-        where: { id: profileId },
-        data: {
-          name,
-          slug,
-          ip,
-          port,
-          tcpProtocol
-        }
-      })
-    } catch (err) {}
   },
 
   editUser: async (event) => {
@@ -360,3 +307,4 @@ function getStatsPermissions(result: any) {
   if (result.data.p_stats_1) return 1
   return 0
 }
+

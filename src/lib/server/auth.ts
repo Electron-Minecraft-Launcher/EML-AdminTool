@@ -30,12 +30,15 @@ export async function login(username: string, password: string): Promise<User> {
   return user
 }
 
-export async function verify(session: string): Promise<User> {
+export async function verify(session: string): Promise<User & { profilePermissions: { profileId: string; permission: number }[] }> {
   const payload = await checkSession(session)
 
   let existing
   try {
-    existing = await db.user.findUnique({ where: { id: payload.id as string } })
+    existing = await db.user.findUnique({
+      where: { id: payload.id as string },
+      include: { profilePermissions: { select: { profileId: true, permission: true } } }
+    })
   } catch (err) {
     console.error('Error verifying user:', err)
     throw new ServerError('Failed to verify user', err, NotificationCode.DATABASE_ERROR, 500)
@@ -86,3 +89,4 @@ export async function logout(session: string): Promise<void> {
     throw new ServerError('Failed to log out user', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
+

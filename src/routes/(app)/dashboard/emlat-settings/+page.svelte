@@ -25,7 +25,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
   let showEditAdminToolModal = $state(false)
   let showUninstallModal = $state(false)
 
-  let selectedUserId = $state(data.profiles[0].id)
+  let selectedUserId = $state(data.users[0].id)
   let updateMessage: string = $state('')
 
   onMount(() => {
@@ -133,7 +133,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 
     <div>
       <p class="label">{$l.dashboard.emlatSettings.info.nbUsers}</p>
-      <p>{data.profiles.length}</p>
+      <p>{data.users.length}</p>
     </div>
   </div>
 </section>

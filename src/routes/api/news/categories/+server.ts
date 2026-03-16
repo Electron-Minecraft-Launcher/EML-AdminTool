@@ -8,7 +8,6 @@ export const GET: RequestHandler = async () => {
   try {
     newsCategories = await getNewsCategories()
   } catch (err) {
-    console.error('Failed to get news categories:', err)
     return json({ success: false, message: 'Failed to get news categories' }, { status: 500 })
   }
 

@@ -238,12 +238,7 @@ async function loadApplicationContext(event: RequestEvent) {
 async function handleUserSession(event: RequestEvent, session: string) {
   try {
     const user = await verify(session)
-    const profilePermissions = await db.userProfilePermission.findMany({
-      where: { userId: user.id },
-      select: { profileId: true, permission: true }
-    })
-
-    event.locals.user = getUserInfo(user, profilePermissions)
+    event.locals.user = getUserInfo(user, user.profilePermissions)
   } catch (err) {
     deleteSession(event)
 

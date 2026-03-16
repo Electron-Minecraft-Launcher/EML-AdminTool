@@ -24,35 +24,39 @@ export const load = (async (event) => {
   try {
     const files = await getCachedFilesParsed(domain, 'files-updater')
 
-    let loader: Loader | null = null
-    try {
-      loader = (await db.loader.findFirst()) as Loader | null
-    } catch (err) {
-      console.error('Failed to load loader:', err)
-      throw new ServerError('Failed to load loader', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-
-    if (!loader?.loaderVersion) {
-      loader = {
-        id: '',
-        type: ILoaderType.VANILLA,
-        minecraftVersion: 'latest_release',
-        loaderVersion: 'latest_release',
-        format: ILoaderFormat.CLIENT,
-        file: null,
-        updatedAt: new Date()
-      } as Loader
-    }
+    const [vanilla, forge, neoforge, fabric, quilt, fabricLoaderVersions, quiltLoaderVersions, databaseLoader] = await Promise.all([
+      getVanillaVersions(),
+      getForgeLikeVersions(ILoaderType.FORGE),
+      getForgeLikeVersions(ILoaderType.NEOFORGE),
+      getFabricLikeGameVersions(ILoaderType.FABRIC),
+      getFabricLikeGameVersions(ILoaderType.QUILT),
+      getFabricLikeLoaderVersions(ILoaderType.FABRIC),
+      getFabricLikeLoaderVersions(ILoaderType.QUILT),
+      db.loader.findFirst().catch((err) => {
+        console.error('Failed to load loader:', err)
+        throw new ServerError('Failed to load loader', err, NotificationCode.DATABASE_ERROR, 500)
+      })
+    ])
 
     const loaderList = {
-      [ILoaderType.VANILLA]: await getVanillaVersions(),
-      [ILoaderType.FORGE]: await getForgeLikeVersions(ILoaderType.FORGE),
-      [ILoaderType.NEOFORGE]: await getForgeLikeVersions(ILoaderType.NEOFORGE),
-      [ILoaderType.FABRIC]: await getFabricLikeGameVersions(ILoaderType.FABRIC),
-      [ILoaderType.QUILT]: await getFabricLikeGameVersions(ILoaderType.QUILT)
+      [ILoaderType.VANILLA]: vanilla,
+      [ILoaderType.FORGE]: forge,
+      [ILoaderType.NEOFORGE]: neoforge,
+      [ILoaderType.FABRIC]: fabric,
+      [ILoaderType.QUILT]: quilt
     }
-    const fabricLoaderVersions = await getFabricLikeLoaderVersions(ILoaderType.FABRIC)
-    const quiltLoaderVersions = await getFabricLikeLoaderVersions(ILoaderType.QUILT)
+
+    const loader: Loader = databaseLoader?.loaderVersion
+      ? (databaseLoader as Loader)
+      : ({
+          id: '',
+          type: ILoaderType.VANILLA,
+          minecraftVersion: 'latest_release',
+          loaderVersion: 'latest_release',
+          format: ILoaderFormat.CLIENT,
+          file: null,
+          updatedAt: new Date()
+        } as Loader)
 
     return { loader, loaderList, fabricLoaderVersions, quiltLoaderVersions, files }
   } catch (err) {
@@ -188,10 +192,10 @@ export const actions: Actions = {
     try {
       for (const path of paths) {
         if (typeof path !== 'string') continue
-
         await deleteFile('files-updater', path)
-        await cacheFiles('files-updater')
       }
+      
+      await cacheFiles('files-updater')
 
       const cache = await getCachedFilesParsed(domain, 'files-updater')
       return { files: cache }
@@ -251,3 +255,4 @@ export const actions: Actions = {
     }
   }
 }
+

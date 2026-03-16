@@ -32,32 +32,27 @@ export const load = (async (event) => {
   }
 
   try {
-    let news, newsCategories, newsTags, images
-    try {
-      news = await db.news.findMany({
-        orderBy: { createdAt: 'desc' },
-        include: { author: { select: { id: true, username: true } }, categories: true, tags: true }
+    const [news, newsCategories, newsTags] = await Promise.all([
+      db.news
+        .findMany({
+          orderBy: { createdAt: 'desc' },
+          include: { author: { select: { id: true, username: true } }, categories: true, tags: true }
+        })
+        .catch((err) => {
+          console.error('Failed to load news:', err)
+          throw new ServerError('Failed to load news', err, NotificationCode.DATABASE_ERROR, 500)
+        }),
+      db.newsCategory.findMany({ orderBy: { name: 'asc' } }).catch((err) => {
+        console.error('Failed to load news categories:', err)
+        throw new ServerError('Failed to load news categories', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
+      db.newsTag.findMany({ orderBy: { name: 'asc' } }).catch((err) => {
+        console.error('Failed to load news tags:', err)
+        throw new ServerError('Failed to load news tags', err, NotificationCode.DATABASE_ERROR, 500)
       })
-    } catch (err) {
-      console.error('Failed to load news:', err)
-      throw new ServerError('Failed to load news', err, NotificationCode.DATABASE_ERROR, 500)
-    }
+    ])
 
-    try {
-      newsCategories = await db.newsCategory.findMany({ orderBy: { name: 'asc' } })
-    } catch (err) {
-      console.error('Failed to load news categories:', err)
-      throw new ServerError('Failed to load news categories', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-
-    try {
-      newsTags = await db.newsTag.findMany({ orderBy: { name: 'asc' } })
-    } catch (err) {
-      console.error('Failed to load news tags:', err)
-      throw new ServerError('Failed to load news tags', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-
-    images = await getFiles(domain, 'images')
+    const images = await getFiles(domain, 'images')
 
     return { news, newsCategories, newsTags, images }
   } catch (err) {
@@ -332,3 +327,4 @@ export const actions: Actions = {
     }
   }
 }
+

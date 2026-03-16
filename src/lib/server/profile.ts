@@ -17,6 +17,15 @@ export async function getProfiles(limit: number = 20): Promise<Profile[]> {
   }
 }
 
+export async function getDefaultProfile(): Promise<Profile | null> {
+  try {
+    return await db.profile.findFirst({ where: { isDefault: true } })
+  } catch (err) {
+    console.error('Failed to get default profile:', err)
+    throw new ServerError('Failed to get default profile', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
 export async function getProfileById(profileId: string): Promise<Profile | null> {
   let profile
   try {
@@ -25,6 +34,15 @@ export async function getProfileById(profileId: string): Promise<Profile | null>
   } catch (err) {
     console.error('Error fetching profile by ID:', err)
     throw new ServerError('Error fetching profile by ID', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
+export async function getProfileBySlug(slug: string): Promise<Profile | null> {
+  try {
+    return await db.profile.findUnique({ where: { slug } })
+  } catch (err) {
+    console.error('Failed to get profile by slug:', err)
+    throw new ServerError('Failed to get profile by slug', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
 
@@ -83,3 +101,35 @@ export async function deleteProfile(profileId: string): Promise<void> {
     throw new ServerError('Error deleting profile', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
+
+export async function getUserProfilePermissions(userId: string): Promise<{ profileId: string; permission: number }[]> {
+  try {
+    return await db.userProfilePermission.findMany({
+      where: { userId },
+      select: { profileId: true, permission: true }
+    })
+  } catch (err) {
+    console.error('Failed to get user profile permissions:', err)
+    throw new ServerError('Failed to get user profile permissions', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
+export async function setUserProfilePermission(userId: string, profileId: string, permission: 0 | 1 | 2): Promise<void> {
+  try {
+    if (permission === 0) {
+      await db.userProfilePermission.deleteMany({ where: { userId, profileId } })
+    } else {
+      await db.userProfilePermission.upsert({
+        where: { userId_profileId: { userId, profileId } },
+        create: { userId, profileId, permission },
+        update: { permission }
+      })
+    }
+  } catch (err) {
+    console.error('Failed to set user profile permission:', err)
+    throw new ServerError('Failed to set user profile permission', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
+
+
