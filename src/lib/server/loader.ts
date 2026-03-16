@@ -25,7 +25,7 @@ export async function getLoader(profileId: string = '1'): Promise<Loader | null>
   }
 }
 
-export async function updateLoader(profileId: string = '1', loader: Partial<Loader>): Promise<void> {
+export async function updateLoader(loader: Partial<Loader>, profileId: string = '1'): Promise<void> {
   let existingLoader
   try {
     existingLoader = await db.loader.findFirst({ where: { profileId } })
@@ -54,5 +54,6 @@ export async function updateLoader(profileId: string = '1', loader: Partial<Load
     throw new ServerError('Failed to update loader', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
+
 
 
