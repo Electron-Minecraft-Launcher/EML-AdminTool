@@ -315,12 +315,6 @@ async function refuseDeleteUser(event: RequestEvent<any>) {
   }
 }
 
-function getFilesUpdaterPermission(result: any) {
-  if (result.data.p_filesUpdater_2) return 2
-  if (result.data.p_filesUpdater_1) return 1
-  return 0
-}
-
 function getNewsPermissions(result: any) {
   if (result.data.p_news_2) return 2
   if (result.data.p_news_1 || result.data.p_newsCategories || result.data.p_newsTags) return 1
