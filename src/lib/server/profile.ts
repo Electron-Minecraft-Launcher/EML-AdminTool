@@ -114,22 +114,45 @@ export async function getUserProfilePermissions(userId: string): Promise<{ profi
   }
 }
 
-export async function setUserProfilePermission(userId: string, profileId: string, permission: 0 | 1 | 2): Promise<void> {
+/**
+ * Called from the Profile page modal.
+ */
+export async function setProfileUserPermissions(profileId: string, permissions: { userId: string; permission: 0 | 1 | 2 }[]): Promise<void> {
   try {
-    if (permission === 0) {
-      await db.userProfilePermission.deleteMany({ where: { userId, profileId } })
-    } else {
-      await db.userProfilePermission.upsert({
-        where: { userId_profileId: { userId, profileId } },
-        create: { userId, profileId, permission },
-        update: { permission }
-      })
-    }
+    await db.$transaction([
+      db.userProfilePermission.deleteMany({ where: { profileId } }),
+      ...permissions
+        .filter((p) => p.permission > 0)
+        .map((p) =>
+          db.userProfilePermission.create({
+            data: { profileId, userId: p.userId, permission: p.permission }
+          })
+        )
+    ])
   } catch (err) {
-    console.error('Failed to set user profile permission:', err)
-    throw new ServerError('Failed to set user profile permission', err, NotificationCode.DATABASE_ERROR, 500)
+    console.error('Failed to set profile user permissions:', err)
+    throw new ServerError('Failed to set profile user permissions', err, NotificationCode.DATABASE_ERROR, 500)
   }
 }
 
-
+/**
+ * Called from the Settings page modal.
+ */
+export async function setUserProfilePermissions(userId: string, permissions: { profileId: string; permission: 0 | 1 | 2 }[]): Promise<void> {
+  try {
+    await db.$transaction([
+      db.userProfilePermission.deleteMany({ where: { userId } }),
+      ...permissions
+        .filter((p) => p.permission > 0)
+        .map((p) =>
+          db.userProfilePermission.create({
+            data: { userId, profileId: p.profileId, permission: p.permission }
+          })
+        )
+    ])
+  } catch (err) {
+    console.error('Failed to set user profile permissions:', err)
+    throw new ServerError('Failed to set user profile permissions', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
 

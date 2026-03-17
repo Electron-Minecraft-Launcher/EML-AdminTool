@@ -50,6 +50,46 @@ export const profileSchema = z
   })
   .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFIL_PORT_WITHOUT_IP, path: ['port'] })
 
+const profilePermissionItemSchema = z.object({
+  userId: z.string(),
+  permission: z.union([z.literal(0), z.literal(1), z.literal(2)])
+})
+
+const userPermissionItemSchema = z.object({
+  profileId: z.string(),
+  permission: z.union([z.literal(0), z.literal(1), z.literal(2)])
+})
+
+export const profilePermissionsSchema = z.object({
+  profileId: z.string().min(1, NotificationCode.MISSING_INPUT),
+  permissions: z
+    .string()
+    .transform((str, ctx) => {
+      try {
+        return JSON.parse(str)
+      } catch {
+        ctx.addIssue({ message: NotificationCode.INVALID_INPUT })
+        return z.NEVER
+      }
+    })
+    .pipe(z.array(profilePermissionItemSchema))
+})
+
+export const userProfilePermissionsSchema = z.object({
+  userId: z.string().min(1, NotificationCode.MISSING_INPUT),
+  permissions: z
+    .string()
+    .transform((str, ctx) => {
+      try {
+        return JSON.parse(str)
+      } catch {
+        ctx.addIssue({ message: NotificationCode.INVALID_INPUT })
+        return z.NEVER
+      }
+    })
+    .pipe(z.array(userPermissionItemSchema))
+})
+
 export const editUserSchema = z.object({
   userId: z.string(),
   username: z
@@ -57,8 +97,6 @@ export const editUserSchema = z.object({
     .transform((val) => val.trim())
     .refine((val) => val.length >= 2, { message: NotificationCode.EDIT_USER_USERNAME_TOO_SHORT })
     .refine((val) => val.length <= 64, { message: NotificationCode.EDIT_USER_USERNAME_TOO_LONG }),
-  p_filesUpdater_1: z.boolean(),
-  p_filesUpdater_2: z.boolean(),
   p_bootstraps: z.boolean(),
   p_maintenance: z.boolean(),
   p_news_1: z.boolean(),
