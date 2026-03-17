@@ -5,9 +5,9 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getVanillaVersions } from '$lib/server/loaders/vanilla'
 import { verify } from '$lib/server/auth'
-import { profileSchema } from '$lib/utils/validations'
+import { profilePermissionsSchema, profileSchema } from '$lib/utils/validations'
 import { fail } from '$lib/server/action'
-import { addProfile, getProfileById, updateProfile } from '$lib/server/profile'
+import { addProfile, getProfileById, updateProfileUserPermissions, updateProfile } from '$lib/server/profile'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -92,5 +92,34 @@ export const actions: Actions = {
       console.error('Unknown error:', err)
       throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
     }
+  },
+
+  setProfilePermissions: async (event) => {
+    const user = event.locals.user
+    if (!user?.isAdmin) throw error(403, { message: NotificationCode.FORBIDDEN })
+
+    const form = await event.request.formData()
+    const raw = {
+      profileId: form.get('profile-id'),
+      permissions: form.get('permissions')
+    }
+
+    const result = profilePermissionsSchema.safeParse(raw)
+    if (!result.success) {
+      return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
+    }
+
+    const { profileId, permissions } = result.data
+
+    try {
+      await updateProfileUserPermissions(profileId, permissions)
+    } catch (err) {
+      if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
+      if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
+
+      console.error('Unknown error:', err)
+      throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
+    }
   }
 }
+

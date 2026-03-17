@@ -6,7 +6,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getOS, getStorage } from '$lib/server/vps'
 import { getUpdate, update } from '$lib/server/update'
-import { editEMLATSchema, profileSchema, editUserSchema } from '$lib/utils/validations'
+import { editEMLATSchema, profileSchema, editUserSchema, userProfilePermissionsSchema } from '$lib/utils/validations'
 import { editEMLAT } from '$lib/server/emlat'
 import { generateRandomPin, getPin } from '$lib/server/pin'
 import type { LanguageCode } from '$lib/stores/language'
@@ -17,6 +17,7 @@ import { restartServer } from '$lib/server/setup'
 import { IUserStatus } from '$lib/utils/db'
 import { dev } from '$app/environment'
 import { getVanillaVersions } from '$lib/server/loaders/vanilla'
+import { updateUserProfilePermissions } from '$lib/server/profile'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -28,7 +29,7 @@ export const load = (async (event) => {
   try {
     let vps
 
-    const [environment, users, update, minecraftVersions] = await Promise.all([
+    const [environment, users, profiles, userPermissions, update, minecraftVersions] = await Promise.all([
       db.environment.findFirst().catch((err) => {
         console.error('Failed to load environment:', err)
         throw new ServerError('Failed to load environment', err, NotificationCode.DATABASE_ERROR, 500)
@@ -37,6 +38,18 @@ export const load = (async (event) => {
         console.error('Failed to load users:', err)
         throw new ServerError('Failed to load users', err, NotificationCode.DATABASE_ERROR, 500)
       }),
+      db.profile.findMany({ orderBy: { name: 'asc' } }).catch((err) => {
+        console.error('Failed to load profiles:', err)
+        throw new ServerError('Failed to load profiles', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
+      db.userProfilePermission
+        .findMany({
+          select: { userId: true, profileId: true, permission: true }
+        })
+        .catch((err) => {
+          console.error('Failed to load permissions:', err)
+          throw new ServerError('Failed to load permissions', err, NotificationCode.DATABASE_ERROR, 500)
+        }),
       getUpdate().catch((err) => {
         throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
       }),
@@ -54,7 +67,7 @@ export const load = (async (event) => {
       throw new ServerError('Failed to load VPS information', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
 
-    return { environment, users, vps, update, minecraftVersions }
+    return { environment, users, profiles, userPermissions, vps, update, minecraftVersions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -135,10 +148,20 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
+    const p_filesUpdaterRaw = {
+      userId: form.get('user-id'),
+      permissions: form.get('profile-permissions')
+    }
+
+    const p_filesUpdaterResult = userProfilePermissionsSchema.safeParse(p_filesUpdaterRaw)
+    if (!p_filesUpdaterResult.success) {
+      return fail(event, 400, { failure: JSON.parse(p_filesUpdaterResult.error.message)[0].message })
+    }
+
     const userId = result.data.userId
     const username = result.data.username
     const status = IUserStatus.ACTIVE
-    const p_filesUpdater = getFilesUpdaterPermission(result)
+    const p_filesUpdater = p_filesUpdaterResult.data.permissions
     const p_bootstraps = result.data.p_bootstraps ? 1 : 0
     const p_maintenance = result.data.p_maintenance ? 1 : 0
     const p_news = getNewsPermissions(result)
@@ -148,18 +171,20 @@ export const actions: Actions = {
     const p_stats = getStatsPermissions(result)
 
     try {
-      await updateUser(userId, {
-        username,
-        status,
-        p_filesUpdater,
-        p_bootstraps,
-        p_maintenance,
-        p_news,
-        p_newsCategories,
-        p_newsTags,
-        p_backgrounds,
-        p_stats
-      })
+      await Promise.all([
+        updateUser(userId, {
+          username,
+          status,
+          p_bootstraps,
+          p_maintenance,
+          p_news,
+          p_newsCategories,
+          p_newsTags,
+          p_backgrounds,
+          p_stats
+        }),
+        updateUserProfilePermissions(userId, p_filesUpdater)
+      ])
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })

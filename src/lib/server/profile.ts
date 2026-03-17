@@ -117,7 +117,7 @@ export async function getUserProfilePermissions(userId: string): Promise<{ profi
 /**
  * Called from the Profile page modal.
  */
-export async function setProfileUserPermissions(profileId: string, permissions: { userId: string; permission: 0 | 1 | 2 }[]): Promise<void> {
+export async function updateProfileUserPermissions(profileId: string, permissions: { userId: string; permission: 0 | 1 | 2 }[]): Promise<void> {
   try {
     await db.$transaction([
       db.userProfilePermission.deleteMany({ where: { profileId } }),
@@ -138,7 +138,7 @@ export async function setProfileUserPermissions(profileId: string, permissions: 
 /**
  * Called from the Settings page modal.
  */
-export async function setUserProfilePermissions(userId: string, permissions: { profileId: string; permission: 0 | 1 | 2 }[]): Promise<void> {
+export async function updateUserProfilePermissions(userId: string, permissions: { profileId: string; permission: 0 | 1 | 2 }[]): Promise<void> {
   try {
     await db.$transaction([
       db.userProfilePermission.deleteMany({ where: { userId } }),
