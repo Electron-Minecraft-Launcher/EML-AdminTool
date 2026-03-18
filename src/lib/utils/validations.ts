@@ -68,7 +68,10 @@ export const profilePermissionsSchema = z.object({
       try {
         return JSON.parse(str)
       } catch {
-        ctx.addIssue({ message: NotificationCode.INVALID_INPUT })
+        ctx.addIssue({
+          code: 'custom',
+          message: NotificationCode.INVALID_INPUT
+        })
         return z.NEVER
       }
     })
@@ -83,7 +86,10 @@ export const userProfilePermissionsSchema = z.object({
       try {
         return JSON.parse(str)
       } catch {
-        ctx.addIssue({ message: NotificationCode.INVALID_INPUT })
+        ctx.addIssue({
+          code: 'custom',
+          message: NotificationCode.INVALID_INPUT
+        })
         return z.NEVER
       }
     })
@@ -275,4 +281,6 @@ export const backgroundSchema = z
   .refine((schema) => !(!schema.backgroundId && !schema.file), {
     message: NotificationCode.MISSING_INPUT
   })
+
+
 
