@@ -4,19 +4,19 @@
   import { addNotification } from '$lib/stores/notifications'
   import type { NotificationCode } from '$lib/utils/notifications'
   import type { SubmitFunction } from '@sveltejs/kit'
-  import type { PageData } from '../../routes/(app)/dashboard/profiles/$types'
   import AddEditProfileModal from '../modals/AddEditProfileModal.svelte'
+  import type { Profile } from '@prisma/client'
 
   interface Props {
+    profiles: Profile[]
     selectedProfileId: string
-    data: PageData
+    selectedProfileIdModal: string | null
+    showAddEditProfileModal: boolean
   }
 
-  let { selectedProfileId = $bindable(), data }: Props = $props()
+  let { profiles, selectedProfileId = $bindable(), selectedProfileIdModal = $bindable(null), showAddEditProfileModal: showEditProfileModal = $bindable(false) }: Props = $props()
 
-  let showEditProfileModal = $state(false)
-  let selectedProfile = $derived.by(() => data.profiles.find((profile) => profile.id === selectedProfileId))!
-  let action: 'ADD' | 'EDIT' = $state('ADD')
+  let selectedProfile = $derived.by(() => profiles.find((profile) => profile.id === selectedProfileId))!
 
   const tcpProtocols = {
     modern: 'Modern (1.7+)',
@@ -34,7 +34,7 @@
       return
     }
 
-    formData.set('profile-id', selectedProfileId)
+    formData.set('profile-id', selectedProfileId ?? '')
     return async ({ result, update }) => {
       await update({ reset: false })
       if (result.type === 'failure') {
@@ -48,7 +48,7 @@
 </script>
 
 {#if showEditProfileModal}
-  <AddEditProfileModal bind:show={showEditProfileModal} bind:selectedProfileId {action} {data} />
+  <AddEditProfileModal bind:show={showEditProfileModal} bind:selectedProfileId={selectedProfileIdModal} {profiles} />
 {/if}
 
 {#if !selectedProfile.isDefault}
@@ -59,8 +59,8 @@
 <button
   class="secondary right"
   onclick={() => {
+    selectedProfileIdModal = selectedProfileId
     showEditProfileModal = true
-    action = 'EDIT'
   }}
   aria-label="Edit profile"
 >
@@ -102,7 +102,7 @@
 <style lang="scss">
   div.info {
     min-height: 200px;
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
   }
 

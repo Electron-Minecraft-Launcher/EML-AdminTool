@@ -8,7 +8,14 @@
 
   const env = getEnv()
 
-  let selectedProfileId = $state(data.profiles[0].id)
+  let selectedProfileId: string = $state(data.profiles[0].id)
+  let selectedProfileIdModal: string | null = $state(null)
+  let showAddEditProfileModal = $state(false)
+  let profiles = $state(data.profiles)
+
+  $effect(() => {
+    if (data.profiles) profiles = data.profiles
+  })
 </script>
 
 <svelte:head>
@@ -16,10 +23,6 @@
 </svelte:head>
 
 <h2>{$l.dashboard.profiles.title}</h2>
-
-<section class="section warning">
-  <p><i class="fa-solid fa-warning"></i>&nbsp;&nbsp;You cannot add or remove profiles at this time. You can only modify the default profile.</p>
-</section>
 
 <section class="section">
   <h3>{$l.dashboard.profiles.profileManagement.title}</h3>
@@ -35,10 +38,19 @@
           {/if}
         </button>
       {/each}
+      <button
+        class="secondary add"
+        onclick={() => {
+          selectedProfileIdModal = null
+          showAddEditProfileModal = true
+        }}
+      >
+        <i class="fa-solid fa-plus"></i>&nbsp;&nbsp;{$l.dashboard.profiles.profileManagement.addProfile}
+      </button>
     </div>
 
     <div class="content-list">
-      <ProfileManagement bind:selectedProfileId {data} />
+      <ProfileManagement {profiles} bind:showAddEditProfileModal bind:selectedProfileId bind:selectedProfileIdModal />
     </div>
   </div>
 </section>
@@ -56,5 +68,10 @@
 
   i.fa-solid.fa-star {
     font-size: 10px;
+  }
+
+  button.add {
+    margin-top: 10px;
+    width: 100%;
   }
 </style>

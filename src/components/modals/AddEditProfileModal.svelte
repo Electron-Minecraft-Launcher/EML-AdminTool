@@ -2,7 +2,6 @@
   import { applyAction, enhance } from '$app/forms'
   import { l } from '$lib/stores/language'
   import { addNotification } from '$lib/stores/notifications'
-  import type { PageData } from '../../routes/(app)/dashboard/profiles/$types'
   import type { SubmitFunction } from '@sveltejs/kit'
   import ModalTemplate from './__ModalTemplate.svelte'
   import type { NotificationCode } from '$lib/utils/notifications'
@@ -11,10 +10,8 @@
 
   interface Props {
     show: boolean
-    selectedProfileId: string
-    action: 'ADD' | 'EDIT'
-    data: PageData
-    scroll?: HTMLDivElement | null
+    selectedProfileId: string | null
+    profiles: Profile[]
   }
 
   const emptyProfile: Profile = {
@@ -29,9 +26,9 @@
     createdAt: new Date()
   }
 
-  let { show = $bindable(), selectedProfileId = $bindable(), action, data, scroll = $bindable(null) }: Props = $props()
+  let { show = $bindable(), selectedProfileId = $bindable(), profiles }: Props = $props()
 
-  let selectedProfile = $state(data.profiles.find((profile) => profile.id === selectedProfileId) ?? emptyProfile)
+  let selectedProfile = $state(profiles.find((profile) => profile.id === selectedProfileId) ?? emptyProfile)
   let name = $state(selectedProfile.name)
   let slug = $derived.by(() => {
     return name
@@ -44,7 +41,9 @@
   let tcpProtocol = $state(selectedProfile.tcpProtocol ?? 'modern')
 
   let disabled = $derived.by(() => {
-    if (data.profiles.some((profile) => (profile.slug === slug || profile.name === name) && profile.id !== selectedProfileId)) {
+    if (selectedProfileId && profiles.some((profile) => (profile.slug === slug || profile.name === name) && profile.id !== selectedProfileId)) {
+      return true
+    } else if (!selectedProfileId && profiles.some((profile) => profile.slug === slug || profile.name === name)) {
       return true
     }
   })
@@ -53,7 +52,7 @@
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
     showLoader = true
-    formData.set('profile-id', selectedProfileId)
+    formData.set('profile-id', selectedProfileId ?? '')
 
     return async ({ result, update }) => {
       await update({ reset: false })
@@ -78,7 +77,7 @@
 
   <form method="POST" action="?/addEditProfile" use:enhance={enhanceForm}>
     <h2>
-      {action === 'ADD' ? $l.dashboard.emlatSettings.profileManagement.modal.addProfile : $l.dashboard.emlatSettings.profileManagement.modal.title}
+      {selectedProfileId ? $l.dashboard.emlatSettings.profileManagement.modal.addProfile : $l.dashboard.emlatSettings.profileManagement.modal.title}
     </h2>
 
     <div class="flex">
@@ -107,13 +106,13 @@
         </div>
       </div>
       <div style="flex: 0.5;">
-        <label for="tcp-protocol"
-          >{$l.dashboard.emlatSettings.profileManagement.modal.minecraftVersion}&nbsp;&nbsp;<i
+        <label for="tcp-protocol">
+          {$l.dashboard.emlatSettings.profileManagement.modal.minecraftVersion}&nbsp;&nbsp;<i
             class="fa-solid fa-circle-question"
             style="cursor: help"
             title={$l.dashboard.emlatSettings.profileManagement.modal.minecraftVersionInfo}
-          ></i></label
-        >
+          ></i>
+        </label>
         <select id="tcp-protocol" name="tcp-protocol" bind:value={tcpProtocol} style="width: 100%">
           <option value="modern">Modern (1.7+)</option>
           <option value="1.6">Legacy (1.6.x)</option>
@@ -125,7 +124,7 @@
 
     <div class="actions">
       <button type="button" class="secondary" onclick={() => (show = false)}>{$l.common.cancel}</button>
-      <button type="submit" class="primary">{$l.common.save}</button>
+      <button type="submit" class="primary" {disabled}>{$l.common.save}</button>
     </div>
   </form>
 </ModalTemplate>

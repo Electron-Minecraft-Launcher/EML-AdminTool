@@ -32,7 +32,7 @@
   let macFiles: File[] = $state([])
   let linFiles: File[] = $state([])
 
-  let disabled: boolean = $derived(winFiles.length === 0 && macFiles.length === 0 && linFiles.length === 0)
+  let disabled = $derived(winFiles.length === 0 && macFiles.length === 0 && linFiles.length === 0)
 
   const accept = {
     win: '.exe,.msi,.yml,.blockmap',
