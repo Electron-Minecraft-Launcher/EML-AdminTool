@@ -61,7 +61,6 @@ const userPermissionItemSchema = z.object({
 })
 
 export const profilePermissionsSchema = z.object({
-  profileId: z.string().min(1, NotificationCode.MISSING_INPUT),
   permissions: z
     .string()
     .transform((str, ctx) => {
@@ -76,6 +75,7 @@ export const profilePermissionsSchema = z.object({
       }
     })
     .pipe(z.array(profilePermissionItemSchema))
+    .optional()
 })
 
 export const userProfilePermissionsSchema = z.object({

@@ -70,6 +70,11 @@
     font-size: 10px;
   }
 
+  div.list-container div.list {
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+
   button.add {
     margin-top: 10px;
     width: 100%;

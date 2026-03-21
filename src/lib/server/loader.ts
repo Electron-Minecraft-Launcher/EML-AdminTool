@@ -55,5 +55,12 @@ export async function updateLoader(loader: Partial<Loader>, profileId: string = 
   }
 }
 
-
+export async function deleteLoader(profileId: string): Promise<void> {
+  try {
+    await db.loader.deleteMany({ where: { profileId } })
+  } catch (err) {
+    console.error('Failed to delete loader:', err)
+    throw new ServerError('Failed to delete loader', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
 

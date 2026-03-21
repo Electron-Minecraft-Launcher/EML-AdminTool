@@ -160,8 +160,9 @@ export async function editFile(dir: Dir, path: string, name: string, content: st
  * @param path Path to the file, relative to the directory, without the file name.
  * @param name Current name of the file.
  * @param newName New name of the file.
+ * @param throwError Whether to throw an error if the file does not exist.
  */
-export async function renameFile(dir: Dir, path: string, name: string, newName: string): Promise<void> {
+export async function renameFile(dir: Dir, path: string, name: string, newName: string, throwError: boolean = true): Promise<void> {
   let fullPath, newFullPath
   try {
     name = name.removeUnwantedFilenameChars()
@@ -176,7 +177,18 @@ export async function renameFile(dir: Dir, path: string, name: string, newName: 
     await fs.access(fullPath)
   } catch {
     console.warn('File does not exist:', fullPath)
-    throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    if (throwError) {
+      throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    } else {
+      return // no need to rename anything
+    }
+  }
+
+  try {
+    await fs.mkdir(path_.dirname(newFullPath), { recursive: true })
+  } catch (err) {
+    console.error('Error creating parent directory:', err)
+    throw new ServerError('Failed to create parent directory', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
   }
 
   try {
@@ -191,8 +203,9 @@ export async function renameFile(dir: Dir, path: string, name: string, newName: 
  * Delete a file or folder.
  * @param dir Directory where the file to delete is.
  * @param path Path to the file, relative to the directory, **including** the file name.
+ * @param throwError Whether to throw an error if the file does not exist.
  */
-export async function deleteFile(dir: Dir, path: string): Promise<void> {
+export async function deleteFile(dir: Dir, path: string, throwError: boolean = true): Promise<void> {
   try {
     path = sanitizePath('files', dir, path)
   } catch (err) {
@@ -204,7 +217,10 @@ export async function deleteFile(dir: Dir, path: string): Promise<void> {
     await fs.access(path)
   } catch {
     console.warn('File does not exist:', path)
-    throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    if (throwError) {
+      throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    }
+    return
   }
 
   try {
@@ -319,4 +335,7 @@ async function getFileSha1(path: string): Promise<string> {
     stream.on('error', reject)
   })
 }
+
+
+
 
