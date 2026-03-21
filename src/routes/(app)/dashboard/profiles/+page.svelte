@@ -12,9 +12,13 @@
   let selectedProfileIdModal: string | null = $state(null)
   let showAddEditProfileModal = $state(false)
   let profiles = $state(data.profiles)
+  let users = $state(data.users)
+  let userPermissions = $state(data.userPermissions)
 
   $effect(() => {
     if (data.profiles) profiles = data.profiles
+    if (data.users) users = data.users
+    if (data.userPermissions) userPermissions = data.userPermissions
   })
 </script>
 
@@ -50,7 +54,7 @@
     </div>
 
     <div class="content-list">
-      <ProfileManagement {profiles} bind:showAddEditProfileModal bind:selectedProfileId bind:selectedProfileIdModal />
+      <ProfileManagement bind:showAddEditProfileModal bind:selectedProfileId bind:selectedProfileIdModal {data} />
     </div>
   </div>
 </section>
@@ -70,9 +74,13 @@
     font-size: 10px;
   }
 
-  div.list-container div.list {
-    overflow-x: visible;
-    overflow-y: visible;
+  div.list-container {
+    div.list {
+      max-height: 500px !important;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-bottom: 10px;
+    }
   }
 
   button.add {

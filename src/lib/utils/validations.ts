@@ -45,7 +45,9 @@ export const profileSchema = z
     if (data.ip && !data.port) {
       data.port = 25565
     }
-    console.log(data)
+    if (data.ip && !data.tcpProtocol) {
+      data.tcpProtocol = 'modern'
+    }
     return data
   })
   .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFIL_PORT_WITHOUT_IP, path: ['port'] })

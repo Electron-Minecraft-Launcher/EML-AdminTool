@@ -148,20 +148,21 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const p_filesUpdaterRaw = {
-      userId: form.get('user-id'),
-      permissions: form.get('profile-permissions')
-    }
+    // const p_filesUpdaterRaw = {
+    //   userId: form.get('user-id'),
+    //   permissions: form.get('profile-permissions')
+    // }
 
-    const p_filesUpdaterResult = userProfilePermissionsSchema.safeParse(p_filesUpdaterRaw)
-    if (!p_filesUpdaterResult.success) {
-      return fail(event, 400, { failure: JSON.parse(p_filesUpdaterResult.error.message)[0].message })
-    }
+    // const p_filesUpdaterResult = userProfilePermissionsSchema.safeParse(p_filesUpdaterRaw)
+    // if (!p_filesUpdaterResult.success) {
+    //   return fail(event, 400, { failure: JSON.parse(p_filesUpdaterResult.error.message)[0].message })
+    // }
 
     const userId = result.data.userId
     const username = result.data.username
     const status = IUserStatus.ACTIVE
-    const p_filesUpdater = p_filesUpdaterResult.data.permissions
+    // const p_filesUpdater = p_filesUpdaterResult.data.permissions
+    const p_filesUpdater = 0
     const p_bootstraps = result.data.p_bootstraps ? 1 : 0
     const p_maintenance = result.data.p_maintenance ? 1 : 0
     const p_news = getNewsPermissions(result)
@@ -183,7 +184,7 @@ export const actions: Actions = {
           p_backgrounds,
           p_stats
         }),
-        updateUserProfilePermissions(userId, p_filesUpdater)
+        // updateUserProfilePermissions(userId, p_filesUpdater)
       ])
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })

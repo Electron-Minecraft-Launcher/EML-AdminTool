@@ -9,7 +9,7 @@ import { profilePermissionsSchema, profileSchema } from '$lib/utils/validations'
 import { fail } from '$lib/server/action'
 import { addProfile, getProfileById, updateProfileUserPermissions, updateProfile, deleteProfile } from '$lib/server/profile'
 import { IUserStatus } from '$lib/utils/db'
-import { cacheFiles, deleteFile, renameFile, sanitizePath } from '$lib/server/files'
+import { cacheFiles, deleteFile, renameFile } from '$lib/server/files'
 import { deleteLoader } from '$lib/server/loader'
 
 export const load = (async (event) => {
@@ -20,11 +20,10 @@ export const load = (async (event) => {
   }
 
   try {
-    const [profiles, users, userPermissions, minecraftVersions] = await Promise.all([
+    const [profiles, users, userPermissions] = await Promise.all([
       db.profile
         .findMany({ orderBy: { name: 'asc' } })
         .then((profiles) => {
-          // Ensure default profile is always first
           const defaultIndex = profiles.findIndex((p) => p.isDefault)
           if (defaultIndex > 0) {
             const [defaultProfile] = profiles.splice(defaultIndex, 1)
@@ -45,11 +44,10 @@ export const load = (async (event) => {
       db.userProfilePermission.findMany().catch((err) => {
         console.error('Failed to load profile user permissions:', err)
         throw new ServerError('Failed to load profile user permissions', err, NotificationCode.DATABASE_ERROR, 500)
-      }),
-      getVanillaVersions()
+      })
     ])
 
-    return { profiles, users, userPermissions, minecraftVersions }
+    return { profiles, users, userPermissions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -122,7 +120,8 @@ export const actions: Actions = {
           await updateProfileUserPermissions(profileId, permissions)
         }
       } else {
-        await addProfile(name, slug, ip, port, tcpProtocol)
+        const profileId = await addProfile(name, slug, ip, port, tcpProtocol)
+        return { profileId }
       }
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })

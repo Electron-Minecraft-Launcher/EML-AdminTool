@@ -229,7 +229,10 @@
   div.permission {
     display: flex;
     gap: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
     margin-top: 5px;
+    padding: 5px;
 
     p {
       width: 200px;

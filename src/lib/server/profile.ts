@@ -46,9 +46,9 @@ export async function getProfileBySlug(slug: string): Promise<Profile | null> {
   }
 }
 
-export async function addProfile(name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string): Promise<void> {
+export async function addProfile(name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string): Promise<string> {
   try {
-    await db.profile.create({
+    const res = await db.profile.create({
       data: {
         name,
         slug,
@@ -57,6 +57,7 @@ export async function addProfile(name: string, slug: string, ip?: string, port?:
         tcpProtocol
       }
     })
+    return res.id
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       console.warn(`Profile with slug ${slug} already exists`)

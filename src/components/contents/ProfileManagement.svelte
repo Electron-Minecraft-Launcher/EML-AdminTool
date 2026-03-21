@@ -5,18 +5,39 @@
   import type { NotificationCode } from '$lib/utils/notifications'
   import type { SubmitFunction } from '@sveltejs/kit'
   import AddEditProfileModal from '../modals/AddEditProfileModal.svelte'
-  import type { Profile } from '@prisma/client'
+  import type { Profile, User, UserProfilePermission } from '@prisma/client'
+  import type { PageData } from '../../routes/(app)/dashboard/profiles/$types'
 
   interface Props {
-    profiles: Profile[]
     selectedProfileId: string
     selectedProfileIdModal: string | null
     showAddEditProfileModal: boolean
+    data: PageData
   }
 
-  let { profiles, selectedProfileId = $bindable(), selectedProfileIdModal = $bindable(null), showAddEditProfileModal: showEditProfileModal = $bindable(false) }: Props = $props()
+  let {
+    selectedProfileId = $bindable(),
+    selectedProfileIdModal = $bindable(null),
+    showAddEditProfileModal: showEditProfileModal = $bindable(false),
+    data
+  }: Props = $props()
 
-  let selectedProfile = $derived.by(() => profiles.find((profile) => profile.id === selectedProfileId))!
+  const emptyProfile: Profile = {
+    id: '',
+    name: '',
+    slug: '',
+    isDefault: false,
+    ip: '',
+    port: null,
+    tcpProtocol: '',
+    updatedAt: new Date(),
+    createdAt: new Date()
+  }
+
+  let selectedProfile = $derived.by(() => {
+    console.log('UPDATED', selectedProfileId)
+    return data.profiles.find((profile) => profile.id === selectedProfileId) ?? emptyProfile
+  })
 
   const tcpProtocols = {
     modern: 'Modern (1.7+)',
@@ -25,8 +46,7 @@
     'beta1.8-1.3': 'Legacy (Beta 1.8-1.3)'
   }
 
-  const enhanceForm: SubmitFunction = ({ action, formData, cancel }) => {
-    // TODO
+  const enhanceForm: SubmitFunction = ({ formData, cancel }) => {
     const warning =
       'Are you sure you want to delete this profile? This action cannot be undone, and all users using this profile will be switched to the default profile. All data associated with this profile will be permanently deleted.'
     if (!confirm(warning)) {
@@ -40,6 +60,8 @@
       if (result.type === 'failure') {
         const message = $l.notifications[result.data?.failure as NotificationCode] ?? $l.notifications.INTERNAL_SERVER_ERROR
         addNotification('ERROR', message)
+      } else if (result.type === 'success') {
+        selectedProfileId = data.profiles[0]?.id ?? ''
       }
 
       await applyAction(result)
@@ -48,7 +70,7 @@
 </script>
 
 {#if showEditProfileModal}
-  <AddEditProfileModal bind:show={showEditProfileModal} bind:selectedProfileId={selectedProfileIdModal} {profiles} />
+  <AddEditProfileModal bind:show={showEditProfileModal} bind:selectedProfileIdModal bind:selectedProfileId {data} />
 {/if}
 
 {#if !selectedProfile.isDefault}
