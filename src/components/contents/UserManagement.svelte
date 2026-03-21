@@ -99,12 +99,12 @@
     {#if selectedUser.isAdmin}
       <p>Admin (all permissions)</p>
     {:else}
-      {#if selectedUser.p_filesUpdater >= 1}
-        <p>Add, edit and delete files</p>
-      {/if}
-      {#if selectedUser.p_filesUpdater === 2}
-        <p>Change Minecraft loader</p>
-      {/if}
+      {#each data.profiles as profile}
+        {@const perm = data.userPermissions.find((p) => p.userId === selectedUserId && p.profileId === profile.id)}
+        {#if perm && perm.permission >= 1}
+          <p>{profile.name}: Add, edit and delete files{perm.permission === 2 ? ', change loader' : ''}</p>
+        {/if}
+      {/each}
 
       {#if selectedUser.p_bootstraps}
         <p>Change bootstraps files</p>
@@ -139,7 +139,7 @@
         <p>View and delete stats</p>
       {/if}
 
-      {#if !selectedUser.p_filesUpdater && !selectedUser.p_bootstraps && !selectedUser.p_maintenance && !selectedUser.p_news && !selectedUser.p_newsCategories && !selectedUser.p_newsTags && !selectedUser.p_backgrounds && !selectedUser.p_stats}
+      {#if !data.userPermissions.some((p) => p.userId === selectedUserId && p.permission > 0) && !selectedUser.p_bootstraps && !selectedUser.p_maintenance && !selectedUser.p_news && !selectedUser.p_newsCategories && !selectedUser.p_newsTags && !selectedUser.p_backgrounds && !selectedUser.p_stats}
         <p>No permissions</p>
       {/if}
     {/if}

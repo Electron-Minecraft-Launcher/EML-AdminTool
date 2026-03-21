@@ -130,7 +130,6 @@
       const a = document.createElement('a')
       a.href = downloadUrl
       a.download = file.name
-      console.log(file.name)
       a.click()
       window.URL.revokeObjectURL(downloadUrl)
       selectedItems = [file]

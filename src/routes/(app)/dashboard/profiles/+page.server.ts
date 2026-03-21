@@ -5,7 +5,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getVanillaVersions } from '$lib/server/loaders/vanilla'
 import { verify } from '$lib/server/auth'
-import { profilePermissionsSchema, profileSchema } from '$lib/utils/validations'
+import { profileUserPermissionsSchema, profileSchema } from '$lib/utils/validations'
 import { fail } from '$lib/server/action'
 import { addProfile, getProfileById, updateProfileUserPermissions, updateProfile, deleteProfile } from '$lib/server/profile'
 import { IUserStatus } from '$lib/utils/db'
@@ -88,7 +88,7 @@ export const actions: Actions = {
 
     const rawPermissions = { permissions: form.get('permissions') || undefined }
 
-    const permissionsResult = profilePermissionsSchema.safeParse(rawPermissions)
+    const permissionsResult = profileUserPermissionsSchema.safeParse(rawPermissions)
 
     if (!permissionsResult.success) {
       return fail(event, 400, { failure: JSON.parse(permissionsResult.error.message)[0].message })

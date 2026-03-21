@@ -34,17 +34,27 @@
     createdAt: new Date()
   }
 
-  let selectedProfile = $derived.by(() => {
-    console.log('UPDATED', selectedProfileId)
-    return data.profiles.find((profile) => profile.id === selectedProfileId) ?? emptyProfile
-  })
-
   const tcpProtocols = {
     modern: 'Modern (1.7+)',
     '1.6': 'Legacy (1.6.x)',
     '1.4-1.5': 'Legacy (1.4.x-1.5.x)',
     'beta1.8-1.3': 'Legacy (Beta 1.8-1.3)'
   }
+
+  let selectedProfile = $derived.by(() => {
+    return data.profiles.find((profile) => profile.id === selectedProfileId) ?? emptyProfile
+  })
+
+  let profileUsers = $derived(
+    data.users
+      .map((u) => ({
+        ...u,
+        permission: data.userPermissions.find((p) => p.profileId === selectedProfileId && p.userId === u.id)?.permission ?? 0
+      }))
+      .filter((u) => u.permission > 0)
+  )
+
+  $inspect(profileUsers)
 
   const enhanceForm: SubmitFunction = ({ formData, cancel }) => {
     const warning =
@@ -119,6 +129,24 @@
       </div>
     </div>
   </div>
+
+  <p class="label">{$l.dashboard.emlatSettings.userManagement.modal.permissions}</p>
+  {#if profileUsers.length > 0}
+    <div class="user-permissions">
+      <div class="user-permission">
+        <span class="username">{data.user.username}</span>
+        <span class="perm-badge">Files + Loader</span>
+      </div>
+      {#each profileUsers as u}
+        <div class="user-permission">
+          <span class="username">{u.username}</span>
+          <span class="perm-badge">{u.permission === 2 ? 'Files + Loader' : 'Files'}</span>
+        </div>
+      {/each}
+    </div>
+  {:else}
+    <p>No user has access to this profile.</p>
+  {/if}
 </div>
 
 <style lang="scss">
@@ -176,5 +204,31 @@
 
   button.delete {
     color: #6e2626;
+  }
+
+  div.user-permissions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 5px;
+  }
+
+  div.user-permission {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    span.username {
+      min-width: 120px;
+      text-align: right;
+    }
+
+    span.perm-badge {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--secondary-color);
+      color: #505050;
+    }
   }
 </style>

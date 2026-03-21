@@ -3,15 +3,6 @@ import { NotificationCode } from './notifications'
 import { DateTime } from 'luxon'
 import { ILoaderType } from '$lib/utils/db'
 
-const isValidPlatformBatch = (files: File[], extensions: string[]) => {
-  if (files.length === 0) return true
-
-  const hasYml = files.some((f) => f.name.endsWith('.yml'))
-  const hasBinary = files.some((f) => extensions.some((ext) => f.name.endsWith(ext)))
-
-  return hasYml && hasBinary
-}
-
 export const setupSchema = z.object({
   language: z.string().length(2, NotificationCode.SETUP_INVALID_LANGUAGE),
   dbPassword: z.string().min(10, NotificationCode.SETUP_DATABASE_PASSWORD_TOO_SHORT),
@@ -62,7 +53,7 @@ const userPermissionItemSchema = z.object({
   permission: z.union([z.literal(0), z.literal(1), z.literal(2)])
 })
 
-export const profilePermissionsSchema = z.object({
+export const profileUserPermissionsSchema = z.object({
   permissions: z
     .string()
     .transform((str, ctx) => {
@@ -81,8 +72,7 @@ export const profilePermissionsSchema = z.object({
 })
 
 export const userProfilePermissionsSchema = z.object({
-  userId: z.string().min(1, NotificationCode.MISSING_INPUT),
-  permissions: z
+  p_filesUpdater: z
     .string()
     .transform((str, ctx) => {
       try {
@@ -283,6 +273,7 @@ export const backgroundSchema = z
   .refine((schema) => !(!schema.backgroundId && !schema.file), {
     message: NotificationCode.MISSING_INPUT
   })
+
 
 
 

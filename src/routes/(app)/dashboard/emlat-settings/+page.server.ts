@@ -6,7 +6,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getOS, getStorage } from '$lib/server/vps'
 import { getUpdate, update } from '$lib/server/update'
-import { editEMLATSchema, profileSchema, editUserSchema, userProfilePermissionsSchema } from '$lib/utils/validations'
+import { editEMLATSchema, profileSchema, editUserSchema, userProfilePermissionsSchema, profileUserPermissionsSchema } from '$lib/utils/validations'
 import { editEMLAT } from '$lib/server/emlat'
 import { generateRandomPin, getPin } from '$lib/server/pin'
 import type { LanguageCode } from '$lib/stores/language'
@@ -129,8 +129,6 @@ export const actions: Actions = {
     const raw = {
       userId: form.get('user-id'),
       username: form.get('username'),
-      p_filesUpdater_1: form.get('p_files-updater_1') === 'on',
-      p_filesUpdater_2: form.get('p_files-updater_2') === 'on',
       p_bootstraps: form.get('p_bootstraps') === 'on',
       p_maintenance: form.get('p_maintenance') === 'on',
       p_news_1: form.get('p_news_1') === 'on',
@@ -147,22 +145,20 @@ export const actions: Actions = {
     if (!result.success) {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
+    
+    const rawFilesUpdaterPermissions = { p_filesUpdater: form.get('p_files-updater') || undefined }
+    
+    const filesUpdaterPermissionsResult = userProfilePermissionsSchema.safeParse(rawFilesUpdaterPermissions)
+    
+    if (!filesUpdaterPermissionsResult.success) {
+      return fail(event, 400, { failure: JSON.parse(filesUpdaterPermissionsResult.error.message)[0].message })
+    }
 
-    // const p_filesUpdaterRaw = {
-    //   userId: form.get('user-id'),
-    //   permissions: form.get('profile-permissions')
-    // }
-
-    // const p_filesUpdaterResult = userProfilePermissionsSchema.safeParse(p_filesUpdaterRaw)
-    // if (!p_filesUpdaterResult.success) {
-    //   return fail(event, 400, { failure: JSON.parse(p_filesUpdaterResult.error.message)[0].message })
-    // }
+    const { p_filesUpdater } = filesUpdaterPermissionsResult.data
 
     const userId = result.data.userId
     const username = result.data.username
     const status = IUserStatus.ACTIVE
-    // const p_filesUpdater = p_filesUpdaterResult.data.permissions
-    const p_filesUpdater = 0
     const p_bootstraps = result.data.p_bootstraps ? 1 : 0
     const p_maintenance = result.data.p_maintenance ? 1 : 0
     const p_news = getNewsPermissions(result)
@@ -184,7 +180,7 @@ export const actions: Actions = {
           p_backgrounds,
           p_stats
         }),
-        // updateUserProfilePermissions(userId, p_filesUpdater)
+        updateUserProfilePermissions(userId, p_filesUpdater)
       ])
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
@@ -327,4 +323,5 @@ function getStatsPermissions(result: any) {
   if (result.data.p_stats_1) return 1
   return 0
 }
+
 

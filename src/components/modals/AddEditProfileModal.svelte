@@ -43,7 +43,7 @@
   let tcpProtocol = $state(selectedProfile.tcpProtocol ?? 'modern')
   let permissions = $state(
     data.users.map((u) => {
-      const existing = data.userPermissions.find((p) => p.profileId === selectedProfileId && p.userId === u.id)
+      const existing = data.userPermissions.find((p) => p.profileId === selectedProfileIdModal && p.userId === u.id)
       return {
         userId: u.id,
         p1: (existing?.permission ?? 0) >= 1,
