@@ -114,7 +114,7 @@ export const actions: Actions = {
         if (slug !== profile.slug) {
           await renameFile('files-updater', '', profile.slug, slug, false)
           await deleteFile('cache', `files-updater-${profile.slug}.json`, false)
-          await cacheFiles('files-updater', slug)
+          await cacheFiles(`files-updater/${slug}`)
         }
         if (permissions) {
           await updateProfileUserPermissions(profileId, permissions)

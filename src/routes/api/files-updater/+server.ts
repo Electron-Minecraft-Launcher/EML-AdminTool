@@ -15,7 +15,7 @@ export const GET: RequestHandler = async (event) => {
 
   let cache
   try {
-    cache = await getCachedFiles(domain, 'files-updater', profile?.slug)
+    cache = await getCachedFiles(domain, `files-updater/${profile?.slug}`)
   } catch (err) {
     return json({ success: false, message: 'Failed to get cached files' }, { status: 500 })
   }

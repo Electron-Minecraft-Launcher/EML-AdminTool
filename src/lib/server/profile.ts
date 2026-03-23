@@ -157,3 +157,58 @@ export async function updateUserProfilePermissions(userId: string, permissions: 
   }
 }
 
+export async function getAccessibleProfiles(userId: string, isAdmin: boolean): Promise<Profile[]> {
+  if (isAdmin) {
+    return getProfiles()
+  }
+
+  try {
+    const permissions = await db.userProfilePermission.findMany({
+      where: { userId, permission: { gt: 0 } },
+      select: { profileId: true }
+    })
+
+    const profileIds = permissions.map((p) => p.profileId)
+
+    return await db.profile.findMany({
+      where: { id: { in: profileIds } },
+      orderBy: { name: 'asc' }
+    })
+  } catch (err) {
+    console.error('Failed to get accessible profiles:', err)
+    throw new ServerError('Failed to get accessible profiles', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
+/**
+ * Resolves a profile by its ID, checking the user's permissions.
+ * @param profileId
+ * @param userId
+ * @param isAdmin Whether the user is an admin. If true, permissions won't be checked.
+ * @param minPermission `1` the user must have at least Files Updater permissions, `2` the user must have at least Files Updater and Loader permissions. Default is `1`.
+ * @returns
+ */
+export async function resolveProfile(profileId: string, userId: string, isAdmin: boolean, minPermission: 1 | 2 = 1): Promise<Profile> {
+  const profile = await getProfileById(profileId)
+
+  if (!profile) {
+    throw new BusinessError('Profile not found', NotificationCode.NOT_FOUND, 404)
+  }
+
+  if (!isAdmin) {
+    let permission
+    try {
+      permission = await db.userProfilePermission.findUnique({ where: { userId_profileId: { userId, profileId } } })
+    } catch (err) {
+      console.error('Failed to check profile permission:', err)
+      throw new ServerError('Failed to check profile permission', err, NotificationCode.DATABASE_ERROR, 500)
+    }
+
+    if (!permission || permission.permission < minPermission) {
+      throw new BusinessError('Forbidden', NotificationCode.FORBIDDEN, 403)
+    }
+  }
+
+  return profile
+}
+

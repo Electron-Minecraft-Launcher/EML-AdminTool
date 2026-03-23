@@ -11,32 +11,30 @@ const root = path_.join(process.cwd())
 /**
  * Get files in a directory.
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
- * @param dir Directory to get files from.
- * @param profileSlug Slug of the profile to get files for.
+ * @param dir Directory to get files from (including the profile slug if applicable).
  */
-export async function getFiles(domain: string, dir: Dir, profileSlug?: string): Promise<File_[]> {
-  const resolvedDir = profileSlug ? getProfileDir(profileSlug) : dir
-  await fs.mkdir(path_.join(root, 'files', resolvedDir), { recursive: true })
+export async function getFiles(domain: string, dir: Dir): Promise<File_[]> {
+  await fs.mkdir(path_.join(root, 'files', dir), { recursive: true })
   const filesArray: File_[] = []
-  await browse(filesArray, resolvedDir, '', domain)
+  await browse(filesArray, dir, '', domain)
   return filesArray
 }
 
 /**
  * Get cached files for a directory. If the cache does not exist, it will be generated.
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
- * @param dir Directory to get cached files from.
- * @param profileSlug Slug of the profile to get cached files for.
+ * @param dir Directory to get cached files from (including the profile slug if applicable).
  */
-export async function getCachedFiles(domain: string, dir: Dir, profileSlug?: string): Promise<string> {
-  const cacheKey = profileSlug ? getProfileCacheKey(profileSlug) : dir
+export async function getCachedFiles(domain: string, dir: Dir): Promise<string> {
+  const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
+  const cacheKey = slug ? `files-updater-${slug}` : dir
   const target = sanitizePath('files', 'cache', `${cacheKey}.json`)
   let cache
   try {
     cache = (await fs.readFile(target, 'utf-8')).replaceAll('{{url}}', domain)
   } catch {
     console.warn('Cache file not found, generating new cache.')
-    await cacheFiles(dir, profileSlug)
+    await cacheFiles(dir)
     cache = (await fs.readFile(target, 'utf-8')).replaceAll('{{url}}', domain)
   }
 
@@ -46,11 +44,10 @@ export async function getCachedFiles(domain: string, dir: Dir, profileSlug?: str
 /**
  * Get cached files for a directory and parse them. If the cache does not exist, it will be generated.
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
- * @param dir Directory to get cached files from.
- * @param profileSlug Slug of the profile to get cached files for.
+ * @param dir Directory to get cached files from (including the profile slug if applicable).
  */
-export async function getCachedFilesParsed(domain: string, dir: Dir, profileSlug?: string): Promise<File_[]> {
-  const cache = await getCachedFiles(domain, dir, profileSlug)
+export async function getCachedFilesParsed(domain: string, dir: Dir): Promise<File_[]> {
+  const cache = await getCachedFiles(domain, dir)
   try {
     return JSON.parse(cache) as File_[]
   } catch (err) {
@@ -61,19 +58,16 @@ export async function getCachedFilesParsed(domain: string, dir: Dir, profileSlug
 
 /**
  * Upload a file to the server.
- * @param dir Directory to upload the file to.
+ * @param dir Directory to upload the file to (including the profile slug if applicable).
  * @param path Path to the file, relative to the directory, without the file name.
  * @param file File object to upload.
- * @param profileSlug Slug of the profile to upload the file for.
  */
-export async function uploadFile(dir: Dir, path: string, file: File, profileSlug?: string): Promise<void> {
+export async function uploadFile(dir: Dir, path: string, file: File): Promise<void> {
   if (!file) return
-
-  const resolvedDir = profileSlug ? getProfileDir(profileSlug) : dir
 
   let target, name, buffer
   try {
-    target = sanitizePath('files', resolvedDir, path)
+    target = sanitizePath('files', dir, path)
     name = path_.basename(file.name).removeUnwantedFilenameChars()
     buffer = Buffer.from(await file.arrayBuffer())
   } catch (err) {
@@ -244,13 +238,12 @@ export function sanitizePath(...path: string[]): string {
 /**
  * Generate a cache file for a directory by browsing the directory and saving the file metadata in a JSON file.
  * The cache file will be saved in `files/cache/{dir}.json`.
- * @param dir Directory to generate the cache for. This should be the same directory used in `getCachedFiles` and `getCachedFilesParsed`.
- * @param profileSlug Slug of the profile to generate the cache for.
+ * @param dir Directory to generate the cache for (including the profile slug if applicable). This should be the same directory used in `getCachedFiles` and `getCachedFilesParsed`.
  */
-export async function cacheFiles(dir: Dir, profileSlug?: string): Promise<void> {
-  const resolvedDir = profileSlug ? getProfileDir(profileSlug) : dir
-  const cacheKey = profileSlug ? getProfileCacheKey(profileSlug) : dir
-  const files = await getFiles('{{url}}', resolvedDir as Dir)
+export async function cacheFiles(dir: Dir): Promise<void> {
+  const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
+  const cacheKey = slug ? `files-updater-${slug}` : dir
+  const files = await getFiles('{{url}}', dir as Dir)
   await fs.mkdir(path_.join(root, 'files', 'cache'), { recursive: true })
   await fs.writeFile(path_.join(root, 'files', 'cache', `${cacheKey}.json`), JSON.stringify(files, null, 2))
 }
@@ -290,22 +283,6 @@ async function browse(filesArray: File_[], dir: Dir, subdir: string, domain: str
 }
 
 /**
- * Get the directory for a profile based on its slug. This is used to store files for each profile in a separate directory.
- * @param profileSlug Slug of the profile to get the directory for.
- */
-function getProfileDir(profileSlug: string): Dir {
-  return `files-updater/${profileSlug}` as Dir
-}
-
-/**
- * Get the cache key for a profile based on its slug. This is used to store the cache for each profile in a separate file.
- * @param profileSlug Slug of the profile to get the cache key for.
- */
-function getProfileCacheKey(profileSlug: string): string {
-  return `files-updater-${profileSlug}`
-}
-
-/**
  * Get the type of a file based on its path.
  * @param path Path to the file.
  */
@@ -335,7 +312,4 @@ async function getFileSha1(path: string): Promise<string> {
     stream.on('error', reject)
   })
 }
-
-
-
 

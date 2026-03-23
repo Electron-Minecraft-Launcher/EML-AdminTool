@@ -15,7 +15,6 @@ class UploadStore {
   private fileSizes = new Map<string, number>()
   private fileProgress = new Map<string, number>()
 
-
   async startUpload(files: File[], currentPath: string, onFileUploaded?: (newFile: File_) => void) {
     if (files.length === 0) return
 
@@ -71,3 +70,4 @@ class UploadStore {
 }
 
 export const uploader = new UploadStore()
+

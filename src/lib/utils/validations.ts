@@ -140,6 +140,7 @@ export const registerSchema = z.object({
 })
 
 export const renameFileSchema = z.object({
+  profileId: z.string(),
   path: z.string(),
   name: z.string().min(1, NotificationCode.INVALID_INPUT).max(255, NotificationCode.INVALID_INPUT),
   newName: z
@@ -151,6 +152,7 @@ export const renameFileSchema = z.object({
 
 export const createFileSchema = z
   .object({
+    profileId: z.string(),
     path: z.string(),
     name: z
       .string()
@@ -163,12 +165,19 @@ export const createFileSchema = z
   })
 
 export const editFileSchema = z.object({
+  profileId: z.string(),
   path: z.string(),
   name: z.string().min(1, NotificationCode.INVALID_INPUT).max(255, NotificationCode.INVALID_INPUT),
   content: z.string()
 })
 
+export const deleteFilesSchema = z.object({
+  profileId: z.string(),
+  paths: z.array(z.string())
+})
+
 export const loaderSchema = z.object({
+  profileId: z.string(),
   type: z.enum(ILoaderType),
   minecraftVersion: z.string(),
   loaderVersion: z.string()
@@ -273,6 +282,7 @@ export const backgroundSchema = z
   .refine((schema) => !(!schema.backgroundId && !schema.file), {
     message: NotificationCode.MISSING_INPUT
   })
+
 
 
 

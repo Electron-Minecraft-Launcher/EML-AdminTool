@@ -6,13 +6,9 @@
   import type { File as File_ } from '$lib/utils/types'
   import ChangeLoaderModal from '../../../../components/modals/ChangeLoaderModal.svelte'
   import getUser from '$lib/utils/user'
-  import { callAction } from '$lib/utils/call'
-  import { l } from '$lib/stores/language'
-  import { addNotification } from '$lib/stores/notifications'
   import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
   import type { Loader } from '@prisma/client'
   import { invalidateAll } from '$app/navigation'
-  import { smartUpload } from '$lib/utils/uploader'
   import { uploader } from '$lib/stores/upload.svelte'
 
   let { data }: PageProps = $props()
