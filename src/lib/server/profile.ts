@@ -70,14 +70,14 @@ export async function addProfile(name: string, slug: string, ip?: string, port?:
 
 export async function updateProfile(profileId: string, name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string): Promise<void> {
   try {
-    await db.profile.update({
+    let t = await db.profile.update({
       where: { id: profileId },
       data: {
         name,
         slug,
-        ip,
-        port,
-        tcpProtocol
+        ip: ip ?? null,
+        port: port ?? null,
+        tcpProtocol: tcpProtocol ?? null
       }
     })
   } catch (err) {

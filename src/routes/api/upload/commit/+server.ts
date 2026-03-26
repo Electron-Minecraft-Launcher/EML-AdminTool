@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     await cacheFiles(context)
 
     const domain = url.origin
-    const allFiles = await getCachedFilesParsed(domain, context as any)
+    const allFiles = await getCachedFilesParsed(domain, context)
 
     const relativePath = lock.targetPath.split(`files/${context}/`)[1]
     const dirPath = path.dirname(relativePath)

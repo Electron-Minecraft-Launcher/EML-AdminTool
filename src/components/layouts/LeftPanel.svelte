@@ -17,10 +17,6 @@
 
   const user = getUser()
 
-  const randomWidth = { times: 100, min: 50 }
-  const height = '21px'
-  const customStyle: { [key: string]: string }[] = [{ display: 'block' }, { margin: '30px 15px 20px 15px' }]
-
   let accountDropdownOpen = $state(false)
 
   async function accountClick() {
@@ -80,7 +76,7 @@
     <div class="h4"><hr style="border-color: #505050; border-top: 0; position: relative; top: 5px;" /></div>
   {/if}
 
-  {#if user.p_filesUpdater}
+  {#if user.profilePermissions.length > 0 || user.isAdmin}
     <a href="/dashboard/files-updater" class:active={page.url.pathname == '/dashboard/files-updater'}>
       <i class="fa-solid fa-folder-open"></i>Files Updater
     </a>

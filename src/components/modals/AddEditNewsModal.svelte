@@ -45,8 +45,6 @@
   let categories = $state(selectedNews?.categories ?? [])
   let tags = $state(selectedNews?.tags ?? [])
 
-  $inspect(categories)
-
   let editorContainer: HTMLDivElement
   let editorView: EditorView
   const editorTheme = EditorView.theme({

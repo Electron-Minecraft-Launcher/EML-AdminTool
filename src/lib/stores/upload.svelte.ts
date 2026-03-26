@@ -15,7 +15,7 @@ class UploadStore {
   private fileSizes = new Map<string, number>()
   private fileProgress = new Map<string, number>()
 
-  async startUpload(files: File[], currentPath: string, onFileUploaded?: (newFile: File_) => void) {
+  async startUpload(files: File[], currentPath: string, slug: string, onFileUploaded?: (newFile: File_) => void) {
     if (files.length === 0) return
 
     this.isUploading = true
@@ -30,7 +30,7 @@ class UploadStore {
     })
 
     const success = await smartUpload(files, {
-      context: 'files-updater',
+      context: `files-updater/${slug}`,
       mode: 'BEST_EFFORT',
       currentPath,
       promptOverwrite: async (fileName) => confirm(`File "${fileName}" already exists. Do you want to overwrite it?`),

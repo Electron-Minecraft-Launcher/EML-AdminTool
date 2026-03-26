@@ -30,14 +30,14 @@ export async function login(username: string, password: string): Promise<User> {
   return user
 }
 
-export async function verify(session: string): Promise<User & { profilePermissions: { profileId: string; permission: number }[] }> {
+export async function verify(session: string): Promise<User & { profilePermissions: { profileId: string; name: string; permission: number }[] }> {
   const payload = await checkSession(session)
 
   let existing
   try {
     existing = await db.user.findUnique({
       where: { id: payload.id as string },
-      include: { profilePermissions: { select: { profileId: true, permission: true } } }
+      include: { profilePermissions: { select: { profileId: true, profile: { select: { name: true } }, permission: true } } }
     })
   } catch (err) {
     console.error('Error verifying user:', err)
@@ -49,7 +49,13 @@ export async function verify(session: string): Promise<User & { profilePermissio
     throw new BusinessError('User not found', NotificationCode.UNAUTHORIZED, 401)
   }
 
-  return existing
+  const profilePermissions = existing.profilePermissions.map((perm) => ({
+    profileId: perm.profileId,
+    name: perm.profile.name,
+    permission: perm.permission
+  }))
+
+  return { ...existing, profilePermissions }
 }
 
 export async function register(username: string, password: string, pin: string): Promise<User> {

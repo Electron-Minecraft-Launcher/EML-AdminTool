@@ -12,15 +12,18 @@
   import { callAction } from '$lib/utils/call'
   import { addNotification } from '$lib/stores/notifications'
   import { uploader } from '$lib/stores/upload.svelte'
+  import type { Profile } from '@prisma/client'
 
   interface Props {
+    selectedProfile: Profile
     currentPath: string
     files: File_[]
     ready: boolean
   }
 
-  let { currentPath = $bindable(), files = $bindable(), ready = $bindable() }: Props = $props()
+  let { selectedProfile, currentPath = $bindable(), files = $bindable(), ready = $bindable() }: Props = $props()
 
+  // let isNavigating = $derived(!!navigating)
   let showRenameModal = $state(false)
   let showCreateFileModal = $state(false)
   let createFileAction: 'FOLDER' | 'FILE' = $state('FOLDER')
@@ -82,11 +85,8 @@
       files = [...files, ...optimisticFolders]
     }
 
-    uploader.startUpload(filesArray, currentPath, (newFile: File_) => {
-      files = [
-        ...files.filter(f => f.name !== newFile.name || f.path !== newFile.path), 
-        newFile
-      ]
+    uploader.startUpload(filesArray, currentPath, selectedProfile.slug, (newFile: File_) => {
+      files = [...files.filter((f) => f.name !== newFile.name || f.path !== newFile.path), newFile]
     })
 
     if (folderUpload) {
@@ -147,6 +147,7 @@
 
     const formData = new FormData()
     for (const file of selectedItems) {
+      formData.append('profile-id', selectedProfile.id)
       formData.append('paths', `${file.path}${file.name}`)
     }
 
@@ -226,15 +227,15 @@
 />
 
 {#if showRenameModal}
-  <RenameFileModal bind:files bind:selectedItems bind:show={showRenameModal} />
+  <RenameFileModal bind:files {selectedProfile} bind:selectedItems bind:show={showRenameModal} />
 {/if}
 
 {#if showCreateFileModal}
-  <CreateFileModal bind:files {currentPath} bind:show={showCreateFileModal} bind:showEditFileModal type={createFileAction} bind:fileToEdit />
+  <CreateFileModal bind:files {selectedProfile} {currentPath} bind:show={showCreateFileModal} bind:showEditFileModal type={createFileAction} bind:fileToEdit />
 {/if}
 
 {#if showEditFileModal}
-  <EditFileModal bind:files bind:show={showEditFileModal} bind:fileToEdit />
+  <EditFileModal bind:files {selectedProfile} bind:show={showEditFileModal} bind:fileToEdit />
 {/if}
 
 <div class="explorer">

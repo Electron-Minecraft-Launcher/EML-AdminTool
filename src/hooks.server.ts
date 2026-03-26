@@ -263,7 +263,7 @@ function getDefaultEnv() {
   }
 }
 
-function getUserInfo(user: User, profilePermissions: { profileId: string; permission: number }[] = []) {
+function getUserInfo(user: User, profilePermissions: { profileId: string; name: string; permission: number }[] = []) {
   return {
     id: user.id,
     username: user.username,
@@ -276,7 +276,7 @@ function getUserInfo(user: User, profilePermissions: { profileId: string; permis
     p_backgrounds: user.p_backgrounds as 0 | 1,
     p_stats: user.p_stats as 0 | 1 | 2,
     isAdmin: user.isAdmin,
-    profilePermissions: profilePermissions as { profileId: string; permission: 0 | 1 | 2 }[]
+    profilePermissions: profilePermissions as { profileId: string; name: string; permission: 0 | 1 | 2 }[]
   }
 }
 

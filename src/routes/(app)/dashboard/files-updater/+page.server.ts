@@ -19,19 +19,14 @@ export const load = (async (event) => {
   const domain = event.url.origin
   const user = event.locals.user
 
-  if (!user) {
+  if (!user?.profilePermissions.some((p) => p.permission > 0) && !user?.isAdmin) {
     throw redirect(303, '/')
   }
 
   try {
     const profiles = await getAccessibleProfiles(user.id, user.isAdmin)
-
-    if (profiles.length === 0) {
-      throw redirect(303, '/dashboard')
-    }
-
-    const requestedProfileId = event.url.searchParams.get('profileId')
-    const selectedProfile = (requestedProfileId ? profiles.find((p) => p.id === requestedProfileId) : null) ?? profiles[0]
+    const requestedProfileSlug = event.url.searchParams.get('profile')
+    const selectedProfile = (requestedProfileSlug ? profiles.find((p) => p.slug === requestedProfileSlug) : null) ?? profiles[0]
 
     const [files, vanilla, forge, neoforge, fabric, quilt, fabricLoaderVersions, quiltLoaderVersions, databaseLoader] = await Promise.all([
       getCachedFilesParsed(domain, `files-updater/${selectedProfile.slug}`),
@@ -83,7 +78,7 @@ export const actions: Actions = {
     const domain = event.url.origin
 
     if (!user) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
@@ -124,7 +119,7 @@ export const actions: Actions = {
     const domain = event.url.origin
 
     if (!user) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
@@ -164,7 +159,7 @@ export const actions: Actions = {
     const domain = event.url.origin
 
     if (!user) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
@@ -205,7 +200,7 @@ export const actions: Actions = {
     const user = event.locals.user
 
     if (!user) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
@@ -247,7 +242,7 @@ export const actions: Actions = {
     const user = event.locals.user
 
     if (!user) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
@@ -292,4 +287,5 @@ export const actions: Actions = {
     }
   }
 }
+
 

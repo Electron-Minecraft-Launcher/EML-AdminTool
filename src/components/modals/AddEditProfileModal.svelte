@@ -100,8 +100,8 @@
   <form method="POST" action="?/addEditProfile" use:enhance={enhanceForm}>
     <h2>
       {selectedProfileIdModal
-        ? $l.dashboard.emlatSettings.profileManagement.modal.addProfile
-        : $l.dashboard.emlatSettings.profileManagement.modal.title}
+        ? $l.dashboard.emlatSettings.profileManagement.modal.title
+        : $l.dashboard.emlatSettings.profileManagement.modal.addProfile}
     </h2>
 
     <div class="flex">

@@ -16,14 +16,16 @@
   import { applyAction } from '$app/forms'
   import { addNotification } from '$lib/stores/notifications'
   import { NotificationCode } from '$lib/utils/notifications'
+  import type { Profile } from '@prisma/client'
 
   interface Props {
     show: boolean
     files: File_[]
+    selectedProfile: Profile
     fileToEdit: File_
   }
 
-  let { show = $bindable(), files = $bindable(), fileToEdit = $bindable() }: Props = $props()
+  let { show = $bindable(), files = $bindable(), selectedProfile, fileToEdit = $bindable() }: Props = $props()
 
   let showLoader = $state(false)
 
@@ -105,6 +107,7 @@
     formData.set('path', path)
     formData.set('name', name)
     formData.set('content', editorView.state.doc.toString())
+    formData.set('profile-id', selectedProfile.id)
 
     return async ({ result, update }) => {
       await update({ reset: false })

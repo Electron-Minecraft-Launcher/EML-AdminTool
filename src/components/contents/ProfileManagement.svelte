@@ -54,8 +54,6 @@
       .filter((u) => u.permission > 0)
   )
 
-  $inspect(profileUsers)
-
   const enhanceForm: SubmitFunction = ({ formData, cancel }) => {
     const warning =
       'Are you sure you want to delete this profile? This action cannot be undone, and all users using this profile will be switched to the default profile. All data associated with this profile will be permanently deleted.'
@@ -131,22 +129,18 @@
   </div>
 
   <p class="label">{$l.dashboard.emlatSettings.userManagement.modal.permissions}</p>
-  {#if profileUsers.length > 0}
-    <div class="user-permissions">
-      <div class="user-permission">
-        <span class="username">{data.user.username}</span>
-        <span class="perm-badge">Files + Loader</span>
-      </div>
-      {#each profileUsers as u}
-        <div class="user-permission">
-          <span class="username">{u.username}</span>
-          <span class="perm-badge">{u.permission === 2 ? 'Files + Loader' : 'Files'}</span>
-        </div>
-      {/each}
+  <div class="user-permissions">
+    <div class="user-permission">
+      <span class="username">{data.user.username}</span>
+      <span class="perm-badge">Files + Loader</span>
     </div>
-  {:else}
-    <p>No user has access to this profile.</p>
-  {/if}
+    {#each profileUsers as u}
+      <div class="user-permission">
+        <span class="username">{u.username}</span>
+        <span class="perm-badge">{u.permission === 2 ? 'Files + Loader' : 'Files'}</span>
+      </div>
+    {/each}
+  </div>
 </div>
 
 <style lang="scss">

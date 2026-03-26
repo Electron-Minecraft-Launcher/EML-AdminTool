@@ -50,6 +50,9 @@ export type UserInfo = {
   id: string
   username: string
   isAdmin: boolean
+  /**
+   * @deprecated
+   */
   p_filesUpdater: 0 | 1 | 2
   p_bootstraps: 0 | 1
   p_maintenance: 0 | 1
@@ -71,6 +74,7 @@ export type ExtendedNews = Prisma.NewsGetPayload<{
 
 export type UserProfilePermissionInfo = {
   profileId: string
+  name: string
   permission: 0 | 1 | 2
 }
 

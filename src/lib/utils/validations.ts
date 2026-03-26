@@ -33,6 +33,10 @@ export const profileSchema = z
     tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFIL_INVALID_TCP_PROTOCOL).optional()
   })
   .transform((data) => {
+    if (!data.ip) {
+      data.port = undefined
+      data.tcpProtocol = undefined
+    }
     if (data.ip && !data.port) {
       data.port = 25565
     }

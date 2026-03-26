@@ -8,13 +8,17 @@
   import getUser from '$lib/utils/user'
   import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
   import type { Loader } from '@prisma/client'
-  import { invalidateAll } from '$app/navigation'
+  import { goto, invalidateAll, pushState } from '$app/navigation'
   import { uploader } from '$lib/stores/upload.svelte'
+  import { page } from '$app/state'
 
   let { data }: PageProps = $props()
 
   const env = getEnv()
   const user = getUser()
+
+  let profileSlug = page.url.searchParams.get('profile') || null
+  let selectedProfile = $derived(data.profiles.find((profile) => profile.slug === profileSlug) ?? data.profiles[0])
 
   let files = $state(data.files)
 
@@ -47,9 +51,14 @@
     }
   }
 
-  async function getData() {
+  async function getData(slug: string | null = null) {
     filesReady = false
-    await invalidateAll()
+    profileSlug = slug
+    await goto(`?profile=${slug}`, {
+      invalidateAll: true,
+      keepFocus: true,
+      noScroll: true
+    })
     filesReady = true
   }
 
@@ -103,12 +112,9 @@
         files = [...files, ...optimisticFolders]
       }
 
-      uploader.startUpload(entries, currentPath, (newFile: File_) => {
-      files = [
-        ...files.filter(f => f.name !== newFile.name || f.path !== newFile.path), 
-        newFile
-      ]
-    })
+      uploader.startUpload(entries, currentPath, selectedProfile.slug, (newFile: File_) => {
+        files = [...files.filter((f) => f.name !== newFile.name || f.path !== newFile.path), newFile]
+      })
     }
   }
 
@@ -179,6 +185,7 @@
 {#if showChangeLoaderModal}
   <ChangeLoaderModal
     bind:show={showChangeLoaderModal}
+    {selectedProfile}
     loader={data.loader as unknown as Loader}
     fabricLoaderVersions={data.fabricLoaderVersions}
     quiltLoaderVersions={data.quiltLoaderVersions}
@@ -187,6 +194,22 @@
 {/if}
 
 <h2>Files Updater</h2>
+
+{#if data.profiles.length > 1}
+  <div class="profile-tabs">
+    {#each data.profiles as profile}
+      <button
+        class:active={selectedProfile.id === profile.id}
+        onclick={() => {
+          getData(profile.slug)
+        }}
+        aria-label={`Select profile ${profile.name}`}
+      >
+        {profile.name}
+      </button>
+    {/each}
+  </div>
+{/if}
 
 <section
   class="section explorer"
@@ -205,11 +228,10 @@
   aria-label="Files Updater Explorer"
 >
   <h3>
-    <button style="margin-right: 5px" onclick={getData} aria-label="Refresh Files Updater"><i class="fa-solid fa-rotate-right"></i></button><span
-      bind:this={path}
-      class:scrolled-left={sL}
-      class:scrolled-right={sR}
-      ><button onclick={() => (currentPath = '')}>Files Updater</button>{#each currentPathSplit as dir, i}{#if dir !== ''}<i
+    <button style="margin-right: 5px" onclick={() => getData(selectedProfile.slug)} aria-label="Refresh Files Updater"
+      ><i class="fa-solid fa-rotate-right"></i></button
+    ><span bind:this={path} class:scrolled-left={sL} class:scrolled-right={sR}
+      ><button onclick={() => (currentPath = '')}>{selectedProfile.slug}</button>{#each currentPathSplit as dir, i}{#if dir !== ''}<i
             class="fa-solid fa-caret-right"
           ></i><button onclick={() => (currentPath = currentPathSplit.slice(0, i + 1).join('/') + '/')}>{dir}</button>
         {/if}
@@ -217,16 +239,16 @@
     </span>
   </h3>
 
-  <FilesUpdater bind:files bind:currentPath bind:ready={filesReady} />
+  <FilesUpdater {selectedProfile} bind:files bind:currentPath bind:ready={filesReady} />
 </section>
 
-{#if user.p_filesUpdater === 2}
+{#if user.profilePermissions.some((perm) => perm.profileId === selectedProfile.id && perm.permission === 2) || user.isAdmin}
   <section class="section">
     <button class="secondary right" onclick={() => (showChangeLoaderModal = true)} aria-label="Change Minecraft loader">
       <i class="fa-solid fa-ellipsis"></i>
     </button>
 
-    <h3>Minecraft loader</h3>
+    <h3>Minecraft loader for {selectedProfile.name}</h3>
 
     <div class="container">
       <div>
@@ -284,6 +306,29 @@
 
 <style lang="scss">
   @use '../../../../../static/scss/dashboard.scss';
+
+  div.profile-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid var(--border-color);
+    overflow-x: auto;
+
+    button {
+      border: none;
+      border-bottom: 2px solid transparent;
+      border-radius: 5px 5px 0 0;
+      background: none;
+      padding: 15px 20px;
+      font-weight: bold;
+      color: #565656 !important;
+      font-size: 1em;
+
+      &.active {
+        color: var(--primary-color) !important;
+        border-bottom: 2px solid var(--primary-color);
+      }
+    }
+  }
 
   section.section.explorer {
     &.drag::after {
