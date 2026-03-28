@@ -31,9 +31,8 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
   }
 
   const { uuid, token }: { uuid: string; token: string } = await request.json()
-  const context = url.searchParams.get('context') as Context
 
-  if (!uuid || !token || !context) {
+  if (!uuid || !token) {
     return json({ status: 'FAILURE', reason: 'BAD_REQUEST' }, { status: 400 })
   }
 
@@ -48,7 +47,9 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
     }
   }
 
-  if (!lock || lock.token !== token || lock.userId !== user.id) {
+  const context = lock?.context as Context | undefined
+
+  if (!lock || lock.token !== token || lock.userId !== user.id || !context) {
     return json({ status: 'FAILURE', reason: 'FORBIDDEN' }, { status: 403 })
   }
 
