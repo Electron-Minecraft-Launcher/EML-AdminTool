@@ -24,8 +24,14 @@ async function abortAndCleanup(targetPathKey: string, partPath: string) {
   await fs.unlink(partPath).catch(() => {})
 }
 
-export const POST: RequestHandler = async ({ request, url }) => {
-  const { uuid, token, context }: { uuid: string; token: string; context: Context } = await request.json()
+export const POST: RequestHandler = async ({ request, url, locals }) => {
+  const user = locals.user
+  if (!user) {
+    return json({ status: 'FAILURE', reason: 'UNAUTHORIZED' }, { status: 401 })
+  }
+
+  const { uuid, token }: { uuid: string; token: string } = await request.json()
+  const context = url.searchParams.get('context') as Context
 
   if (!uuid || !token || !context) {
     return json({ status: 'FAILURE', reason: 'BAD_REQUEST' }, { status: 400 })
@@ -42,7 +48,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     }
   }
 
-  if (!lock || lock.token !== token) {
+  if (!lock || lock.token !== token || lock.userId !== user.id) {
     return json({ status: 'FAILURE', reason: 'FORBIDDEN' }, { status: 403 })
   }
 
@@ -84,3 +90,5 @@ export const POST: RequestHandler = async ({ request, url }) => {
     return json({ status: 'FAILURE', reason: 'SERVER_ERROR' }, { status: 500 })
   }
 }
+
+

@@ -41,6 +41,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   } else if (context === 'images' && !user.p_news) {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
+  } else {
+    return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   }
 
   const results = []
