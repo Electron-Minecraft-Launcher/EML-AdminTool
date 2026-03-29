@@ -2,7 +2,7 @@ import { error, redirect, type Actions } from '@sveltejs/kit'
 import { fail } from '$lib/server/action'
 import type { PageServerLoad } from './$types'
 import { NotificationCode } from '$lib/utils/notifications'
-import { createFileSchema, editFileSchema, renameFileSchema, loaderSchema } from '$lib/utils/validations'
+import { createFileSchema, editFileSchema, renameFileSchema, loaderSchema, deleteFilesSchema } from '$lib/utils/validations'
 import { cacheFiles, createFile, deleteFile, editFile, getCachedFilesParsed, getFiles, renameFile } from '$lib/server/files'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { db } from '$lib/server/db'
@@ -12,49 +12,58 @@ import { updateLoader } from '$lib/server/loader'
 import { checkVanillaLoader, getVanillaVersions } from '$lib/server/loaders/vanilla'
 import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forgelike'
 import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
+import { getAccessibleProfiles, resolveProfile } from '$lib/server/profile'
+import type { Dir } from '$lib/utils/types'
 
 export const load = (async (event) => {
   const domain = event.url.origin
   const user = event.locals.user
 
-  if (!user?.p_filesUpdater) {
-    throw redirect(303, '/dashboard')
+  if (!user?.profilePermissions.some((p) => p.permission > 0) && !user?.isAdmin) {
+    throw redirect(303, '/')
   }
 
   try {
-    const files = await getCachedFilesParsed(domain, 'files-updater')
+    const profiles = await getAccessibleProfiles(user.id, user.isAdmin)
+    const requestedProfileSlug = event.url.searchParams.get('profile')
+    const selectedProfile = (requestedProfileSlug ? profiles.find((p) => p.slug === requestedProfileSlug) : null) ?? profiles[0]
 
-    let loader: Loader | null = null
-    try {
-      loader = (await db.loader.findFirst()) as Loader | null
-    } catch (err) {
-      console.error('Failed to load loader:', err)
-      throw new ServerError('Failed to load loader', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-
-    if (!loader?.loaderVersion) {
-      loader = {
-        id: '',
-        type: ILoaderType.VANILLA,
-        minecraftVersion: 'latest_release',
-        loaderVersion: 'latest_release',
-        format: ILoaderFormat.CLIENT,
-        file: null,
-        updatedAt: new Date()
-      } as Loader
-    }
+    const [files, vanilla, forge, neoforge, fabric, quilt, fabricLoaderVersions, quiltLoaderVersions, databaseLoader] = await Promise.all([
+      getCachedFilesParsed(domain, `files-updater/${selectedProfile.slug}`),
+      getVanillaVersions(),
+      getForgeLikeVersions(ILoaderType.FORGE),
+      getForgeLikeVersions(ILoaderType.NEOFORGE),
+      getFabricLikeGameVersions(ILoaderType.FABRIC),
+      getFabricLikeGameVersions(ILoaderType.QUILT),
+      getFabricLikeLoaderVersions(ILoaderType.FABRIC),
+      getFabricLikeLoaderVersions(ILoaderType.QUILT),
+      db.loader.findFirst({ where: { profileId: selectedProfile.id } }).catch((err) => {
+        console.error('Failed to load loader:', err)
+        throw new ServerError('Failed to load loader', err, NotificationCode.DATABASE_ERROR, 500)
+      })
+    ])
 
     const loaderList = {
-      [ILoaderType.VANILLA]: await getVanillaVersions(),
-      [ILoaderType.FORGE]: await getForgeLikeVersions(ILoaderType.FORGE),
-      [ILoaderType.NEOFORGE]: await getForgeLikeVersions(ILoaderType.NEOFORGE),
-      [ILoaderType.FABRIC]: await getFabricLikeGameVersions(ILoaderType.FABRIC),
-      [ILoaderType.QUILT]: await getFabricLikeGameVersions(ILoaderType.QUILT)
+      [ILoaderType.VANILLA]: vanilla,
+      [ILoaderType.FORGE]: forge,
+      [ILoaderType.NEOFORGE]: neoforge,
+      [ILoaderType.FABRIC]: fabric,
+      [ILoaderType.QUILT]: quilt
     }
-    const fabricLoaderVersions = await getFabricLikeLoaderVersions(ILoaderType.FABRIC)
-    const quiltLoaderVersions = await getFabricLikeLoaderVersions(ILoaderType.QUILT)
 
-    return { loader, loaderList, fabricLoaderVersions, quiltLoaderVersions, files }
+    const loader: Loader = databaseLoader?.loaderVersion
+      ? (databaseLoader as Loader)
+      : ({
+          id: '',
+          type: ILoaderType.VANILLA,
+          minecraftVersion: 'latest_release',
+          loaderVersion: 'latest_release',
+          format: ILoaderFormat.CLIENT,
+          file: null,
+          updatedAt: new Date()
+        } as Loader)
+
+    return { profiles, loader, loaderList, fabricLoaderVersions, quiltLoaderVersions, files }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -68,12 +77,13 @@ export const actions: Actions = {
     const user = event.locals.user
     const domain = event.url.origin
 
-    if (!user?.p_filesUpdater) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+    if (!user) {
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
     const raw = {
+      profileId: form.get('profile-id'),
       path: form.get('path'),
       name: form.get('name'),
       newName: form.get('new-name')
@@ -84,13 +94,16 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { path, name, newName } = result.data
+    const { profileId, path, name, newName } = result.data
 
     try {
-      await renameFile('files-updater', path, name, newName)
-      await cacheFiles('files-updater')
+      const profile = await resolveProfile(profileId, user.id, user.isAdmin)
+      const dir = `files-updater/${profile.slug}` as Dir
 
-      const files = await getFiles(domain, 'files-updater')
+      await renameFile(dir, path, name, newName)
+      await cacheFiles(dir)
+
+      const files = await getFiles(domain, dir)
       return { files }
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
@@ -105,12 +118,13 @@ export const actions: Actions = {
     const user = event.locals.user
     const domain = event.url.origin
 
-    if (!user?.p_filesUpdater) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+    if (!user) {
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
     const raw = {
+      profileId: form.get('profile-id'),
       path: form.get('path'),
       name: form.get('name') ?? undefined
     }
@@ -120,13 +134,16 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { path, name } = result.data
+    const { profileId, path, name } = result.data
 
     try {
-      await createFile('files-updater', path, name)
-      await cacheFiles('files-updater')
+      const profile = await resolveProfile(profileId, user.id, user.isAdmin)
+      const dir = `files-updater/${profile.slug}` as Dir
 
-      const files = await getFiles(domain, 'files-updater')
+      await createFile(dir, path, name)
+      await cacheFiles(dir)
+
+      const files = await getFiles(domain, dir)
       return { files }
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
@@ -141,12 +158,13 @@ export const actions: Actions = {
     const user = event.locals.user
     const domain = event.url.origin
 
-    if (!user?.p_filesUpdater) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+    if (!user) {
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
     const raw = {
+      profileId: form.get('profile-id'),
       path: form.get('path'),
       name: form.get('name'),
       content: form.get('content')
@@ -157,13 +175,16 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { path, name, content } = result.data
+    const { profileId, path, name, content } = result.data
 
     try {
-      await editFile('files-updater', path, name, content)
-      await cacheFiles('files-updater')
+      const profile = await resolveProfile(profileId, user.id, user.isAdmin)
+      const dir = `files-updater/${profile.slug}` as Dir
 
-      const files = await getFiles(domain, 'files-updater')
+      await editFile(dir, path, name, content)
+      await cacheFiles(dir)
+
+      const files = await getFiles(domain, dir)
       return { files }
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
@@ -178,22 +199,35 @@ export const actions: Actions = {
     const domain = event.url.origin
     const user = event.locals.user
 
-    if (!user?.p_filesUpdater) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+    if (!user) {
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
-    const paths = form.getAll('paths')
+    const raw = {
+      profileId: form.get('profile-id'),
+      paths: form.getAll('paths')
+    }
+
+    const result = deleteFilesSchema.safeParse(raw)
+    if (!result.success) {
+      return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
+    }
+
+    const { profileId, paths } = result.data
 
     try {
+      const profile = await resolveProfile(profileId, user.id, user.isAdmin)
+      const dir = `files-updater/${profile.slug}` as Dir
+
       for (const path of paths) {
         if (typeof path !== 'string') continue
-
-        await deleteFile('files-updater', path)
-        await cacheFiles('files-updater')
+        await deleteFile(dir, path)
       }
 
-      const cache = await getCachedFilesParsed(domain, 'files-updater')
+      await cacheFiles(dir)
+
+      const cache = await getCachedFilesParsed(domain, dir)
       return { files: cache }
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
@@ -207,12 +241,13 @@ export const actions: Actions = {
   changeLoader: async (event) => {
     const user = event.locals.user
 
-    if (user?.p_filesUpdater !== 2) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
+    if (!user) {
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
     }
 
     const form = await event.request.formData()
     const raw = {
+      profileId: form.get('profile-id'),
       type: form.get('type'),
       minecraftVersion: form.get('minecraft-version'),
       loaderVersion: form.get('loader-version')
@@ -223,11 +258,14 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { type, minecraftVersion, loaderVersion } = result.data
+    const { profileId, type, minecraftVersion, loaderVersion } = result.data
 
     try {
+      const profile = await resolveProfile(profileId, user.id, user.isAdmin, 2)
+
       let file: any = null
       let format: LoaderFormat = ILoaderFormat.CLIENT
+
       if (type === ILoaderType.VANILLA) {
         checkVanillaLoader(minecraftVersion, loaderVersion)
       } else if (type === ILoaderType.FORGE || type === ILoaderType.NEOFORGE) {
@@ -239,9 +277,7 @@ export const actions: Actions = {
         checkFabricLikeLoader(type, minecraftVersion, loaderVersion)
       }
 
-      const loader = { type, minecraftVersion, loaderVersion, format, file }
-
-      await updateLoader(loader)
+      await updateLoader({ type, minecraftVersion, loaderVersion, format, file }, profile.id)
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.message })
@@ -251,3 +287,5 @@ export const actions: Actions = {
     }
   }
 }
+
+

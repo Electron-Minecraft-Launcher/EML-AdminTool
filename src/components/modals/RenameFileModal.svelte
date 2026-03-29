@@ -8,14 +8,16 @@
   import { l } from '$lib/stores/language'
   import { addNotification } from '$lib/stores/notifications'
   import { onMount } from 'svelte'
+  import type { Profile } from '@prisma/client'
 
   interface Props {
     show: boolean
     files: File_[]
     selectedItems: File_[]
+    selectedProfile: Profile
   }
 
-  let { show = $bindable(), files = $bindable(), selectedItems = $bindable() }: Props = $props()
+  let { show = $bindable(), files = $bindable(), selectedItems = $bindable(), selectedProfile }: Props = $props()
 
   let showLoader = $state(false)
   let path = $state(selectedItems[0].path)
@@ -33,6 +35,7 @@
     showLoader = true
     formData.set('path', path)
     formData.set('name', name)
+    formData.set('profile-id', selectedProfile.id)
 
     return async ({ result }) => {
       showLoader = false

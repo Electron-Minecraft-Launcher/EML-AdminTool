@@ -6,7 +6,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getOS, getStorage } from '$lib/server/vps'
 import { getUpdate, update } from '$lib/server/update'
-import { editEMLATSchema, profileSchema, editUserSchema } from '$lib/utils/validations'
+import { editEMLATSchema, editUserSchema, userProfilePermissionsSchema } from '$lib/utils/validations'
 import { editEMLAT } from '$lib/server/emlat'
 import { generateRandomPin, getPin } from '$lib/server/pin'
 import type { LanguageCode } from '$lib/stores/language'
@@ -17,6 +17,7 @@ import { restartServer } from '$lib/server/setup'
 import { IUserStatus } from '$lib/utils/db'
 import { dev } from '$app/environment'
 import { getVanillaVersions } from '$lib/server/loaders/vanilla'
+import { updateUserProfilePermissions } from '$lib/server/profile'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -26,27 +27,37 @@ export const load = (async (event) => {
   }
 
   try {
-    let environment, profiles, users, vps, update, minecraftVersions
+    let vps
 
-    try {
-      environment = (await db.environment.findFirst())!
-    } catch (err) {
-      console.error('Failed to load environment:', err)
-      throw new ServerError('Failed to load environment', err, NotificationCode.DATABASE_ERROR, 500)
-    }
+    const [environment, users, profiles, userPermissions, update, minecraftVersions] = await Promise.all([
+      db.environment.findFirst().catch((err) => {
+        console.error('Failed to load environment:', err)
+        throw new ServerError('Failed to load environment', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
+      db.user.findMany({ omit: { password: true }, orderBy: { username: 'asc' } }).catch((err) => {
+        console.error('Failed to load users:', err)
+        throw new ServerError('Failed to load users', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
+      db.profile.findMany({ orderBy: { name: 'asc' } }).catch((err) => {
+        console.error('Failed to load profiles:', err)
+        throw new ServerError('Failed to load profiles', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
+      db.userProfilePermission
+        .findMany({
+          select: { userId: true, profileId: true, permission: true }
+        })
+        .catch((err) => {
+          console.error('Failed to load permissions:', err)
+          throw new ServerError('Failed to load permissions', err, NotificationCode.DATABASE_ERROR, 500)
+        }),
+      getUpdate().catch((err) => {
+        throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
+      }),
+      getVanillaVersions()
+    ])
 
-    try {
-      profiles = await db.profile.findMany({ orderBy: { name: 'asc' } })
-    } catch (err) {
-      console.error('Failed to load profiles:', err)
-      throw new ServerError('Failed to load profiles', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-
-    try {
-      users = await db.user.findMany({ omit: { password: true }, orderBy: { username: 'asc' } })
-    } catch (err) {
-      console.error('Failed to load users:', err)
-      throw new ServerError('Failed to load users', err, NotificationCode.DATABASE_ERROR, 500)
+    if (!environment) {
+      throw new ServerError('Environment configuration not found', null, NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
 
     try {
@@ -56,15 +67,7 @@ export const load = (async (event) => {
       throw new ServerError('Failed to load VPS information', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
 
-    try {
-      update = await getUpdate()
-    } catch (err) {
-      throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
-    }
-
-    minecraftVersions = await getVanillaVersions()
-
-    return { environment, profiles, users, vps, update, minecraftVersions }
+    return { environment, users, profiles, userPermissions, vps, update, minecraftVersions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -114,49 +117,6 @@ export const actions: Actions = {
     }
   },
 
-  editProfile: async (event) => {
-    const user = event.locals.user
-
-    if (!user?.isAdmin) {
-      throw error(403, { message: NotificationCode.FORBIDDEN })
-    }
-
-    const form = await event.request.formData()
-
-    const raw = {
-      profileId: form.get('profile-id'),
-      name: form.get('name'),
-      ip: form.get('ip'),
-      port: form.get('port'),
-      tcpProtocol: form.get('tcp-protocol')
-    }
-
-    const result = profileSchema.safeParse(raw)
-
-    if (!result.success) {
-      return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
-    }
-
-    const { profileId, name, ip, port, tcpProtocol } = result.data
-    const slug = name
-      .toLowerCase()
-      .replace(/\s+/g, '-')
-      .replace(/[^a-z0-9\-]/g, '')
-
-    try {
-      await db.profile.update({
-        where: { id: profileId },
-        data: {
-          name,
-          slug,
-          ip,
-          port,
-          tcpProtocol
-        }
-      })
-    } catch (err) {}
-  },
-
   editUser: async (event) => {
     const user = event.locals.user
 
@@ -169,8 +129,6 @@ export const actions: Actions = {
     const raw = {
       userId: form.get('user-id'),
       username: form.get('username'),
-      p_filesUpdater_1: form.get('p_files-updater_1') === 'on',
-      p_filesUpdater_2: form.get('p_files-updater_2') === 'on',
       p_bootstraps: form.get('p_bootstraps') === 'on',
       p_maintenance: form.get('p_maintenance') === 'on',
       p_news_1: form.get('p_news_1') === 'on',
@@ -187,11 +145,20 @@ export const actions: Actions = {
     if (!result.success) {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
+    
+    const rawFilesUpdaterPermissions = { p_filesUpdater: form.get('p_files-updater') || undefined }
+    
+    const filesUpdaterPermissionsResult = userProfilePermissionsSchema.safeParse(rawFilesUpdaterPermissions)
+    
+    if (!filesUpdaterPermissionsResult.success) {
+      return fail(event, 400, { failure: JSON.parse(filesUpdaterPermissionsResult.error.message)[0].message })
+    }
+
+    const { p_filesUpdater } = filesUpdaterPermissionsResult.data
 
     const userId = result.data.userId
     const username = result.data.username
     const status = IUserStatus.ACTIVE
-    const p_filesUpdater = getFilesUpdaterPermission(result)
     const p_bootstraps = result.data.p_bootstraps ? 1 : 0
     const p_maintenance = result.data.p_maintenance ? 1 : 0
     const p_news = getNewsPermissions(result)
@@ -201,18 +168,20 @@ export const actions: Actions = {
     const p_stats = getStatsPermissions(result)
 
     try {
-      await updateUser(userId, {
-        username,
-        status,
-        p_filesUpdater,
-        p_bootstraps,
-        p_maintenance,
-        p_news,
-        p_newsCategories,
-        p_newsTags,
-        p_backgrounds,
-        p_stats
-      })
+      await Promise.all([
+        updateUser(userId, {
+          username,
+          status,
+          p_bootstraps,
+          p_maintenance,
+          p_news,
+          p_newsCategories,
+          p_newsTags,
+          p_backgrounds,
+          p_stats
+        }),
+        updateUserProfilePermissions(userId, p_filesUpdater)
+      ])
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
@@ -343,12 +312,6 @@ async function refuseDeleteUser(event: RequestEvent<any>) {
   }
 }
 
-function getFilesUpdaterPermission(result: any) {
-  if (result.data.p_filesUpdater_2) return 2
-  if (result.data.p_filesUpdater_1) return 1
-  return 0
-}
-
 function getNewsPermissions(result: any) {
   if (result.data.p_news_2) return 2
   if (result.data.p_news_1 || result.data.p_newsCategories || result.data.p_newsTags) return 1
@@ -360,3 +323,5 @@ function getStatsPermissions(result: any) {
   if (result.data.p_stats_1) return 1
   return 0
 }
+
+

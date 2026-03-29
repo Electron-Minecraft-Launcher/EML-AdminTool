@@ -3,6 +3,7 @@ import type { File as File_ } from '$lib/utils/types'
 
 interface InitUploadRequest {
   context: Context
+  profileId?: string
   files: {
     id: string
     path: string
@@ -26,6 +27,7 @@ interface CommitUploadRequest {
   uuid: string
   token: string
   context: Context
+  profileId?: string
 }
 
 interface CommitUploadResponse {
@@ -38,6 +40,7 @@ interface UploadOptions {
   context: Context
   mode: 'BEST_EFFORT' | 'ALL_OR_NOTHING'
   currentPath: string
+  profileId?: string
   promptOverwrite?: (fileName: string) => Promise<boolean>
   onProgress?: (fileName: string, progress: number) => void
   onFileComplete?: (newFile: File_) => Promise<void> | void
@@ -169,7 +172,8 @@ async function processUpload(intention: FileIntention, uuid: string, token: stri
   const commitPayload: CommitUploadRequest = {
     uuid,
     token,
-    context: options.context
+    context: options.context,
+    profileId: options.profileId
   }
 
   const commitRes = await fetch('/api/upload/commit', {

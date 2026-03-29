@@ -57,23 +57,24 @@ model Environment {
 }
 
 model User {
-  id               String     @id @default(cuid(2))
-  username         String     @unique
-  password         String
-  status           UserStatus @default(PENDING)
-  isAdmin          Boolean    @default(false)
-  p_filesUpdater   Int        @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
-  p_bootstraps     Int        @default(0) // 0 = no access, 1 = read and write
-  p_maintenance    Int        @default(0) // 0 = no access, 1 = read and write
-  p_news           Int        @default(0) // 0 = no access, 1 = read and write, 2 = admin (can delete news they did not create)
-  p_newsCategories Int        @default(0) // 0 = no access, 1 = read and write
-  p_newsTags       Int        @default(0) // 0 = no access, 1 = read and write
-  p_backgrounds    Int        @default(0) // 0 = no access, 1 = read and write
-  p_stats          Int        @default(0) // 0 = no access, 1 = read, 2 = read and reset
-  createdAt        DateTime   @default(now())
-  updatedAt        DateTime   @updatedAt
-  logs             Log[]
-  news             News[]
+  id                 String                  @id @default(cuid(2))
+  username           String                  @unique
+  password           String
+  status             UserStatus              @default(PENDING)
+  isAdmin            Boolean                 @default(false)
+  p_filesUpdater     Int                     @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
+  p_bootstraps       Int                     @default(0) // 0 = no access, 1 = read and write
+  p_maintenance      Int                     @default(0) // 0 = no access, 1 = read and write
+  p_news             Int                     @default(0) // 0 = no access, 1 = read and write, 2 = admin (can delete news they did not create)
+  p_newsCategories   Int                     @default(0) // 0 = no access, 1 = read and write
+  p_newsTags         Int                     @default(0) // 0 = no access, 1 = read and write
+  p_backgrounds      Int                     @default(0) // 0 = no access, 1 = read and write
+  p_stats            Int                     @default(0) // 0 = no access, 1 = read, 2 = read and reset
+  profilePermissions UserProfilePermission[]
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+  logs               Log[]
+  news               News[]
 }
 
 model Log {
@@ -93,18 +94,22 @@ model Loader {
   format           LoaderFormat
   file             Json?
   updatedAt        DateTime     @updatedAt
+  profileId        String       @default("1")
+  profile          Profile      @relation(fields: [profileId], references: [id])
 }
 
 model Profile {
-  id          String   @id @default(cuid(2))
-  name        String
-  isDefault   Boolean  @default(false)
-  slug        String   @unique
-  ip          String?
-  port        Int?
-  tcpProtocol String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String                  @id @default(cuid(2))
+  name            String
+  isDefault       Boolean                 @default(false)
+  slug            String                  @unique
+  ip              String?
+  port            Int?
+  tcpProtocol     String?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  loaders         Loader[]
+  userPermissions UserProfilePermission[]
 }
 
 model Bootstrap {
@@ -174,4 +179,17 @@ model ExpiredToken {
 model SystemMigration {
   id        String   @id
   appliedAt DateTime @default(now())
+}
+
+model UserProfilePermission {
+  id         String   @id @default(cuid(2))
+  userId     String
+  profileId  String
+  permission Int      @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, profileId])
 }

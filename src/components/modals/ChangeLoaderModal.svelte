@@ -1,6 +1,6 @@
 <script lang="ts">
   import { ILoaderType } from '$lib/utils/db'
-  import type { Loader, LoaderType } from '@prisma/client'
+  import type { Loader, LoaderType, Profile } from '@prisma/client'
   import type { LoaderVersion } from '$lib/utils/types'
   import ModalTemplate from './__ModalTemplate.svelte'
   import LoadingSplash from '../layouts/LoadingSplash.svelte'
@@ -12,13 +12,14 @@
 
   interface Props {
     show: boolean
+    selectedProfile: Profile
     loader: Loader
     fabricLoaderVersions: string[]
     quiltLoaderVersions: string[]
     loaderList: { [key: string]: LoaderVersion[] }
   }
 
-  let { show = $bindable(), loader, fabricLoaderVersions, quiltLoaderVersions, loaderList }: Props = $props()
+  let { show = $bindable(), selectedProfile, loader, fabricLoaderVersions, quiltLoaderVersions, loaderList }: Props = $props()
 
   const latestInfo = 'Choosing this version will always force the Launcher to download the latest release.'
 
@@ -189,6 +190,7 @@
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
     showLoader = true
+    formData.set('profile-id', selectedProfile.id)
     formData.set('type', type)
     formData.set('minecraft-version', minecraftVersion)
     formData.set('loader-version', loaderVersion)

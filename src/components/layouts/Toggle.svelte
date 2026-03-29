@@ -6,8 +6,6 @@
   }
 
   let { status = $bindable(), disabled = false, text = ['Enabled', 'Disabled'] }: Props = $props()
-
-  $inspect(status)
 </script>
 
 <label class="switch p" class:disabled>

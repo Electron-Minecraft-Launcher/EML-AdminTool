@@ -3,15 +3,6 @@ import { NotificationCode } from './notifications'
 import { DateTime } from 'luxon'
 import { ILoaderType } from '$lib/utils/db'
 
-const isValidPlatformBatch = (files: File[], extensions: string[]) => {
-  if (files.length === 0) return true
-
-  const hasYml = files.some((f) => f.name.endsWith('.yml'))
-  const hasBinary = files.some((f) => extensions.some((ext) => f.name.endsWith(ext)))
-
-  return hasYml && hasBinary
-}
-
 export const setupSchema = z.object({
   language: z.string().length(2, NotificationCode.SETUP_INVALID_LANGUAGE),
   dbPassword: z.string().min(10, NotificationCode.SETUP_DATABASE_PASSWORD_TOO_SHORT),
@@ -42,13 +33,64 @@ export const profileSchema = z
     tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFIL_INVALID_TCP_PROTOCOL).optional()
   })
   .transform((data) => {
+    if (!data.ip) {
+      data.port = undefined
+      data.tcpProtocol = undefined
+    }
     if (data.ip && !data.port) {
       data.port = 25565
     }
-    console.log(data)
+    if (data.ip && !data.tcpProtocol) {
+      data.tcpProtocol = 'modern'
+    }
     return data
   })
   .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFIL_PORT_WITHOUT_IP, path: ['port'] })
+
+const profilePermissionItemSchema = z.object({
+  userId: z.string(),
+  permission: z.union([z.literal(0), z.literal(1), z.literal(2)])
+})
+
+const userPermissionItemSchema = z.object({
+  profileId: z.string(),
+  permission: z.union([z.literal(0), z.literal(1), z.literal(2)])
+})
+
+export const profileUserPermissionsSchema = z.object({
+  permissions: z
+    .string()
+    .transform((str, ctx) => {
+      try {
+        return JSON.parse(str)
+      } catch {
+        ctx.addIssue({
+          code: 'custom',
+          message: NotificationCode.INVALID_INPUT
+        })
+        return z.NEVER
+      }
+    })
+    .pipe(z.array(profilePermissionItemSchema))
+    .optional()
+})
+
+export const userProfilePermissionsSchema = z.object({
+  p_filesUpdater: z
+    .string()
+    .transform((str, ctx) => {
+      try {
+        return JSON.parse(str)
+      } catch {
+        ctx.addIssue({
+          code: 'custom',
+          message: NotificationCode.INVALID_INPUT
+        })
+        return z.NEVER
+      }
+    })
+    .pipe(z.array(userPermissionItemSchema))
+})
 
 export const editUserSchema = z.object({
   userId: z.string(),
@@ -57,8 +99,6 @@ export const editUserSchema = z.object({
     .transform((val) => val.trim())
     .refine((val) => val.length >= 2, { message: NotificationCode.EDIT_USER_USERNAME_TOO_SHORT })
     .refine((val) => val.length <= 64, { message: NotificationCode.EDIT_USER_USERNAME_TOO_LONG }),
-  p_filesUpdater_1: z.boolean(),
-  p_filesUpdater_2: z.boolean(),
   p_bootstraps: z.boolean(),
   p_maintenance: z.boolean(),
   p_news_1: z.boolean(),
@@ -104,6 +144,7 @@ export const registerSchema = z.object({
 })
 
 export const renameFileSchema = z.object({
+  profileId: z.string(),
   path: z.string(),
   name: z.string().min(1, NotificationCode.INVALID_INPUT).max(255, NotificationCode.INVALID_INPUT),
   newName: z
@@ -115,6 +156,7 @@ export const renameFileSchema = z.object({
 
 export const createFileSchema = z
   .object({
+    profileId: z.string(),
     path: z.string(),
     name: z
       .string()
@@ -127,12 +169,19 @@ export const createFileSchema = z
   })
 
 export const editFileSchema = z.object({
+  profileId: z.string(),
   path: z.string(),
   name: z.string().min(1, NotificationCode.INVALID_INPUT).max(255, NotificationCode.INVALID_INPUT),
   content: z.string()
 })
 
+export const deleteFilesSchema = z.object({
+  profileId: z.string(),
+  paths: z.array(z.string())
+})
+
 export const loaderSchema = z.object({
+  profileId: z.string(),
   type: z.enum(ILoaderType),
   minecraftVersion: z.string(),
   loaderVersion: z.string()
@@ -237,4 +286,8 @@ export const backgroundSchema = z
   .refine((schema) => !(!schema.backgroundId && !schema.file), {
     message: NotificationCode.MISSING_INPUT
   })
+
+
+
+
 

@@ -4,19 +4,35 @@
   import { addNotification } from '$lib/stores/notifications'
   import type { NotificationCode } from '$lib/utils/notifications'
   import type { SubmitFunction } from '@sveltejs/kit'
-  import type { PageData } from '../../routes/(app)/dashboard/profiles/$types'
   import AddEditProfileModal from '../modals/AddEditProfileModal.svelte'
+  import type { Profile, User, UserProfilePermission } from '@prisma/client'
+  import type { PageData } from '../../routes/(app)/dashboard/profiles/$types'
 
   interface Props {
     selectedProfileId: string
+    selectedProfileIdModal: string | null
+    showAddEditProfileModal: boolean
     data: PageData
   }
 
-  let { selectedProfileId = $bindable(), data }: Props = $props()
+  let {
+    selectedProfileId = $bindable(),
+    selectedProfileIdModal = $bindable(null),
+    showAddEditProfileModal: showEditProfileModal = $bindable(false),
+    data
+  }: Props = $props()
 
-  let showEditProfileModal = $state(false)
-  let selectedProfile = $derived.by(() => data.profiles.find((profile) => profile.id === selectedProfileId))!
-  let action: 'ADD' | 'EDIT' = $state('ADD')
+  const emptyProfile: Profile = {
+    id: '',
+    name: '',
+    slug: '',
+    isDefault: false,
+    ip: '',
+    port: null,
+    tcpProtocol: '',
+    updatedAt: new Date(),
+    createdAt: new Date()
+  }
 
   const tcpProtocols = {
     modern: 'Modern (1.7+)',
@@ -25,8 +41,20 @@
     'beta1.8-1.3': 'Legacy (Beta 1.8-1.3)'
   }
 
-  const enhanceForm: SubmitFunction = ({ action, formData, cancel }) => {
-    // TODO
+  let selectedProfile = $derived.by(() => {
+    return data.profiles.find((profile) => profile.id === selectedProfileId) ?? emptyProfile
+  })
+
+  let profileUsers = $derived(
+    data.users
+      .map((u) => ({
+        ...u,
+        permission: data.userPermissions.find((p) => p.profileId === selectedProfileId && p.userId === u.id)?.permission ?? 0
+      }))
+      .filter((u) => u.permission > 0)
+  )
+
+  const enhanceForm: SubmitFunction = ({ formData, cancel }) => {
     const warning =
       'Are you sure you want to delete this profile? This action cannot be undone, and all users using this profile will be switched to the default profile. All data associated with this profile will be permanently deleted.'
     if (!confirm(warning)) {
@@ -34,12 +62,14 @@
       return
     }
 
-    formData.set('profile-id', selectedProfileId)
+    formData.set('profile-id', selectedProfileId ?? '')
     return async ({ result, update }) => {
       await update({ reset: false })
       if (result.type === 'failure') {
         const message = $l.notifications[result.data?.failure as NotificationCode] ?? $l.notifications.INTERNAL_SERVER_ERROR
         addNotification('ERROR', message)
+      } else if (result.type === 'success') {
+        selectedProfileId = data.profiles[0]?.id ?? ''
       }
 
       await applyAction(result)
@@ -48,7 +78,7 @@
 </script>
 
 {#if showEditProfileModal}
-  <AddEditProfileModal bind:show={showEditProfileModal} bind:selectedProfileId {action} {data} />
+  <AddEditProfileModal bind:show={showEditProfileModal} bind:selectedProfileIdModal bind:selectedProfileId {data} />
 {/if}
 
 {#if !selectedProfile.isDefault}
@@ -59,8 +89,8 @@
 <button
   class="secondary right"
   onclick={() => {
+    selectedProfileIdModal = selectedProfileId
     showEditProfileModal = true
-    action = 'EDIT'
   }}
   aria-label="Edit profile"
 >
@@ -97,12 +127,26 @@
       </div>
     </div>
   </div>
+
+  <p class="label">{$l.dashboard.emlatSettings.userManagement.modal.permissions}</p>
+  <div class="user-permissions">
+    <div class="user-permission">
+      <span class="username">{data.user.username}</span>
+      <span class="perm-badge">Files + Loader</span>
+    </div>
+    {#each profileUsers as u}
+      <div class="user-permission">
+        <span class="username">{u.username}</span>
+        <span class="perm-badge">{u.permission === 2 ? 'Files + Loader' : 'Files'}</span>
+      </div>
+    {/each}
+  </div>
 </div>
 
 <style lang="scss">
   div.info {
     min-height: 200px;
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
   }
 
@@ -154,5 +198,31 @@
 
   button.delete {
     color: #6e2626;
+  }
+
+  div.user-permissions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 5px;
+  }
+
+  div.user-permission {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    span.username {
+      min-width: 120px;
+      text-align: right;
+    }
+
+    span.perm-badge {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--secondary-color);
+      color: #505050;
+    }
   }
 </style>

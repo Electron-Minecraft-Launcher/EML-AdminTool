@@ -238,7 +238,7 @@ async function loadApplicationContext(event: RequestEvent) {
 async function handleUserSession(event: RequestEvent, session: string) {
   try {
     const user = await verify(session)
-    event.locals.user = getUserInfo(user)
+    event.locals.user = getUserInfo(user, user.profilePermissions)
   } catch (err) {
     deleteSession(event)
 
@@ -263,11 +263,11 @@ function getDefaultEnv() {
   }
 }
 
-function getUserInfo(user: User) {
+function getUserInfo(user: User, profilePermissions: { profileId: string; name: string; permission: number }[] = []) {
   return {
     id: user.id,
     username: user.username,
-    p_filesUpdater: user.p_filesUpdater as 0 | 1,
+    p_filesUpdater: user.p_filesUpdater as 0 | 1 | 2,
     p_bootstraps: user.p_bootstraps as 0 | 1,
     p_maintenance: user.p_maintenance as 0 | 1,
     p_news: user.p_news as 0 | 1 | 2,
@@ -275,6 +275,8 @@ function getUserInfo(user: User) {
     p_newsTags: user.p_newsTags as 0 | 1,
     p_backgrounds: user.p_backgrounds as 0 | 1,
     p_stats: user.p_stats as 0 | 1 | 2,
-    isAdmin: user.isAdmin
+    isAdmin: user.isAdmin,
+    profilePermissions: profilePermissions as { profileId: string; name: string; permission: 0 | 1 | 2 }[]
   }
 }
+

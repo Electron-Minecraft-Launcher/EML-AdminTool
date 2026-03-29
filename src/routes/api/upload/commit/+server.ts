@@ -24,10 +24,15 @@ async function abortAndCleanup(targetPathKey: string, partPath: string) {
   await fs.unlink(partPath).catch(() => {})
 }
 
-export const POST: RequestHandler = async ({ request, url }) => {
-  const { uuid, token, context }: { uuid: string; token: string; context: Context } = await request.json()
+export const POST: RequestHandler = async ({ request, url, locals }) => {
+  const user = locals.user
+  if (!user) {
+    return json({ status: 'FAILURE', reason: 'UNAUTHORIZED' }, { status: 401 })
+  }
 
-  if (!uuid || !token || !context) {
+  const { uuid, token }: { uuid: string; token: string } = await request.json()
+
+  if (!uuid || !token) {
     return json({ status: 'FAILURE', reason: 'BAD_REQUEST' }, { status: 400 })
   }
 
@@ -42,7 +47,9 @@ export const POST: RequestHandler = async ({ request, url }) => {
     }
   }
 
-  if (!lock || lock.token !== token) {
+  const context = lock?.context as Context | undefined
+
+  if (!lock || lock.token !== token || lock.userId !== user.id || !context) {
     return json({ status: 'FAILURE', reason: 'FORBIDDEN' }, { status: 403 })
   }
 
@@ -68,7 +75,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
     await cacheFiles(context)
 
     const domain = url.origin
-    const allFiles = await getCachedFilesParsed(domain, context as any)
+    const allFiles = await getCachedFilesParsed(domain, context)
 
     const relativePath = lock.targetPath.split(`files/${context}/`)[1]
     const dirPath = path.dirname(relativePath)
@@ -84,3 +91,5 @@ export const POST: RequestHandler = async ({ request, url }) => {
     return json({ status: 'FAILURE', reason: 'SERVER_ERROR' }, { status: 500 })
   }
 }
+
+

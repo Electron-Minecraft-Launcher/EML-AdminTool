@@ -9,12 +9,14 @@
   import LoadingSplash from '../layouts/LoadingSplash.svelte'
   import { onMount } from 'svelte'
   import { readableFiles } from '$lib/utils/files'
+  import type { Profile } from '@prisma/client'
 
   interface Props {
     show: boolean
     showEditFileModal: boolean
     files: File_[]
     currentPath: string
+    selectedProfile: Profile
     type: 'FOLDER' | 'FILE'
     fileToEdit?: File_
   }
@@ -24,6 +26,7 @@
     showEditFileModal = $bindable(),
     files = $bindable(),
     currentPath,
+    selectedProfile,
     type,
     fileToEdit = $bindable(undefined)
   }: Props = $props()
@@ -38,6 +41,7 @@
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
     showLoader = true
+    formData.set('profile-id', selectedProfile.id)
     name = name.removeUnwantedFilenameChars()
     if (type === 'FOLDER') {
       formData.set('path', `${currentPath}${name}`)
