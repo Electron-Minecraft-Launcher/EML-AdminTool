@@ -8,8 +8,7 @@ export const GET: RequestHandler = async () => {
   try {
     background = await getActiveBackground()
   } catch (err) {
-    console.error('Failed to get bootstraps:', err)
-    return json({ success: false, message: 'Failed to get bootstraps' }, { status: 500 })
+    return json({ success: false, message: 'Failed to get background' }, { status: 500 })
   }
 
   let res

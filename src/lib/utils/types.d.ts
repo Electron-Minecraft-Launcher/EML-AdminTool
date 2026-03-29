@@ -61,8 +61,8 @@ export interface File {
   type: 'JAVA' | 'ASSET' | 'LIBRARY' | 'NATIVE' | 'MOD' | 'CONFIG' | 'BOOTSTRAP' | 'BACKGROUND' | 'FOLDER' | 'IMAGE' | 'OTHER'
 }
 
-export type Dir = 'files-updater' | 'loader' | 'bootstraps' | 'backgrounds' | 'images' | 'cache'
-export type Context = 'files-updater' | 'bootstraps' | 'backgrounds' | 'images'
+export type Dir = 'files-updater' | 'loader' | 'bootstraps' | 'backgrounds' | 'images' | 'cache' | `files-updater/${string}`
+export type Context = `files-updater/${string}` | 'bootstraps' | 'backgrounds' | 'images'
 
 export interface LoaderVersion {
   majorVersion: string
@@ -70,3 +70,4 @@ export interface LoaderVersion {
   loaderVersion: string
   type: ('release' | 'snapshot' | 'beta' | 'alpha' | 'latest' | 'recommended' | 'default')[]
 }
+

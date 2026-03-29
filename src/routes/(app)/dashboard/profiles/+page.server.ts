@@ -5,9 +5,12 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { getVanillaVersions } from '$lib/server/loaders/vanilla'
 import { verify } from '$lib/server/auth'
-import { profileSchema } from '$lib/utils/validations'
+import { profileUserPermissionsSchema, profileSchema } from '$lib/utils/validations'
 import { fail } from '$lib/server/action'
-import { addProfile, getProfileById, updateProfile } from '$lib/server/profile'
+import { addProfile, getProfileById, updateProfileUserPermissions, updateProfile, deleteProfile } from '$lib/server/profile'
+import { IUserStatus } from '$lib/utils/db'
+import { cacheFiles, deleteFile, renameFile } from '$lib/server/files'
+import { deleteLoader } from '$lib/server/loader'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -17,18 +20,34 @@ export const load = (async (event) => {
   }
 
   try {
-    let profiles, minecraftVersions
+    const [profiles, users, userPermissions] = await Promise.all([
+      db.profile
+        .findMany({ orderBy: { name: 'asc' } })
+        .then((profiles) => {
+          const defaultIndex = profiles.findIndex((p) => p.isDefault)
+          if (defaultIndex > 0) {
+            const [defaultProfile] = profiles.splice(defaultIndex, 1)
+            profiles.unshift(defaultProfile)
+          }
+          return profiles
+        })
+        .catch((err) => {
+          console.error('Failed to load profiles:', err)
+          throw new ServerError('Failed to load profiles', err, NotificationCode.DATABASE_ERROR, 500)
+        }),
+      db.user
+        .findMany({ where: { status: IUserStatus.ACTIVE, isAdmin: false }, omit: { password: true }, orderBy: { username: 'asc' } })
+        .catch((err) => {
+          console.error('Failed to load users:', err)
+          throw new ServerError('Failed to load users', err, NotificationCode.DATABASE_ERROR, 500)
+        }),
+      db.userProfilePermission.findMany().catch((err) => {
+        console.error('Failed to load profile user permissions:', err)
+        throw new ServerError('Failed to load profile user permissions', err, NotificationCode.DATABASE_ERROR, 500)
+      })
+    ])
 
-    try {
-      profiles = await db.profile.findMany({ orderBy: { name: 'asc' } })
-    } catch (err) {
-      console.error('Failed to load profiles:', err)
-      throw new ServerError('Failed to load profiles', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-
-    minecraftVersions = await getVanillaVersions()
-
-    return { profiles, minecraftVersions }
+    return { profiles, users, userPermissions }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -59,7 +78,6 @@ export const actions: Actions = {
       port: form.get('port') ? Number(form.get('port')) : undefined,
       tcpProtocol: form.get('tcp-protocol') || undefined
     }
-
     const result = profileSchema.safeParse(raw)
 
     if (!result.success) {
@@ -68,7 +86,15 @@ export const actions: Actions = {
 
     const { profileId, name, ip, port, tcpProtocol } = result.data
 
-    console.log('Received profile data:', { profileId, name, ip, port, tcpProtocol })
+    const rawPermissions = { permissions: form.get('permissions') || undefined }
+
+    const permissionsResult = profileUserPermissionsSchema.safeParse(rawPermissions)
+
+    if (!permissionsResult.success) {
+      return fail(event, 400, { failure: JSON.parse(permissionsResult.error.message)[0].message })
+    }
+
+    const { permissions } = permissionsResult.data
 
     const slug = name
       .toLowerCase()
@@ -84,9 +110,57 @@ export const actions: Actions = {
         }
 
         await updateProfile(profileId, name, slug, ip, port, tcpProtocol)
+
+        if (slug !== profile.slug) {
+          await renameFile('files-updater', '', profile.slug, slug, false)
+          await deleteFile('cache', `files-updater-${profile.slug}.json`, false)
+          await cacheFiles(`files-updater/${slug}`)
+        }
+        if (permissions) {
+          await updateProfileUserPermissions(profileId, permissions)
+        }
       } else {
-        await addProfile(name, slug, ip, port, tcpProtocol)
+        const profileId = await addProfile(name, slug, ip, port, tcpProtocol)
+        return { profileId }
       }
+    } catch (err) {
+      if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
+      if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
+
+      console.error('Unknown error:', err)
+      throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
+    }
+  },
+
+  deleteProfile: async (event) => {
+    const user = event.locals.user
+
+    if (!user?.isAdmin) {
+      throw error(403, { message: NotificationCode.FORBIDDEN })
+    }
+
+    const form = await event.request.formData()
+    const profileId = form.get('profile-id')
+
+    if (!profileId || typeof profileId !== 'string') {
+      return fail(event, 400, { failure: NotificationCode.MISSING_INPUT })
+    }
+
+    try {
+      const profile = await getProfileById(profileId)
+
+      if (!profile) {
+        return fail(event, 404, { failure: NotificationCode.NOT_FOUND })
+      }
+
+      if (profile.isDefault) {
+        return fail(event, 403, { failure: NotificationCode.FORBIDDEN })
+      }
+
+      await deleteLoader(profile.id)
+      await deleteFile('files-updater', profile.slug, false)
+      await deleteFile('cache', `files-updater-${profile.slug}.json`, false)
+      await deleteProfile(profileId)
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
@@ -96,3 +170,4 @@ export const actions: Actions = {
     }
   }
 }
+

@@ -247,6 +247,7 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
       profileManagement: {
         title: `Profile management`,
         profiles: `Profiles`,
+        addProfile: `Add profile`,
         defaultProfile: `Default profile`,
         profileName: `Profile name`,
         profileSlug: `Profile ID`,

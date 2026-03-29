@@ -1,4 +1,4 @@
-## Change Logs
+## Changelog
 
 ### Removed features
 

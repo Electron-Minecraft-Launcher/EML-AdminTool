@@ -14,6 +14,7 @@ export interface UploadLock {
 }
 
 export const activeUploads: Map<string, UploadLock> = new Map<string, UploadLock>()
+export const uploadsByUuid: Map<string, string> = new Map<string, string>()
 export const STAGING_DIR: string = path.join(process.cwd(), 'files', '.staging')
 
 export const LOCK_TIMEOUT_MS: number = 2 * 60 * 1000
@@ -32,6 +33,8 @@ export function createLock(data: Omit<UploadLock, 'uuid' | 'token' | 'lastActivi
     lastActivity: Date.now()
   })
 
+  uploadsByUuid.set(uuid, data.targetPath)
+
   return { uuid, token }
 }
 
@@ -41,6 +44,7 @@ function startGarbageCollector() {
     for (const [targetPath, lock] of activeUploads.entries()) {
       if (now - lock.lastActivity > LOCK_TIMEOUT_MS) {
         activeUploads.delete(targetPath)
+        uploadsByUuid.delete(lock.uuid)
         const partPath = path.join(STAGING_DIR, `${lock.uuid}.part`)
         fs.unlink(partPath).catch(() => {})
       }
@@ -48,7 +52,8 @@ function startGarbageCollector() {
   }, 60 * 1000)
 }
 
-if (!globalStore.__uploadGCStarted) { // used for dev HMR to avoid multiple GC instances
+if (!globalStore.__uploadGCStarted) {
+  // used for dev HMR to avoid multiple GC instances
   startGarbageCollector()
   globalStore.__uploadGCStarted = true
 }

@@ -11,7 +11,7 @@ const root = path_.join(process.cwd())
 /**
  * Get files in a directory.
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
- * @param dir Directory to get files from.
+ * @param dir Directory to get files from (including the profile slug if applicable).
  */
 export async function getFiles(domain: string, dir: Dir): Promise<File_[]> {
   await fs.mkdir(path_.join(root, 'files', dir), { recursive: true })
@@ -23,16 +23,18 @@ export async function getFiles(domain: string, dir: Dir): Promise<File_[]> {
 /**
  * Get cached files for a directory. If the cache does not exist, it will be generated.
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
- * @param dir Directory to get cached files from.
+ * @param dir Directory to get cached files from (including the profile slug if applicable).
  */
 export async function getCachedFiles(domain: string, dir: Dir): Promise<string> {
-  const target = sanitizePath('files', 'cache', `${dir}.json`)
+  const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
+  const cacheKey = slug ? `files-updater-${slug}` : dir
+  const target = sanitizePath('files', 'cache', `${cacheKey}.json`)
   let cache
   try {
     cache = (await fs.readFile(target, 'utf-8')).replaceAll('{{url}}', domain)
-  } catch (err) {
-    console.warn('Cache file not found, generating new cache:', err)
-    await cacheFiles('files-updater')
+  } catch {
+    console.warn('Cache file not found, generating new cache.')
+    await cacheFiles(dir)
     cache = (await fs.readFile(target, 'utf-8')).replaceAll('{{url}}', domain)
   }
 
@@ -42,7 +44,7 @@ export async function getCachedFiles(domain: string, dir: Dir): Promise<string> 
 /**
  * Get cached files for a directory and parse them. If the cache does not exist, it will be generated.
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
- * @param dir Directory to get cached files from.
+ * @param dir Directory to get cached files from (including the profile slug if applicable).
  */
 export async function getCachedFilesParsed(domain: string, dir: Dir): Promise<File_[]> {
   const cache = await getCachedFiles(domain, dir)
@@ -56,7 +58,7 @@ export async function getCachedFilesParsed(domain: string, dir: Dir): Promise<Fi
 
 /**
  * Upload a file to the server.
- * @param dir Directory to upload the file to.
+ * @param dir Directory to upload the file to (including the profile slug if applicable).
  * @param path Path to the file, relative to the directory, without the file name.
  * @param file File object to upload.
  */
@@ -152,8 +154,9 @@ export async function editFile(dir: Dir, path: string, name: string, content: st
  * @param path Path to the file, relative to the directory, without the file name.
  * @param name Current name of the file.
  * @param newName New name of the file.
+ * @param throwError Whether to throw an error if the file does not exist.
  */
-export async function renameFile(dir: Dir, path: string, name: string, newName: string): Promise<void> {
+export async function renameFile(dir: Dir, path: string, name: string, newName: string, throwError: boolean = true): Promise<void> {
   let fullPath, newFullPath
   try {
     name = name.removeUnwantedFilenameChars()
@@ -168,7 +171,18 @@ export async function renameFile(dir: Dir, path: string, name: string, newName: 
     await fs.access(fullPath)
   } catch {
     console.warn('File does not exist:', fullPath)
-    throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    if (throwError) {
+      throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    } else {
+      return // no need to rename anything
+    }
+  }
+
+  try {
+    await fs.mkdir(path_.dirname(newFullPath), { recursive: true })
+  } catch (err) {
+    console.error('Error creating parent directory:', err)
+    throw new ServerError('Failed to create parent directory', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
   }
 
   try {
@@ -183,8 +197,9 @@ export async function renameFile(dir: Dir, path: string, name: string, newName: 
  * Delete a file or folder.
  * @param dir Directory where the file to delete is.
  * @param path Path to the file, relative to the directory, **including** the file name.
+ * @param throwError Whether to throw an error if the file does not exist.
  */
-export async function deleteFile(dir: Dir, path: string): Promise<void> {
+export async function deleteFile(dir: Dir, path: string, throwError: boolean = true): Promise<void> {
   try {
     path = sanitizePath('files', dir, path)
   } catch (err) {
@@ -196,7 +211,10 @@ export async function deleteFile(dir: Dir, path: string): Promise<void> {
     await fs.access(path)
   } catch {
     console.warn('File does not exist:', path)
-    throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    if (throwError) {
+      throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+    }
+    return
   }
 
   try {
@@ -220,12 +238,14 @@ export function sanitizePath(...path: string[]): string {
 /**
  * Generate a cache file for a directory by browsing the directory and saving the file metadata in a JSON file.
  * The cache file will be saved in `files/cache/{dir}.json`.
- * @param dir Directory to generate the cache for. This should be the same directory used in `getCachedFiles` and `getCachedFilesParsed`.
+ * @param dir Directory to generate the cache for (including the profile slug if applicable). This should be the same directory used in `getCachedFiles` and `getCachedFilesParsed`.
  */
 export async function cacheFiles(dir: Dir): Promise<void> {
-  const files = await getFiles('{{url}}', dir)
+  const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
+  const cacheKey = slug ? `files-updater-${slug}` : dir
+  const files = await getFiles('{{url}}', dir as Dir)
   await fs.mkdir(path_.join(root, 'files', 'cache'), { recursive: true })
-  await fs.writeFile(path_.join(root, 'files', 'cache', `${dir}.json`), JSON.stringify(files, null, 2))
+  await fs.writeFile(path_.join(root, 'files', 'cache', `${cacheKey}.json`), JSON.stringify(files, null, 2))
 }
 
 /**
@@ -292,3 +312,4 @@ async function getFileSha1(path: string): Promise<string> {
     stream.on('error', reject)
   })
 }
+

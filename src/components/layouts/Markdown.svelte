@@ -40,7 +40,8 @@
 
   const purifyConfig = {
     ADD_TAGS: ['span', 'div', 'p', 'pre', 'code'],
-    ADD_ATTR: ['class', 'style']
+    ADD_ATTR: ['class', 'style'],
+    FORBID_ATTR: ['style', 'onerror', 'onload']
   }
 </script>
 
