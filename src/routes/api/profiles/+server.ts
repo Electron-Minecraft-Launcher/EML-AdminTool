@@ -14,6 +14,7 @@ export const GET: RequestHandler = async () => {
     success: true,
     profiles: profiles.map((profile) => ({
       id: profile.id,
+      isDefault: profile.isDefault, 
       name: profile.name,
       slug: profile.slug,
       ip: profile.ip,
