@@ -16,14 +16,24 @@
 
   const timeDelta = data.timeInfo.time - Date.now()
 
-  const clockFormatter = new Intl.DateTimeFormat($l.language, {
+  const locale = env.language || 'en'
+
+  function createDateFormatter(options: Intl.DateTimeFormatOptions) {
+    try {
+      return new Intl.DateTimeFormat(locale, options)
+    } catch {
+      return new Intl.DateTimeFormat('en', options)
+    }
+  }
+
+  const clockFormatter = createDateFormatter({
     timeZone: data.timeInfo.zone,
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit'
   })
 
-  const dateFormatter = new Intl.DateTimeFormat($l.language, {
+  const dateFormatter = createDateFormatter({
     timeZone: data.timeInfo.zone,
     year: 'numeric',
     month: '2-digit',
