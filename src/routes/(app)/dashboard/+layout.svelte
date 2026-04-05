@@ -27,7 +27,7 @@
     <LeftPanel bind:leftPanelOpen />
   </div>
 
-  <div class="content">
+  <div class="content" class:full-width={!leftPanelOpen}>
     {@render children?.()}
     <Footer />
   </div>
@@ -43,11 +43,13 @@
 
   div.nav {
     width: 260px;
+    min-width: 260px;
     transition: all 0.3s;
     z-index: 10;
 
     &.closed {
       width: 106px;
+      min-width: 106px;
     }
   }
 
@@ -55,5 +57,10 @@
     padding: 30px 100px;
     flex: 1;
     position: relative;
+    width: calc(100vw - 460px);
+
+    &.full-width {
+      width: calc(100vw - 306px);
+    }
   }
 </style>

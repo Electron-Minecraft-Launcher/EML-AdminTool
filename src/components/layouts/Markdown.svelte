@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { marked } from 'marked'
-  import { markedHighlight } from 'marked-highlight'
-  import markedAlert from 'marked-alert'
   import DOMPurify from 'isomorphic-dompurify'
-  import hljs from 'highlight.js'
+  import { onMount } from 'svelte'
+  import { getMarked } from '$lib/utils/marked'
 
   interface Props {
     source: string
@@ -11,42 +9,18 @@
 
   let { source }: Props = $props()
 
-  marked.use(
-    markedHighlight({
-      langPrefix: 'hljs language-',
-      highlight(code, lang) {
-        const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-        return hljs.highlight(code, { language }).value
-      }
-    })
-  )
-
-  marked.use(
-    markedAlert({
-      variants: [
-        { icon: '', type: 'note' },
-        { icon: '', type: 'tip' },
-        { icon: '', type: 'important' },
-        { icon: '', type: 'warning' },
-        { icon: '', type: 'caution' }
-      ]
-    })
-  )
-
-  marked.use({
-    breaks: true,
-    gfm: true
-  })
-
+  const parser = getMarked()
   const purifyConfig = {
     ADD_TAGS: ['span', 'div', 'p', 'pre', 'code'],
     ADD_ATTR: ['class', 'style'],
     FORBID_ATTR: ['style', 'onerror', 'onload']
   }
+
+  onMount(() => {})
 </script>
 
 <div class="markdown-body">
-  {@html DOMPurify.sanitize(marked.parse(source) as string, purifyConfig)}
+  {@html DOMPurify.sanitize(parser.parse(source) as string, purifyConfig)}
 </div>
 
 <style lang="scss" global>
@@ -160,7 +134,6 @@
 
     pre {
       overflow-x: auto;
-      max-width: 100%;
       margin: 0;
 
       code.hljs {
