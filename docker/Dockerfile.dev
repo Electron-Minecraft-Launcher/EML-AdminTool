@@ -11,10 +11,11 @@ COPY prisma.config.ts ./
 COPY docker/entrypoint.dev.sh ./
 
 RUN npm i --ignore-scripts
+RUN sed -i 's/\r$//' /app/entrypoint.dev.sh
 RUN chmod +x /app/entrypoint.dev.sh
 
 EXPOSE 5173
 
-ENTRYPOINT ["/app/entrypoint.dev.sh"]
+ENTRYPOINT ["sh", "/app/entrypoint.dev.sh"]
 # wait command
 # CMD ["tail", "-f", "/dev/null"]

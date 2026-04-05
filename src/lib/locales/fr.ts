@@ -135,6 +135,7 @@ Ainsi, si vous souhaitez nous aider à traduire l'EML AdminTool, vous pourrez tr
   },
   leftPanel: {
     settings: `Paramètres`,
+    profiles: `Profils`,
     features: `Fonctionnalités`,
     logout: `Déconnexion`
   },

@@ -10,20 +10,19 @@
 
   const env = getEnv()
   const user = getUser()
+  const locale = env.language || 'en'
 
   let displayTime = $state('')
   let interval: ReturnType<typeof setInterval>
 
   const timeDelta = data.timeInfo.time - Date.now()
-
-  const clockFormatter = new Intl.DateTimeFormat($l.language, {
+  const clockFormatter = createDateFormatter({
     timeZone: data.timeInfo.zone,
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit'
   })
-
-  const dateFormatter = new Intl.DateTimeFormat($l.language, {
+  const dateFormatter = createDateFormatter({
     timeZone: data.timeInfo.zone,
     year: 'numeric',
     month: '2-digit',
@@ -37,6 +36,14 @@
     displayTime = clockFormatter.format(new Date(currentServerTime))
   }
   updateClock()
+
+  function createDateFormatter(options: Intl.DateTimeFormatOptions) {
+    try {
+      return new Intl.DateTimeFormat(locale, options)
+    } catch {
+      return new Intl.DateTimeFormat('en', options)
+    }
+  }
 
   function filterPosts(post: any) {
     if (!post.filter) return true
