@@ -110,16 +110,16 @@ export async function getServerStatus(
               players: { max: json.players.max, online: json.players.online }
             })
             socket.destroy()
-            clearTimeout(timeout)
+            clearTimeout(connectionTimeout)
           } catch (err) {
             reject(new ServerError(`Received invalid response`, err, NotificationCode.NETWORK_ERROR, 502))
             socket.destroy()
-            clearTimeout(timeout)
+            clearTimeout(connectionTimeout)
           }
         } else {
           reject(new ServerError(`Received unexpected packet`, null, NotificationCode.NETWORK_ERROR, 502))
           socket.destroy()
-          clearTimeout(timeout)
+          clearTimeout(connectionTimeout)
         }
       } else if (protocol === '1.6' || protocol === '1.4-1.5') {
         if (incomingBuf.readUInt8(0) === 0xff) {
@@ -129,7 +129,7 @@ export async function getServerStatus(
           if (fields[0] !== '§1') {
             reject(new ServerError(`Received invalid response: the first field is not '§1'`, null, NotificationCode.NETWORK_ERROR, 502))
             socket.destroy()
-            clearTimeout(timeout)
+            clearTimeout(connectionTimeout)
           }
 
           resolve({
@@ -139,11 +139,11 @@ export async function getServerStatus(
             players: { max: +fields[5], online: +fields[4] }
           })
           socket.destroy()
-          clearTimeout(timeout)
+          clearTimeout(connectionTimeout)
         } else {
           reject(new ServerError(`Received invalid response: wrong packet identifier`, null, NotificationCode.NETWORK_ERROR, 502))
           socket.destroy()
-          clearTimeout(timeout)
+          clearTimeout(connectionTimeout)
         }
       } else if (protocol === 'beta1.8-1.3') {
         const bufReader = new BufferReader(incomingBuf)
@@ -159,11 +159,11 @@ export async function getServerStatus(
             players: { max: +fields[2], online: +fields[1] }
           })
           socket.destroy()
-          clearTimeout(timeout)
+          clearTimeout(connectionTimeout)
         } else {
           reject(new ServerError(`Received invalid response: wrong packet identifier`, null, NotificationCode.NETWORK_ERROR, 502))
           socket.destroy()
-          clearTimeout(timeout)
+          clearTimeout(connectionTimeout)
         }
       }
     })

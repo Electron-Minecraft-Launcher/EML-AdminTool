@@ -15,7 +15,7 @@ type LauncherStatus = {
   scheduledStartTime: Date | null
 }
 
-export const load = (async (event) => {
+export const load = (async () => {
   let timeInfo = { time: Date.now(), zone: Intl.DateTimeFormat().resolvedOptions().timeZone }
   let serverStatus: ServerStatus | null = null
   let launcherStatus: LauncherStatus | null = null
