@@ -134,47 +134,59 @@
       </p>
     </div>
   </div>
-  <section class="section">
+  <div class="news">
     {#await data.streamed.fetchNews}
-      <p>Loading...</p>
+      <section class="section">
+        <p>Loading...</p>
+      </section>
     {:then news}
       {#each news.filter(filterPosts) as post}
-        <article class="blog-post">
-          <header class="post-header">
-            <div class="meta-tags">
-              <span class="date">
-                <i class="fa-solid fa-calendar"></i>
-                {new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
-              </span>
-              {#if post.author}
-                <span class="author">
-                  <i class="fa-solid fa-user"></i>
-                  {post.author}
+        <section class="section">
+          <article class="blog-post">
+            <header class="post-header">
+              <div class="meta-tags">
+                <span class="date">
+                  <i class="fa-solid fa-calendar"></i>
+                  {new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
                 </span>
-              {/if}
-              {#if post.tags}
-                <div class="tags">
-                  {#each post.tags as tag}
-                    <span class="tag">#{tag}</span>
-                  {/each}
-                </div>
-              {/if}
+                {#if post.author}
+                  <span class="author">
+                    <i class="fa-solid fa-user"></i>
+                    {post.author}
+                  </span>
+                {/if}
+                {#if post.tags}
+                  <div class="tags">
+                    {#each post.tags as tag}
+                      <span class="tag">#{tag}</span>
+                    {/each}
+                  </div>
+                {/if}
+              </div>
+
+              <h2 class="post-title">{post.title}</h2>
+            </header>
+
+            {#if post.hero}
+              <div class="hero" style="background-image: url('https://emlproject.pages.dev{post.hero}')"></div>
+            {/if}
+
+            <div class="doc-content">
+              <Markdown source={post.content} />
             </div>
-
-            <h2 class="post-title">{post.title}</h2>
-          </header>
-
-          <div class="doc-content">
-            <Markdown source={post.content} />
-          </div>
-        </article>
+          </article>
+        </section>
       {:else}
-        <p>{$l.dashboard.noNews}</p>
+        <section class="section">
+          <p>{$l.dashboard.noNews}</p>
+        </section>
       {/each}
     {:catch error}
-      <p>{$l.dashboard.noNews}</p>
+      <section class="section">
+        <p>{$l.dashboard.noNews}</p>
+      </section>
     {/await}
-  </section>
+  </div>
 </div>
 
 <style lang="scss">
@@ -196,12 +208,21 @@
     flex-direction: column;
   }
 
+  div.news {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    overflow: hidden;
+  }
+
   section.section {
     flex: 1;
     margin-top: 0;
     display: flex;
     gap: 30px;
     flex-direction: column;
+    position: relative;
 
     .blog-post {
       &:not(:last-child) {
@@ -211,7 +232,8 @@
     }
 
     .post-header {
-      margin-bottom: 2rem;
+      max-width: 800px;
+      margin: 0 auto 30px auto;
 
       h2.post-title {
         font-size: 2rem;
@@ -249,6 +271,23 @@
           font-weight: 600;
         }
       }
+    }
+
+    div.hero {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto 30px auto;
+      aspect-ratio: 3 / 2;
+      background-size: cover;
+      background-position: center;
+      border-radius: 10px;
+      box-shadow: 0 4px 20px #00000026;
+      border: 1px solid var(--border-color, #333);
+    }
+
+    div.doc-content {
+      max-width: 800px;
+      margin: 0 auto;
     }
   }
 
