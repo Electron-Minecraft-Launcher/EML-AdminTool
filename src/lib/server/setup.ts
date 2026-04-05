@@ -10,6 +10,9 @@ import { NotificationCode } from '$lib/utils/notifications'
 import { dev } from '$app/environment'
 import { generateRandomPin } from './pin'
 import path from 'path'
+import { PrismaClient } from '@prisma/client'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 const execAsync = promisify(exec)
 
@@ -37,26 +40,45 @@ export const devWarning: string = dev
 `
   : ''
 
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL
+  const pool = new Pool({ connectionString })
+  const adapter = new PrismaPg(pool)
+  return new PrismaClient({ adapter })
+}
+
 export async function changeDatabasePassword(newPassword: string): Promise<void> {
   console.log('\n---------- CHANGING DATABASE PASSWORD ----------\n')
   resetProcessEnv()
 
-  newPassword = newPassword.replace(/["\/\\\+&#%\?=:@]/g, '')
-
-  const client = new Client({ connectionString: process.env.DATABASE_URL })
-  await client.connect()
+  const currentDatabaseUrl = process.env.DATABASE_URL ?? defaultPgURL
 
   try {
-    await client.query(`ALTER USER eml WITH PASSWORD ${escapeLiteral(newPassword)}`)
+    const parsedUrl = new URL(currentDatabaseUrl)
+    const dbUser = decodeURIComponent(parsedUrl.username)
+
+    // PostgreSQL identifiers cannot be safely parameterized, so we only allow simple usernames.
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(dbUser)) {
+      throw new Error('Invalid database username format for password update.')
+    }
+
+    const client = new Client({ connectionString: currentDatabaseUrl })
+    await client.connect()
+
+    try {
+      await client.query(`ALTER USER "${dbUser}" WITH PASSWORD ${escapeLiteral(newPassword)}`)
+    } finally {
+      await client.end()
+    }
+
+    parsedUrl.password = newPassword
+
+    updateEnv(parsedUrl.toString())
   } catch (err) {
     console.error('Error changing database password:', err)
-    await client.end()
     throw new ServerError('Failed to change database password', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
-  await client.end()
-
-  updateEnv(newPassword)
   console.log('Database password changed successfully.')
 }
 
@@ -64,44 +86,29 @@ export async function initDatabase(): Promise<void> {
   console.log('\n------------ INITIALIZING DATABASE -------------\n')
   resetProcessEnv()
 
-  const client = new Client({ connectionString: process.env.DATABASE_URL })
-  await client.connect()
-
-  let res
-  try {
-    res = await client.query(`SELECT 1 FROM "pg_database" WHERE "datname" = $1`, ['eml_admintool'])
-  } catch (err) {
-    console.error('Error checking database existence:', err)
-    await client.end()
-    throw new ServerError('Database check failed', err, NotificationCode.DATABASE_ERROR, 500)
-  }
-
-  if (res.rowCount === 0) {
-    try {
-      await client.query(`CREATE DATABASE "eml_admintool"`)
-    } catch (err) {
-      console.error('Error creating database:', err)
-      await client.end()
-      throw new ServerError('Database creation failed', err, NotificationCode.DATABASE_ERROR, 500)
-    }
-  }
-
   await execAsync('npx prisma db push')
 
+  const prisma = createPrismaClient()
+
   try {
-    res = await client.query(`SELECT 1 FROM "Environment" WHERE id = $1`, [1])
-    if (res.rowCount === 0) {
-      await client.query(`INSERT INTO "Environment" ("id", "language", "name", "theme", "updatedAt") VALUES ($1, 'en', 'EML', 'default', NOW())`, [1])
-    } else {
-      await client.query(`UPDATE "Environment" SET "updatedAt" = NOW() WHERE "id" = $1`, [1])
-    }
+    await prisma.environment.upsert({
+      where: { id: '1' },
+      create: {
+        id: '1',
+        language: 'en',
+        name: 'EML',
+        theme: 'default'
+      },
+      update: {
+        updatedAt: new Date()
+      }
+    })
   } catch (err) {
     console.error('Error initializing Environment table:', err)
-    await client.end()
     throw new ServerError('Failed to initialize Environment table', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await prisma.$disconnect()
   }
-
-  await client.end()
 
   console.log('Database initialized successfully.')
 }
@@ -110,26 +117,43 @@ export async function setAdminUser(username: string, password: string): Promise<
   console.log('\n------------- CREATING ADMIN USER --------------\n')
   resetProcessEnv()
 
-  const client = new Client({ connectionString: process.env.DATABASE_URL })
-  await client.connect()
-
+  const prisma = createPrismaClient()
   const hashedPassword = await bcrypt.hash(password, 10)
 
   try {
-    await client.query(
-      `INSERT INTO "User" 
-      ("id", "username", "password", "status", "isAdmin", "p_filesUpdater", "p_bootstraps", "p_maintenance", "p_news", "p_newsCategories", "p_newsTags", "p_backgrounds", "p_stats", "createdAt", "updatedAt")
-      VALUES (1, $1, $2, 'ACTIVE', true, 2, 1, 1, 2, 1, 1, 1, 2, NOW(), NOW()) ON CONFLICT DO NOTHING`,
-      [username, hashedPassword]
-    )
-    await client.query('UPDATE "Environment" SET "name" = $1, "updatedAt" = NOW() WHERE "id" = $2', [username, 1])
+    await prisma.user.upsert({
+      where: { id: '1' },
+      create: {
+        id: '1',
+        username,
+        password: hashedPassword,
+        status: 'ACTIVE',
+        isAdmin: true,
+        p_filesUpdater: 2,
+        p_bootstraps: 1,
+        p_maintenance: 1,
+        p_news: 2,
+        p_newsCategories: 1,
+        p_newsTags: 1,
+        p_backgrounds: 1,
+        p_stats: 2
+      },
+      update: {}
+    })
+
+    await prisma.environment.update({
+      where: { id: '1' },
+      data: {
+        name: username,
+        updatedAt: new Date()
+      }
+    })
   } catch (err) {
     console.error('Error initializing admin user:', err)
-    await client.end()
     throw new ServerError('Failed to initialize admin user', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await prisma.$disconnect()
   }
-
-  await client.end()
 
   console.log('Admin user created successfully.')
 }
@@ -138,20 +162,20 @@ export async function setPin(): Promise<void> {
   console.log('\n----------------- SETTING PIN ------------------\n')
   resetProcessEnv()
 
-  const client = new Client({ connectionString: process.env.DATABASE_URL })
-  await client.connect()
-
+  const prisma = createPrismaClient()
   const pin = generateRandomPin()
 
   try {
-    await client.query(`UPDATE "Environment" SET "pin" = $1 WHERE "id" = $2`, [pin, 1])
+    await prisma.environment.update({
+      where: { id: '1' },
+      data: { pin }
+    })
   } catch (err) {
     console.error('Error setting pin:', err)
-    await client.end()
     throw new ServerError('Failed to set pin', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await prisma.$disconnect()
   }
-
-  await client.end()
 
   console.log('Pin set successfully.')
 }
@@ -160,18 +184,19 @@ export async function setLanguage(language: string): Promise<void> {
   console.log('\n--------------- SETTING LANGUAGE ---------------\n')
   resetProcessEnv()
 
-  const client = new Client({ connectionString: process.env.DATABASE_URL })
-  await client.connect()
+  const prisma = createPrismaClient()
 
   try {
-    await client.query(`UPDATE "Environment" SET "language" = $1 WHERE "id" = $2`, [language, 1])
+    await prisma.environment.update({
+      where: { id: '1' },
+      data: { language }
+    })
   } catch (err) {
     console.error('Error setting language:', err)
-    await client.end()
     throw new ServerError('Failed to set language', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await prisma.$disconnect()
   }
-
-  await client.end()
 
   console.log('Language set successfully to:', language)
 }
@@ -180,8 +205,7 @@ export async function setDefaultProfile(name: string): Promise<void> {
   console.log('\n------------ SETTING DEFAULT PROFIL ------------\n')
   resetProcessEnv()
 
-  const client = new Client({ connectionString: process.env.DATABASE_URL })
-  await client.connect()
+  const prisma = createPrismaClient()
 
   const slug = name
     .toLowerCase()
@@ -189,17 +213,22 @@ export async function setDefaultProfile(name: string): Promise<void> {
     .replace(/[^a-z0-9\-]/g, '')
 
   try {
-    await client.query(
-      `INSERT INTO "Profile" ("id", "name", "isDefault", "slug", "createdAt", "updatedAt") VALUES ($1, $2, true, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
-      ['1', name, slug]
-    )
+    await prisma.profile.upsert({
+      where: { id: '1' },
+      create: {
+        id: '1',
+        name,
+        isDefault: true,
+        slug
+      },
+      update: {}
+    })
   } catch (err) {
     console.error('Error setting default profile:', err)
-    await client.end()
     throw new ServerError('Failed to set default profile', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await prisma.$disconnect()
   }
-
-  await client.end()
 
   console.log('Default profile set successfully.')
 }
@@ -231,8 +260,10 @@ UPDATER_HTTP_API_TOKEN="${apiToken}"
 BODY_SIZE_LIMIT=Infinity
 `
 
+  const envDirectory = path.dirname(envPath)
+
   try {
-    if (!fs.existsSync(envPath)) fs.mkdirSync(envPath)
+    if (!fs.existsSync(envDirectory)) fs.mkdirSync(envDirectory, { recursive: true })
   } catch (err) {
     console.error('Error creating env directory:', err)
     throw new ServerError('Failed to create env directory', err, NotificationCode.FILE_SYSTEM_ERROR, 500)
@@ -290,28 +321,28 @@ export async function restartServer(): Promise<void> {
   }, 1000)
 }
 
-function updateEnv(dbPassword: string): void {
+function updateEnv(databaseUrl: string): void {
   resetProcessEnv()
   const isConfigured = process.env.IS_CONFIGURED === 'true'
 
   const envFile = envPath
-
-  const newDatabaseUrl = `postgresql://eml:${dbPassword}@dbs:5432/eml_admintool`
-  const newJwtSecretKey = randomBytes(64).toString('base64url')
-  const newApiToken = randomBytes(32).toString('hex')
+  const newJwtSecretKey = process.env.JWT_SECRET_KEY ?? randomBytes(64).toString('base64url')
+  const newApiToken = process.env.UPDATER_HTTP_API_TOKEN ?? randomBytes(32).toString('hex')
 
   const newEnv = `${defaultEnvHeader}
 ${devWarning}
 # EML AdminTool configuration
 IS_CONFIGURED="${isConfigured}"
-DATABASE_URL="${newDatabaseUrl}"
+DATABASE_URL="${databaseUrl}"
 JWT_SECRET_KEY="${newJwtSecretKey}"
 UPDATER_HTTP_API_TOKEN="${newApiToken}"
 BODY_SIZE_LIMIT=Infinity
 `
 
+  const envDirectory = path.dirname(envPath)
+
   try {
-    if (!fs.existsSync(envPath)) fs.mkdirSync(envPath)
+    if (!fs.existsSync(envDirectory)) fs.mkdirSync(envDirectory, { recursive: true })
   } catch (err) {
     console.error('Error creating env directory:', err)
     throw new ServerError('Failed to create env directory', err, NotificationCode.FILE_SYSTEM_ERROR, 500)
