@@ -13,7 +13,7 @@
 # start or restart the application.                   #
 # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
-# EML AdminTool v2.3.2
+# EML AdminTool v2.3.3
 #
 
 name: eml-admintool
@@ -23,7 +23,7 @@ networks:
 
 services:
   web:
-    image: ghcr.io/electron-minecraft-launcher/eml-admintool:2.3.2
+    image: ghcr.io/electron-minecraft-launcher/eml-admintool:2.3.3
     restart: unless-stopped
     networks:
       - network
