@@ -18,6 +18,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const body = await request.json()
   const { context, files }: { context: Context; files: any[] } = body
+  console.log(context, user, !user.p_bootstraps)
+
+  if (!['bootstraps', 'backgrounds', 'images'].includes(context) && !context.startsWith('files-updater/')) {
+    return json({ message: NotificationCode.FORBIDDEN }, { status: 401 })
+  }
 
   if (context.match(/^files-updater\/[a-z0-9-]+$/)) {
     const slug = context.split('/')[1]
@@ -35,16 +40,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         return json({ message: NotificationCode.INTERNAL_SERVER_ERROR }, { status: 500 })
       }
     }
-  } else if (context === 'bootstraps' && !user.p_bootstraps) {
+  } else if (context === 'bootstraps' && !user.p_bootstraps && !user.isAdmin) {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
-  } else if (context === 'backgrounds' && !user.p_backgrounds) {
+  } else if (context === 'backgrounds' && !user.p_backgrounds && !user.isAdmin) {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
-  } else if (context === 'images' && !user.p_news) {
-    return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
-  } else {
+  } else if (context === 'images' && !user.p_news && !user.isAdmin) {
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   }
-
   const results = []
 
   for (const file of files) {
@@ -91,4 +93,3 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
   return json({ results })
 }
-
