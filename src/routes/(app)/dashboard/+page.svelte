@@ -168,7 +168,7 @@
             </header>
 
             {#if post.hero}
-              <div class="hero" style="background-image: url('https://emlproject.pages.dev{post.hero}')"></div>
+              <div class="hero" style="background-image: url('https://emlproject.com{post.hero}')"></div>
             {/if}
 
             <div class="doc-content">

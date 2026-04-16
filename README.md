@@ -4,13 +4,13 @@
 
 ![EML AdminTool](./.github/assets/files-updater.png)
 
-[<img src="https://img.shields.io/badge/Discord-EML-5561e6?&style=for-the-badge">](https://discord.gg/VbR86WchH9)
+[<img src="https://img.shields.io/badge/Discord-EML-5561e6?&style=for-the-badge">](https://emlproject.com/discord/github)
 [<img src="https://img.shields.io/badge/platforms-Docker-0077DA?style=for-the-badge&color=0077DA">](#platforms)
 [<img src="https://img.shields.io/badge/version-2.3.3-orangered?style=for-the-badge&color=orangered">](package.json)
 
 <p>
 <center>
-<a href="https://discord.gg/VbR86WchH9">
+<a href="https://emlproject.com/discord/github">
   <img src="./.github/assets/gg.png" alt="EML AdminTool Logo" width="300"/>
 </a>
 </center>
@@ -31,7 +31,7 @@
 
 ## Installation
 
-Please follow [this guide](https://emlproject.pages.dev/docs/).
+Please follow [this guide](https://emlproject.com/docs/).
 
 ### If you won't use a VPS
 
@@ -45,7 +45,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to contribute to 
 
 - This repository contains a `.env` file. All the information in this file is fake (random strings), and will be replaced by the real information when you install EML AdminTool.
 - This Web software is under the `GNU AGPLv3` license; to get more information, please read the file `LICENSE`. It is legally obligatory to respect this license.
-- If you need some help, you can join [this Discord](https://discord.gg/VbR86WchH9).
+- If you need some help, you can join [this Discord](https://emlproject.com/discord/github).
 
 <br>
 

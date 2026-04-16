@@ -69,7 +69,7 @@ export const load = (async () => {
 
     const fetchNews = async () => {
       try {
-        const response = await fetch('https://emlproject.pages.dev/api/news?get-content&limit=3')
+        const response = await fetch('https://emlproject.com/api/news?get-content&limit=3')
         if (!response.ok) {
           console.error('Failed to fetch news:', response.statusText)
           return []

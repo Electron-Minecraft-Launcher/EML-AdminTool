@@ -238,7 +238,7 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
   <li>Remove the EML AdminTool containers with <code>docker compose -f docker-compose.prod.yml down --rmi all -v</code>.</li>
   <li>Delete the EML AdminTool configuration directory with <code>rm -rf ~/.eml</code>.</li>
 </ol>
-<p>After that, EML AdminTool will be completely removed from your system. You can then reinstall it by following the <a href="https://emlproject.pages.dev/docs/install-eml-admintool" target="_blank">installation guide</a>.</p>`
+<p>After that, EML AdminTool will be completely removed from your system. You can then reinstall it by following the <a href="https://emlproject.com/docs/install-eml-admintool" target="_blank">installation guide</a>.</p>`
         }
       }
     },
