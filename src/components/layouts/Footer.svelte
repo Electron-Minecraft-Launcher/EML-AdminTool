@@ -8,8 +8,8 @@
 <footer>
   <hr />
   <p>
-    EML AdminTool {env.version} – <a href="https://discord.gg/VbR86WchH9" target="_blank">Discord</a> –
-    <a href="https://emlproject.pages.dev/docs" target="_blank">Docs</a> –
+    EML AdminTool {env.version} – <a href="https://emlproject.com/discord/other" target="_blank">Discord</a> –
+    <a href="https://emlproject.com/docs" target="_blank">Docs</a> –
     <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool" target="_blank">GitHub</a> –
     <a href="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/issues/new?template=bug.md" target="_blank"><i class="fa-solid fa-bug"></i>&nbsp;Report a bug</a>
   </p>
