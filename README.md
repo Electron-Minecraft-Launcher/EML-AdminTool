@@ -104,7 +104,7 @@ If you only need to distribute a static modpack without a backend, EML Lib's [ag
 
 ## Installation
 
-Please follow [this guide](https://emlproject.com/docs/).
+EML AdminTool requires Docker to be installed on your system. Please follow [this guide](https://emlproject.com/docs/) to install Docker and EML AdminTool.
 
 ## Contributing
 
@@ -115,12 +115,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines on how to contribute to 
 - This repository contains a `.env` file. All the information in this file is fake (random strings), and will be replaced by the real information when you install EML AdminTool.
 - This Web software is under the `GNU AGPLv3` license; to get more information, please read the file `LICENSE`. It is legally obligatory to respect this license.
 - If you need some help, you can join [this Discord](https://emlproject.com/discord/github).
-
-<br>
-
-[^1]: The Docker Engine installation tutorial from the official Docker documentation includes the installation of Docker Compose.
-
-[^2]: NGINX (or Apache) is recommended to use EML AdminTool in production. It allows you to use a domain name and an SSL certificate. If you don't use NGINX (or Apache), you can use EML AdminTool with the IP address of your VPS. However, it is not recommended to use EML AdminTool without a domain name and an SSL certificate.
-
-[^3]: On desktop (Windows, macOS and Linux), you can use Docker Desktop, which includes Docker and Docker Compose. On a server (Linux), you should install Docker and Docker Compose separately.
 
