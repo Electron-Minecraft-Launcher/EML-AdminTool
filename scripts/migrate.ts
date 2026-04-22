@@ -4,7 +4,9 @@ import { fileURLToPath } from 'node:url'
 import { PrismaClient } from '@prisma/client'
 import { Pool } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
+import { config } from 'dotenv'
 
+config()
 const connectionString = process.env.DATABASE_URL
 const pool = new Pool({ connectionString })
 const adapter = new PrismaPg(pool)
@@ -20,7 +22,7 @@ async function runMigrations() {
     files = allFiles.filter((f) => f.endsWith('.js')).sort() // .js because after compilation, .ts becomes .js
   } catch (err: any) {
     if (err.code === 'ENOENT') {
-      console.log('✅ No migrations directory found. Skipping.')
+      console.log('No migrations directory found. Skipping.')
       return
     }
     throw err
@@ -33,29 +35,29 @@ async function runMigrations() {
   for (const file of files) {
     if (appliedIds.has(file)) continue
 
-    console.log(`⏳ Applying migration: ${file}...`)
+    console.log(`Applying migration: ${file}...`)
     try {
       const migrationModule = await import(path.join(migrationsDir, file))
 
       if (typeof migrationModule.up === 'function') {
         await migrationModule.up(prisma)
       } else {
-        console.warn(`⚠️ Migration ${file} does not export an \`up\` function.`)
+        console.warn(`Migration ${file} does not export an up function.`)
       }
 
       await prisma.systemMigration.create({
         data: { id: file }
       })
-      
-      console.log(`✅ Migration ${file} applied successfully.`)
+
+      console.log(`Migration ${file} applied successfully.`)
       applied++
     } catch (error) {
-      console.error(`❌ Critical error during migration ${file}:`, error)
+      console.error(`Critical error during migration ${file}:`, error)
       process.exit(1)
     }
   }
 
-  console.log(`✅ Applied ${applied} migrations.`)
+  console.log(`Applied ${applied} migrations.`)
 }
 
 runMigrations()

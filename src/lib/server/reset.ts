@@ -4,32 +4,45 @@ import { defaultPgURL, envPath, resetProcessEnv } from './setup'
 import fs from 'node:fs'
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import { Client } from 'pg'
 import { deleteFile } from './files'
-import { Prisma } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
+import path from 'node:path'
+import { Pool } from 'pg'
+import { PrismaPg } from '@prisma/adapter-pg'
 
 export async function resetDatabase(): Promise<void> {
   console.log('\n-------------- RESETTING DATABASE --------------\n')
   resetProcessEnv()
 
-  const client = new Client({ connectionString: process.env.DATABASE_URL })
-  await client.connect()
+  const connectionString = process.env.DATABASE_URL
+  const pool = new Pool({ connectionString })
+  const adapter = new PrismaPg(pool)
+  const prisma = new PrismaClient({ adapter })
 
-  const tables = Prisma.dmmf.datamodel.models
-
-  if (tables.length > 0) {
-    const tableNames = tables.map((t) => `"${t.name}"`).join(', ')
-
-    try {
-      await client.query(`DROP TABLE IF EXISTS ${tableNames} CASCADE`)
-    } catch (err) {
-      console.error(`Error dropping database "eml_admintool":`, err)
-      await client.end()
-      throw new ServerError(`Failed to drop database "eml_admintool"`, err, NotificationCode.DATABASE_ERROR, 500)
-    }
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.userProfilePermission.deleteMany()
+      await tx.loader.deleteMany()
+      await tx.log.deleteMany()
+      await tx.news.deleteMany()
+      await tx.newsCategory.deleteMany()
+      await tx.newsTag.deleteMany()
+      await tx.stat.deleteMany()
+      await tx.expiredToken.deleteMany()
+      await tx.background.deleteMany()
+      await tx.bootstrap.deleteMany()
+      await tx.maintenance.deleteMany()
+      await tx.profile.deleteMany()
+      await tx.user.deleteMany()
+      await tx.environment.deleteMany()
+      await tx.systemMigration.deleteMany()
+    })
+  } catch (err) {
+    console.error('Error resetting database:', err)
+    throw new ServerError('Failed to reset database', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await prisma.$disconnect()
   }
-
-  await client.end()
 }
 
 export async function deleteAllFiles(): Promise<void> {
@@ -97,8 +110,10 @@ DATABASE_URL="${databaseUrl}"
 JWT_SECRET_KEY="${jwtSecretKey}"
 BODY_SIZE_LIMIT=Infinity`
 
+  const envDirectory = path.dirname(envPath)
+
   try {
-    if (!fs.existsSync('./env')) fs.mkdirSync('./env')
+    if (!fs.existsSync(envDirectory)) fs.mkdirSync(envDirectory, { recursive: true })
   } catch (err) {
     console.error('Error creating env directory:', err)
     throw new ServerError('Failed to create env directory', err, NotificationCode.FILE_SYSTEM_ERROR, 500)
