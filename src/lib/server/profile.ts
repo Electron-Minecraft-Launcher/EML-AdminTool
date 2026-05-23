@@ -192,6 +192,7 @@ export async function resolveProfile(profileId: string, userId: string, isAdmin:
   const profile = await getProfileById(profileId)
 
   if (!profile) {
+    console.warn(`Profile with ID ${profileId} not found`)
     throw new BusinessError('Profile not found', NotificationCode.NOT_FOUND, 404)
   }
 
@@ -205,6 +206,7 @@ export async function resolveProfile(profileId: string, userId: string, isAdmin:
     }
 
     if (!permission || permission.permission < minPermission) {
+      console.warn(`User ${userId} does not have permission to access profile ${profileId}`)
       throw new BusinessError('Forbidden', NotificationCode.FORBIDDEN, 403)
     }
   }

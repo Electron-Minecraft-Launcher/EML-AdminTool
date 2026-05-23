@@ -7,6 +7,7 @@ import type { RequestHandler } from './$types'
 export const POST: RequestHandler = async ({ request, locals }) => {
   const user = locals.user
   if (!user) {
+    console.warn('Unauthorized upload attempt')
     return json({ message: 'Unauthorized' }, { status: 401 })
   }
 
@@ -14,6 +15,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const token = request.headers.get('x-upload-token')
 
   if (!uuid || !token) {
+    console.warn('Missing credentials for upload attempt')
     return json({ message: 'Missing credentials' }, { status: 400 })
   }
 
@@ -21,6 +23,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const currentLock = targetPath ? activeUploads.get(targetPath) : null
 
   if (!currentLock || currentLock.token !== token || currentLock.userId !== user.id) {
+    console.warn('Forbidden upload attempt: invalid token or session expired')
     return json({ message: 'Forbidden or expired session' }, { status: 403 })
   }
 
@@ -33,6 +36,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       await fs.unlink(partPath).catch(() => {})
       if (targetPath) activeUploads.delete(targetPath)
       uploadsByUuid.delete(uuid)
+      console.warn('Upload size exceeded for UUID:', uuid)
       return json({ message: 'Size exceeded' }, { status: 413 })
     }
 

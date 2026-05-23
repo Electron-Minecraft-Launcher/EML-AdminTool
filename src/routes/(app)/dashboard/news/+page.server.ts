@@ -96,6 +96,7 @@ export const actions: Actions = {
         }
 
         if (user.id !== news.authorId) {
+          console.warn(`User ${user.id} is not the author of news ${newsId}`)
           throw new BusinessError('You are not the author of this news', NotificationCode.FORBIDDEN, 403)
         }
 
@@ -133,6 +134,7 @@ export const actions: Actions = {
         }
 
         if (user.id !== news.authorId && !user.isAdmin && user.p_news !== 2) {
+          console.warn(`User ${user.id} is not the author of news ${id} and does not have permission to delete it`)
           throw new BusinessError('You are not the author of this news', NotificationCode.FORBIDDEN, 403)
         }
 

@@ -49,8 +49,8 @@ export async function changeDatabasePassword(newPassword: string): Promise<void>
   try {
     await client.query(`ALTER USER eml WITH PASSWORD ${escapeLiteral(newPassword)}`)
   } catch (err) {
-    console.error('Error changing database password:', err)
     await client.end()
+    console.error('Error changing database password:', err)
     throw new ServerError('Failed to change database password', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
@@ -71,8 +71,8 @@ export async function initDatabase(): Promise<void> {
   try {
     res = await client.query(`SELECT 1 FROM "pg_database" WHERE "datname" = $1`, ['eml_admintool'])
   } catch (err) {
-    console.error('Error checking database existence:', err)
     await client.end()
+    console.error('Error checking database existence:', err)
     throw new ServerError('Database check failed', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
@@ -80,8 +80,8 @@ export async function initDatabase(): Promise<void> {
     try {
       await client.query(`CREATE DATABASE "eml_admintool"`)
     } catch (err) {
-      console.error('Error creating database:', err)
       await client.end()
+      console.error('Error creating database:', err)
       throw new ServerError('Database creation failed', err, NotificationCode.DATABASE_ERROR, 500)
     }
   }
@@ -96,8 +96,8 @@ export async function initDatabase(): Promise<void> {
       await client.query(`UPDATE "Environment" SET "updatedAt" = NOW() WHERE "id" = $1`, [1])
     }
   } catch (err) {
-    console.error('Error initializing Environment table:', err)
     await client.end()
+    console.error('Error initializing Environment table:', err)
     throw new ServerError('Failed to initialize Environment table', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
@@ -124,8 +124,8 @@ export async function setAdminUser(username: string, password: string): Promise<
     )
     await client.query('UPDATE "Environment" SET "name" = $1, "updatedAt" = NOW() WHERE "id" = $2', [username, 1])
   } catch (err) {
-    console.error('Error initializing admin user:', err)
     await client.end()
+    console.error('Error initializing admin user:', err)
     throw new ServerError('Failed to initialize admin user', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
@@ -146,8 +146,8 @@ export async function setPin(): Promise<void> {
   try {
     await client.query(`UPDATE "Environment" SET "pin" = $1 WHERE "id" = $2`, [pin, 1])
   } catch (err) {
-    console.error('Error setting pin:', err)
     await client.end()
+    console.error('Error setting pin:', err)
     throw new ServerError('Failed to set pin', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
@@ -166,8 +166,8 @@ export async function setLanguage(language: string): Promise<void> {
   try {
     await client.query(`UPDATE "Environment" SET "language" = $1 WHERE "id" = $2`, [language, 1])
   } catch (err) {
-    console.error('Error setting language:', err)
     await client.end()
+    console.error('Error setting language:', err)
     throw new ServerError('Failed to set language', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
@@ -194,8 +194,8 @@ export async function setDefaultProfile(name: string): Promise<void> {
       ['1', name, slug]
     )
   } catch (err) {
-    console.error('Error setting default profile:', err)
     await client.end()
+    console.error('Error setting default profile:', err)
     throw new ServerError('Failed to set default profile', err, NotificationCode.DATABASE_ERROR, 500)
   }
 

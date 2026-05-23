@@ -51,12 +51,14 @@ export const load = (async (event) => {
           throw new ServerError('Failed to load permissions', err, NotificationCode.DATABASE_ERROR, 500)
         }),
       getUpdate().catch((err) => {
+        console.error('Failed to load update information:', err)
         throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
       }),
       getVanillaVersions()
     ])
 
     if (!environment) {
+      console.error('Environment configuration not found')
       throw new ServerError('Environment configuration not found', null, NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
 
@@ -229,7 +231,7 @@ export const actions: Actions = {
     const user = event.locals.user
 
     if (!user?.isAdmin) {
-      return error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(403, { message: NotificationCode.FORBIDDEN })
     }
 
     try {
@@ -253,7 +255,7 @@ export const actions: Actions = {
     const user = event.locals.user
 
     if (!user?.isAdmin) {
-      return error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(403, { message: NotificationCode.FORBIDDEN })
     }
 
     try {

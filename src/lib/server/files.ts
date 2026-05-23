@@ -172,6 +172,7 @@ export async function renameFile(dir: Dir, path: string, name: string, newName: 
   } catch {
     console.warn('File does not exist:', fullPath)
     if (throwError) {
+      console.warn('File does not exist:', fullPath)
       throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
     } else {
       return // no need to rename anything
@@ -212,6 +213,7 @@ export async function deleteFile(dir: Dir, path: string, throwError: boolean = t
   } catch {
     console.warn('File does not exist:', path)
     if (throwError) {
+      console.warn('File does not exist:', path)
       throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
     }
     return

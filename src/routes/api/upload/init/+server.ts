@@ -13,6 +13,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const user = locals.user
 
   if (!user) {
+    console.warn('Unauthorized upload initialization attempt')
     return json({ message: NotificationCode.UNAUTHORIZED }, { status: 401 })
   }
 
@@ -21,6 +22,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   console.log(context, user, !user.p_bootstraps)
 
   if (!['bootstraps', 'backgrounds', 'images'].includes(context) && !context.startsWith('files-updater/')) {
+    console.warn('Forbidden upload initialization attempt: invalid context')
     return json({ message: NotificationCode.FORBIDDEN }, { status: 401 })
   }
 
@@ -28,6 +30,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const slug = context.split('/')[1]
     const profile = await getProfileBySlug(slug)
     if (!profile) {
+      console.warn('Forbidden upload initialization attempt: profile not found')
       return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
     }
     try {
@@ -41,10 +44,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       }
     }
   } else if (context === 'bootstraps' && !user.p_bootstraps && !user.isAdmin) {
+    console.warn('Forbidden upload initialization attempt: insufficient permissions for bootstraps')
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   } else if (context === 'backgrounds' && !user.p_backgrounds && !user.isAdmin) {
+    console.warn('Forbidden upload initialization attempt: insufficient permissions for backgrounds')
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   } else if (context === 'images' && !user.p_news && !user.isAdmin) {
+    console.warn('Forbidden upload initialization attempt: insufficient permissions for images')
     return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
   }
   const results = []
@@ -93,3 +99,4 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
   return json({ results })
 }
+

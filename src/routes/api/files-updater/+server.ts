@@ -36,4 +36,3 @@ export const GET: RequestHandler = async (event) => {
   return json(res)
 }
 
-

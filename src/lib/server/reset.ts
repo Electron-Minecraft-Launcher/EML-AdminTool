@@ -23,8 +23,8 @@ export async function resetDatabase(): Promise<void> {
     try {
       await client.query(`DROP TABLE IF EXISTS ${tableNames} CASCADE`)
     } catch (err) {
-      console.error(`Error dropping database "eml_admintool":`, err)
       await client.end()
+      console.error(`Error dropping database "eml_admintool":`, err)
       throw new ServerError(`Failed to drop database "eml_admintool"`, err, NotificationCode.DATABASE_ERROR, 500)
     }
   }
