@@ -6,7 +6,7 @@
 
 [<img src="https://img.shields.io/badge/Discord-EML-5561e6?&style=for-the-badge">](https://emlproject.com/discord/github)
 [<img src="https://img.shields.io/badge/platforms-Docker-0077DA?style=for-the-badge&color=0077DA">](#platforms)
-[<img src="https://img.shields.io/badge/version-2.3.3-orangered?style=for-the-badge&color=orangered">](package.json)
+[<img src="https://img.shields.io/badge/version-2.3.4-orangered?style=for-the-badge&color=orangered">](package.json)
 
 <p>
 <center>

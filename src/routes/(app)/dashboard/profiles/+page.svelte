@@ -11,15 +11,6 @@
   let selectedProfileId: string = $state(data.profiles[0].id)
   let selectedProfileIdModal: string | null = $state(null)
   let showAddEditProfileModal = $state(false)
-  let profiles = $state(data.profiles)
-  let users = $state(data.users)
-  let userPermissions = $state(data.userPermissions)
-
-  $effect(() => {
-    if (data.profiles) profiles = data.profiles
-    if (data.users) users = data.users
-    if (data.userPermissions) userPermissions = data.userPermissions
-  })
 </script>
 
 <svelte:head>
