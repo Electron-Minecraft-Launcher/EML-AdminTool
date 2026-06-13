@@ -28,7 +28,7 @@ COPY --from=build /app/LICENSE ./LICENSE
 COPY --from=build /app/docker/entrypoint.prod.sh /app/entrypoint.prod.sh
 
 RUN chmod +x /app/entrypoint.prod.sh
-RUN npm ci --ignore-scripts --omit=dev
+RUN npm ci --ignore-scripts --omit=dev --maxsockets=10 --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
 RUN npx prisma generate --no-hints
 
 EXPOSE 3000
