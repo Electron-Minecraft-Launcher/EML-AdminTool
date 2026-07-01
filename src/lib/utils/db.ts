@@ -43,7 +43,7 @@ export const IStatAction = {
   STARTUP: 'STARTUP',
   LOGIN: 'LOGIN',
   LAUNCH: 'LAUNCH',
-  DEVTOOLS: 'DEVTOOLS'
+  BOOTSTRAP: 'BOOTSTRAP'
 } as const
 
 export type UserInfo = {

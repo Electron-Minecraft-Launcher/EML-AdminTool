@@ -26,7 +26,7 @@
     }
   }
 
-  const enhanceForm: SubmitFunction = ({ formData }) => {
+  const enhanceForm: SubmitFunction = () => {
     return async ({ result, update }) => {
       await update({ reset: false })
       if (result.type === 'failure') {

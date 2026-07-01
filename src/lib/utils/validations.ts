@@ -27,10 +27,10 @@ export const editEMLATSchema = z.object({
 export const profileSchema = z
   .object({
     profileId: z.string().optional(),
-    name: z.string().min(1, NotificationCode.PROFIL_NAME_TOO_SHORT).max(64, NotificationCode.PROFIL_NAME_TOO_LONG),
+    name: z.string().min(1, NotificationCode.PROFILE_NAME_TOO_SHORT).max(64, NotificationCode.PROFILE_NAME_TOO_LONG),
     ip: z.string().optional(),
     port: z.number().optional(),
-    tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFIL_INVALID_TCP_PROTOCOL).optional()
+    tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFILE_INVALID_TCP_PROTOCOL).optional()
   })
   .transform((data) => {
     if (!data.ip) {
@@ -45,7 +45,7 @@ export const profileSchema = z
     }
     return data
   })
-  .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFIL_PORT_WITHOUT_IP, path: ['port'] })
+  .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFILE_PORT_WITHOUT_IP, path: ['port'] })
 
 const profilePermissionItemSchema = z.object({
   userId: z.string(),
@@ -287,7 +287,44 @@ export const backgroundSchema = z
     message: NotificationCode.MISSING_INPUT
   })
 
+const platformSchema = z.enum(['win', 'mac', 'lin', 'unknown'])
+const archSchema = z.enum(['x64', 'arm64', 'ia32', 'unknown'])
+const versionSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(64)
+  .regex(/^[0-9A-Za-z._+-]+$/)
 
-
-
-
+export const statSchemas = {
+  startup: z
+    .object({
+      os: platformSchema,
+      arch: archSchema
+    })
+    .strict(),
+  login: z
+    .object({
+      type: z.enum(['microsoft', 'yggdrasil', 'azauth', 'crack'])
+    })
+    .strict(),
+  launch: z
+    .object({
+      os: platformSchema,
+      arch: archSchema,
+      java: versionSchema,
+      loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
+      version: z.union([versionSchema, z.literal('unknown')]),
+      profile: z.string(),
+      minRam: z.number().int().min(0).max(16384),
+      maxRam: z.number().int().min(512).max(65536),
+    })
+    .strict(),
+  bootstrap: z
+    .object({
+      os: platformSchema,
+      current: versionSchema,
+      latest: versionSchema
+    })
+    .strict()
+}

@@ -91,8 +91,6 @@ export async function logout(session: string): Promise<void> {
   try {
     await db.expiredToken.create({ data: { token: session } })
   } catch (err) {
-    console.error('Error logging out user:', err)
-    throw new ServerError('Failed to log out user', err, NotificationCode.DATABASE_ERROR, 500)
+    console.error('Error invalidating session, skipping:', err)
   }
 }
-

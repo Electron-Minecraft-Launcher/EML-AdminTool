@@ -147,13 +147,13 @@ export async function setPin(): Promise<void> {
     await client.query(`UPDATE "Environment" SET "pin" = $1 WHERE "id" = $2`, [pin, 1])
   } catch (err) {
     await client.end()
-    console.error('Error setting pin:', err)
-    throw new ServerError('Failed to set pin', err, NotificationCode.DATABASE_ERROR, 500)
+    console.error('Error setting PIN:', err)
+    throw new ServerError('Failed to set PIN', err, NotificationCode.DATABASE_ERROR, 500)
   }
 
   await client.end()
 
-  console.log('Pin set successfully.')
+  console.log('PIN set successfully.')
 }
 
 export async function setLanguage(language: string): Promise<void> {
@@ -177,7 +177,7 @@ export async function setLanguage(language: string): Promise<void> {
 }
 
 export async function setDefaultProfile(name: string): Promise<void> {
-  console.log('\n------------ SETTING DEFAULT PROFIL ------------\n')
+  console.log('\n------------ SETTING DEFAULT PROFILE -----------\n')
   resetProcessEnv()
 
   const client = new Client({ connectionString: process.env.DATABASE_URL })
