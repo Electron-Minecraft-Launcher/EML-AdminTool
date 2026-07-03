@@ -63,13 +63,6 @@
   @use '../../../../../static/scss/dashboard.scss';
   @use '../../../../../static/scss/list.scss';
 
-  section.warning {
-    padding: 15px 20px;
-    background-color: #fff3cd;
-    border: 1px solid #d4c084;
-    color: #4d3c0a;
-  }
-
   i.fa-solid.fa-star {
     font-size: 10px;
   }

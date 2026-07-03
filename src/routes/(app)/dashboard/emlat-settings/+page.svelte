@@ -252,7 +252,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       <span class="storage">
         <span class="storage-progress" style={'width: ' + (data.vps.storage[0] / data.vps.storage[1]) * 200 + 'px'}></span>
       </span>
-      {Math.round((data.vps.storage[0] / data.vps.storage[1]) * 100)} %
+      {Math.round((data.vps.storage[0] / data.vps.storage[1]) * 100)}%
     </div>
   </div>
 </section>

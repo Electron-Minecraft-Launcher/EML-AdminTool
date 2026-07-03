@@ -72,13 +72,6 @@
   <div class="container">
     <div>
       <p class="label">Files updater</p>
-      <!-- {#if user.p_filesUpdater}
-        {#if user.p_filesUpdater >= 1}
-          <p>Add, edit and delete files</p>
-        {/if}
-        {#if user.p_filesUpdater === 2}
-          <p>Change Minecraft loader</p>
-        {/if} -->
       {#if user.isAdmin}
         <p>All permissions</p>
       {:else if user.profilePermissions.length > 0}

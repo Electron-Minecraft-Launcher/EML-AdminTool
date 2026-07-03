@@ -21,6 +21,7 @@ export default {
     [NotificationCode.FORBIDDEN]: `Forbidden.`,
     [NotificationCode.INVALID_REQUEST]: `Invalid request.`,
     [NotificationCode.NOT_FOUND]: `Not found.`,
+    [NotificationCode.TOO_MANY_REQUESTS]: `Too many requests.`,
 
     [NotificationCode.SETUP_INVALID_LANGUAGE]: `Language must be exactly 2 characters long.`,
     [NotificationCode.SETUP_DATABASE_PASSWORD_TOO_SHORT]: `Database password must be at least 12 characters long.`,

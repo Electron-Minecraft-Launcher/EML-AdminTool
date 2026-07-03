@@ -300,7 +300,8 @@ export const statSchemas = {
   startup: z
     .object({
       os: platformSchema,
-      arch: archSchema
+      arch: archSchema,
+      current: versionSchema,
     })
     .strict(),
   login: z
@@ -310,6 +311,7 @@ export const statSchemas = {
     .strict(),
   launch: z
     .object({
+      current: versionSchema,
       os: platformSchema,
       arch: archSchema,
       java: versionSchema,
