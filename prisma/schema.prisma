@@ -170,6 +170,24 @@ model Stat {
   createdAt DateTime   @default(now())
 }
 
+model CrashReport {
+  id            String   @id @default(cuid(2))
+  date          String
+  os            String
+  arch          String
+  javaVersion   String
+  javaArch      String
+  profile       String
+  version       String
+  loader        String
+  loaderVersion String
+  minRam        Float?
+  maxRam        Float?
+  exitCode      Int
+  createdAt     DateTime @default(now())
+  fileId        String   @unique
+}
+
 model ExpiredToken {
   id        String   @id @default(cuid(2))
   token     String   @unique

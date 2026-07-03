@@ -1,29 +1,23 @@
 import { getBearerToken, verifyScopedToken } from '$lib/server/jwt'
 import { NotificationCode } from '$lib/utils/notifications'
-import { statSchemas } from '$lib/utils/validations'
+import { crashReportSchema } from '$lib/utils/validations'
 import { json, type RequestHandler } from '@sveltejs/kit'
-import { statsLimiter } from '$lib/server/limiter'
+import { crashReportsLimiter } from '$lib/server/limiter'
 import { ZodError } from 'zod/v4'
-import { addStat } from '$lib/server/stats'
+import { addCrashReport } from '$lib/server/crashreports'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 
 export const POST: RequestHandler = async (event) => {
   const ip = event.getClientAddress()
-  const ev = (event.params.event ?? '') as keyof typeof statSchemas
   const tk = getBearerToken(event.request) ?? ''
 
-  if (!(ev in statSchemas)) {
-    console.warn(`Invalid stat event: ${ev} from IP ${ip}`)
-    return json({ message: NotificationCode.NOT_FOUND }, { status: 404 })
-  }
-
-  if (!(await verifyScopedToken(tk, 'stats'))) {
-    console.warn(`Unauthorized stat submission attempt from IP ${ip}`)
+  if (!(await verifyScopedToken(tk, 'crashreports'))) {
+    console.warn(`Unauthorized crash report submission attempt from IP ${ip}`)
     return json({ message: NotificationCode.UNAUTHORIZED }, { status: 401 })
   }
 
-  if (!statsLimiter.canPerformAction(ip)) {
-    console.warn(`Too many stat submissions from IP ${ip}`)
+  if (!crashReportsLimiter.canPerformAction(ip)) {
+    console.warn(`Too many crash report submissions from IP ${ip}`)
     return json({ message: NotificationCode.TOO_MANY_REQUESTS }, { status: 429 })
   }
 
@@ -38,18 +32,18 @@ export const POST: RequestHandler = async (event) => {
 
   let payload
   try {
-    payload = statSchemas[ev].parse(body ?? {})
+    payload = crashReportSchema.parse(body ?? {})
   } catch (err) {
     if (err instanceof ZodError) {
-      console.warn(`Invalid request body for event ${ev} from IP ${ip}:`, err.issues)
+      console.warn(`Invalid request body from IP ${ip}:`, err.issues)
       return json({ message: NotificationCode.INVALID_INPUT, issues: err.issues }, { status: 400 })
     }
-    console.error(`Unexpected error validating request body for event ${ev} from IP ${ip}:`, err)
+    console.error(`Unexpected error validating request body from IP ${ip}:`, err)
     return json({ message: NotificationCode.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 
   try {
-    await addStat(ev, payload)
+    await addCrashReport(payload.metadata, payload.logData)
   } catch (err) {
     if (err instanceof BusinessError) {
       return json({ message: err.code }, { status: err.httpStatus })
@@ -58,7 +52,7 @@ export const POST: RequestHandler = async (event) => {
       return json({ message: err.code }, { status: err.httpStatus })
     }
 
-    console.error('Failed to record stat:', err)
+    console.error('Failed to record crash report:', err)
     return json({ message: NotificationCode.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 

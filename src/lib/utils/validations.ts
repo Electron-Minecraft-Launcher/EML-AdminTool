@@ -317,7 +317,7 @@ export const statSchemas = {
       version: z.union([versionSchema, z.literal('unknown')]),
       profile: z.string(),
       minRam: z.number().int().min(0).max(16384),
-      maxRam: z.number().int().min(512).max(65536),
+      maxRam: z.number().int().min(512).max(65536)
     })
     .strict(),
   bootstrap: z
@@ -328,3 +328,21 @@ export const statSchemas = {
     })
     .strict()
 }
+
+export const crashReportSchema = z.object({
+  metadata: z.object({
+    date: z.string().min(10).max(100),
+    os: platformSchema,
+    arch: z.enum(['64', '32']),
+    javaVersion: z.string().min(1).max(64),
+    javaArch: z.enum(['64-bit', '32-bit', 'unknown']),
+    profile: z.string().min(1).max(64),
+    version: z.string().min(1).max(64),
+    loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
+    loaderVersion: z.string().min(1).max(64),
+    minRam: z.number().int().min(0).max(16384),
+    maxRam: z.number().int().min(512).max(65536),
+    exitCode: z.int()
+  }),
+  logData: z.string()
+})

@@ -2,7 +2,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import fs from 'node:fs/promises'
 import path_ from 'node:path'
-import type { Dir, File as File_ } from '$lib/utils/types'
+import type { DataDir, FileDir, File as File_ } from '$lib/utils/types'
 import crypto from 'node:crypto'
 import { createReadStream } from 'node:fs'
 
@@ -13,10 +13,11 @@ const root = path_.join(process.cwd())
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
  * @param dir Directory to get files from (including the profile slug if applicable).
  */
-export async function getFiles(domain: string, dir: Dir): Promise<File_[]> {
-  await fs.mkdir(path_.join(root, 'files', dir), { recursive: true })
+export async function getFiles(domain: string, dir: FileDir | DataDir): Promise<File_[]> {
+  const base = getBaseFolder(dir)
+  await fs.mkdir(path_.join(root, base, dir), { recursive: true })
   const filesArray: File_[] = []
-  await browse(filesArray, dir, '', domain)
+  await browse(filesArray, base, dir, '', domain)
   return filesArray
 }
 
@@ -25,10 +26,10 @@ export async function getFiles(domain: string, dir: Dir): Promise<File_[]> {
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
  * @param dir Directory to get cached files from (including the profile slug if applicable).
  */
-export async function getCachedFiles(domain: string, dir: Dir): Promise<string> {
+export async function getCachedFiles(domain: string, dir: FileDir): Promise<string> {
   const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
   const cacheKey = slug ? `files-updater-${slug}` : dir
-  const target = sanitizePath('files', 'cache', `${cacheKey}.json`)
+  const target = sanitizePath('data', 'cache', `${cacheKey}.json`)
   let cache
   try {
     cache = (await fs.readFile(target, 'utf-8')).replaceAll('{{url}}', domain)
@@ -46,7 +47,7 @@ export async function getCachedFiles(domain: string, dir: Dir): Promise<string> 
  * @param domain Domain to use for file URLs. Can be an empty string if URLs are not needed.
  * @param dir Directory to get cached files from (including the profile slug if applicable).
  */
-export async function getCachedFilesParsed(domain: string, dir: Dir): Promise<File_[]> {
+export async function getCachedFilesParsed(domain: string, dir: FileDir): Promise<File_[]> {
   const cache = await getCachedFiles(domain, dir)
   try {
     return JSON.parse(cache) as File_[]
@@ -62,12 +63,13 @@ export async function getCachedFilesParsed(domain: string, dir: Dir): Promise<Fi
  * @param path Path to the file, relative to the directory, without the file name.
  * @param file File object to upload.
  */
-export async function uploadFile(dir: Dir, path: string, file: File): Promise<void> {
+export async function uploadFile(dir: FileDir | DataDir, path: string, file: File): Promise<void> {
   if (!file) return
-
+  
+  const base = getBaseFolder(dir)
   let target, name, buffer
   try {
-    target = sanitizePath('files', dir, path)
+    target = sanitizePath(base, dir, path)
     name = path_.basename(file.name).removeUnwantedFilenameChars()
     buffer = Buffer.from(await file.arrayBuffer())
   } catch (err) {
@@ -90,10 +92,11 @@ export async function uploadFile(dir: Dir, path: string, file: File): Promise<vo
  * @param path Path to the file, relative to the directory, without the file name.
  * @param name Name of the file to create.
  */
-export async function createFile(dir: Dir, path: string, name: string | undefined): Promise<void> {
+export async function createFile(dir: FileDir | DataDir, path: string, name: string | undefined): Promise<void> {
+  const base = getBaseFolder(dir)
   let target
   try {
-    target = sanitizePath('files', dir, path)
+    target = sanitizePath(base, dir, path)
   } catch (err) {
     console.warn('Invalid path:', path, err)
     throw new BusinessError('Invalid path', NotificationCode.INVALID_REQUEST, 400)
@@ -124,11 +127,12 @@ export async function createFile(dir: Dir, path: string, name: string | undefine
  * @param name Name of the file to edit.
  * @param content New content for the file.
  */
-export async function editFile(dir: Dir, path: string, name: string, content: string): Promise<void> {
+export async function editFile(dir: FileDir | DataDir, path: string, name: string, content: string): Promise<void> {
+  const base = getBaseFolder(dir)
   let fullPath
   try {
     name = name.removeUnwantedFilenameChars()
-    fullPath = sanitizePath('files', dir, path, name)
+    fullPath = sanitizePath(base, dir, path, name)
   } catch (err) {
     console.warn('Invalid path:', path, err)
     throw new BusinessError('Invalid path', NotificationCode.INVALID_REQUEST, 400)
@@ -156,12 +160,13 @@ export async function editFile(dir: Dir, path: string, name: string, content: st
  * @param newName New name of the file.
  * @param throwError Whether to throw an error if the file does not exist.
  */
-export async function renameFile(dir: Dir, path: string, name: string, newName: string, throwError: boolean = true): Promise<void> {
+export async function renameFile(dir: FileDir | DataDir, path: string, name: string, newName: string, throwError: boolean = true): Promise<void> {
+  const base = getBaseFolder(dir)
   let fullPath, newFullPath
   try {
     name = name.removeUnwantedFilenameChars()
-    fullPath = sanitizePath('files', dir, path, name)
-    newFullPath = sanitizePath('files', dir, path, newName)
+    fullPath = sanitizePath(base, dir, path, name)
+    newFullPath = sanitizePath(base, dir, path, newName)
   } catch (err) {
     console.warn('Invalid path:', path, err)
     throw new BusinessError('Invalid path', NotificationCode.INVALID_REQUEST, 400)
@@ -200,9 +205,10 @@ export async function renameFile(dir: Dir, path: string, name: string, newName: 
  * @param path Path to the file, relative to the directory, **including** the file name.
  * @param throwError Whether to throw an error if the file does not exist.
  */
-export async function deleteFile(dir: Dir, path: string, throwError: boolean = true): Promise<void> {
+export async function deleteFile(dir: FileDir | DataDir, path: string, throwError: boolean = true): Promise<void> {
+  const base = getBaseFolder(dir)
   try {
-    path = sanitizePath('files', dir, path)
+    path = sanitizePath(base, dir, path)
   } catch (err) {
     console.warn('Invalid path:', path, err)
     throw new BusinessError('Invalid path', NotificationCode.INVALID_REQUEST, 400)
@@ -242,12 +248,17 @@ export function sanitizePath(...path: string[]): string {
  * The cache file will be saved in `files/cache/{dir}.json`.
  * @param dir Directory to generate the cache for (including the profile slug if applicable). This should be the same directory used in `getCachedFiles` and `getCachedFilesParsed`.
  */
-export async function cacheFiles(dir: Dir): Promise<void> {
+export async function cacheFiles(dir: FileDir): Promise<void> {
   const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
   const cacheKey = slug ? `files-updater-${slug}` : dir
-  const files = await getFiles('{{url}}', dir as Dir)
-  await fs.mkdir(path_.join(root, 'files', 'cache'), { recursive: true })
-  await fs.writeFile(path_.join(root, 'files', 'cache', `${cacheKey}.json`), JSON.stringify(files, null, 2))
+  const files = await getFiles('{{url}}', dir as FileDir)
+  await fs.mkdir(path_.join(root, 'data', 'cache'), { recursive: true })
+  await fs.writeFile(path_.join(root, 'data', 'cache', `${cacheKey}.json`), JSON.stringify(files, null, 2))
+}
+
+function getBaseFolder(dir: FileDir | DataDir): 'files' | 'data' {
+  if (dir === 'cache' || dir === 'crash-reports') return 'data'
+  return 'files'
 }
 
 /**
@@ -257,21 +268,21 @@ export async function cacheFiles(dir: Dir): Promise<void> {
  * @param subdir Subdirectory to browse.
  * @param domain Domain to use for file URLs.
  */
-async function browse(filesArray: File_[], dir: Dir, subdir: string, domain: string): Promise<void> {
+async function browse(filesArray: File_[], base: 'files' | 'data', dir: FileDir | DataDir, subdir: string, domain: string): Promise<void> {
   const fullDir = subdir === '' ? dir : `${dir}/${subdir}`
-  const absDir = `${root}/files/${fullDir}`
+  const absDir = `${root}/${base}/${fullDir}`
 
   try {
     const entries = await fs.readdir(absDir)
 
     for (const name of entries) {
-      const abs = `${root}/files/${fullDir}/${name}`
+      const abs = `${root}/${base}/${fullDir}/${name}`
       const path = `${subdir}/`.formatPath()
-      const url = `${domain}/files/${fullDir}/${name}`.replace(/\\/g, '/')
+      const url = base === 'files' ? `${domain}/${base}/${fullDir}/${name}`.replace(/\\/g, '/') : ''
       const type = await getType(path_.join(absDir, name))
 
       if (type === 'FOLDER') {
-        await browse(filesArray, dir, `${subdir}/${name}`.replace(/^\/+/, ''), domain)
+        await browse(filesArray, base, dir, `${subdir}/${name}`.replace(/^\/+/, ''), domain)
         filesArray.push({ name, path, url, type })
       } else {
         const size = (await fs.stat(abs)).size

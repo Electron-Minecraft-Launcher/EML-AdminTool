@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client'
+import type { CrashReport, Prisma } from '@prisma/client'
 
 export const IUserStatus = {
   /**
@@ -78,3 +78,4 @@ export type UserProfilePermissionInfo = {
   permission: 0 | 1 | 2
 }
 
+export type CrashReportPayload = Omit<CrashReport, 'id' | 'fileId' | 'createdAt'>

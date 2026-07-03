@@ -13,7 +13,7 @@ import { checkVanillaLoader, getVanillaVersions } from '$lib/server/loaders/vani
 import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forgelike'
 import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
 import { getAccessibleProfiles, resolveProfile } from '$lib/server/profile'
-import type { Dir } from '$lib/utils/types'
+import type { FileDir } from '$lib/utils/types'
 
 export const load = (async (event) => {
   const domain = event.url.origin
@@ -98,7 +98,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       await renameFile(dir, path, name, newName)
       await cacheFiles(dir)
@@ -138,7 +138,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       await createFile(dir, path, name)
       await cacheFiles(dir)
@@ -179,7 +179,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       await editFile(dir, path, name, content)
       await cacheFiles(dir)
@@ -218,7 +218,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       for (const path of paths) {
         if (typeof path !== 'string') continue

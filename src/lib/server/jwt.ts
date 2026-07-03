@@ -9,11 +9,6 @@ export async function createSessionToken(user: User): Promise<string> {
   return new SignJWT({ id: user.id, isAdmin: user.isAdmin }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime('365d').sign(secret)
 }
 
-export async function createStatsToken(): Promise<string> {
-  const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
-  return new SignJWT({ scope: 'stats' }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime('10m').sign(secret)
-}
-
 export function deleteSession(event: RequestEvent): void {
   event.cookies.delete('session', { path: '/' })
 }
@@ -49,7 +44,12 @@ export async function checkSession(session: string): Promise<JWTPayload> {
   return payload
 }
 
-export async function verifyStatsToken(token?: string): Promise<boolean> {
+export async function createScopedToken(scope: string, expirationTime: string = '10m'): Promise<string> {
+  const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
+  return new SignJWT({ scope }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime(expirationTime).sign(secret)
+}
+
+export async function verifyScopedToken(token?: string, scope?: string): Promise<boolean> {
   if (!token || token.trim() === '') return false
 
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
@@ -57,7 +57,7 @@ export async function verifyStatsToken(token?: string): Promise<boolean> {
   let payload
   try {
     payload = (await jwtVerify(token, secret)).payload
-    return payload.scope === 'stats'
+    return payload.scope === scope
   } catch (err) {
     if (
       err instanceof errors.JWTExpired ||
@@ -65,11 +65,17 @@ export async function verifyStatsToken(token?: string): Promise<boolean> {
       err instanceof errors.JWSSignatureVerificationFailed ||
       err instanceof errors.JWSInvalid
     ) {
-      console.warn('Invalid stats token:', err)
+      console.warn('Invalid scoped token:', err)
       return false
     }
 
-    console.error('Failed to verify stats token:', err)
+    console.error('Failed to verify scoped token:', err)
     return false
   }
+}
+
+export function getBearerToken(request: Request): string | null {
+  const authorization = request.headers.get('authorization')
+  const match = authorization?.match(/^Bearer\s+(.+)$/i)
+  return match?.[1] ?? null
 }

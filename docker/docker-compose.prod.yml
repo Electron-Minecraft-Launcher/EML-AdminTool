@@ -36,6 +36,7 @@ services:
     volumes:
       - files:/app/files
       - env:/app/env
+      - data:/app/data
     ports:
       - '8080:3000'
     depends_on:
@@ -73,3 +74,4 @@ volumes:
   database:
   files:
   env:
+  data:
