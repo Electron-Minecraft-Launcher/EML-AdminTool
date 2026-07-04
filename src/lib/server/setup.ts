@@ -118,8 +118,8 @@ export async function setAdminUser(username: string, password: string): Promise<
   try {
     await client.query(
       `INSERT INTO "User" 
-      ("id", "username", "password", "status", "isAdmin", "p_filesUpdater", "p_bootstraps", "p_maintenance", "p_news", "p_newsCategories", "p_newsTags", "p_backgrounds", "p_stats", "createdAt", "updatedAt")
-      VALUES (1, $1, $2, 'ACTIVE', true, 2, 1, 1, 2, 1, 1, 1, 2, NOW(), NOW()) ON CONFLICT DO NOTHING`,
+      ("id", "username", "password", "status", "isAdmin", "p_filesUpdater", "p_bootstraps", "p_maintenance", "p_news", "p_newsCategories", "p_newsTags", "p_backgrounds", "p_stats", "p_crashReports", "createdAt", "updatedAt")
+      VALUES (1, $1, $2, 'ACTIVE', true, 2, 1, 1, 2, 1, 1, 1, 2, 2, NOW(), NOW()) ON CONFLICT DO NOTHING`,
       [username, hashedPassword]
     )
     await client.query('UPDATE "Environment" SET "name" = $1, "updatedAt" = NOW() WHERE "id" = $2', [username, 1])

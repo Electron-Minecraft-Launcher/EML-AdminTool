@@ -139,7 +139,9 @@ export const actions: Actions = {
       p_newsTags: form.get('p_news-tags') === 'on',
       p_backgrounds: form.get('p_backgrounds') === 'on',
       p_stats_1: form.get('p_stats_1') === 'on',
-      p_stats_2: form.get('p_stats_2') === 'on'
+      p_stats_2: form.get('p_stats_2') === 'on',
+      p_crashReports_1: form.get('p_crash-reports_1') === 'on',
+      p_crashReports_2: form.get('p_crash-reports_2') === 'on'
     }
 
     const result = editUserSchema.safeParse(raw)
@@ -168,6 +170,7 @@ export const actions: Actions = {
     const p_newsTags = result.data.p_newsTags ? 1 : 0
     const p_backgrounds = result.data.p_backgrounds ? 1 : 0
     const p_stats = getStatsPermissions(result)
+    const p_crashReports = getCrashReportsPermissions(result)
 
     try {
       await Promise.all([
@@ -180,7 +183,8 @@ export const actions: Actions = {
           p_newsCategories,
           p_newsTags,
           p_backgrounds,
-          p_stats
+          p_stats,
+          p_crashReports
         }),
         updateUserProfilePermissions(userId, p_filesUpdater)
       ])
@@ -303,7 +307,8 @@ async function refuseDeleteUser(event: RequestEvent<any>) {
       p_newsCategories: 0,
       p_newsTags: 0,
       p_backgrounds: 0,
-      p_stats: 0
+      p_stats: 0,
+      p_crashReports: 0
     })
   } catch (err) {
     if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
@@ -323,6 +328,12 @@ function getNewsPermissions(result: any) {
 function getStatsPermissions(result: any) {
   if (result.data.p_stats_2) return 2
   if (result.data.p_stats_1) return 1
+  return 0
+}
+
+function getCrashReportsPermissions(result: any) {
+  if (result.data.p_crashReports_2) return 2
+  if (result.data.p_crashReports_1) return 1
   return 0
 }
 

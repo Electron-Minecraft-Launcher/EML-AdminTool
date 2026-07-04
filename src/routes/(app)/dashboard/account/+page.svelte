@@ -142,6 +142,17 @@
         <p>-</p>
       {/if}
     </div>
+
+    <div>
+      <p class="label">Crash Reports</p>
+      {#if user.p_crashReports === 1}
+        <p>View crash reports</p>
+      {:else if user.p_crashReports === 2}
+        <p>View and delete crash reports</p>
+      {:else}
+        <p>-</p>
+      {/if}
+    </div>
   </div>
 </section>
 

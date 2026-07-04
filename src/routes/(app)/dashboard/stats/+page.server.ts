@@ -6,31 +6,6 @@ import { NotificationCode } from '$lib/utils/notifications'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { resetStats } from '$lib/server/stats'
 
-function getStats(arr: number[]) {
-  if (arr.length === 0) return { avg: 0, std: 0 }
-  const avg = arr.reduce((a, b) => a + b, 0) / arr.length
-  const variance = arr.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / arr.length
-  return { avg: Math.round(avg), std: Math.round(Math.sqrt(variance)) }
-}
-
-function getBucketKey(date: Date, startDate: Date, range: string) {
-  const msDiff = date.getTime() - startDate.getTime()
-
-  if (range === '1d') {
-    return date.toISOString().substring(0, 13) + 'h'
-  } else if (range === '14d') {
-    return date.toISOString().substring(0, 10)
-  } else if (range === '30d') {
-    const block = Math.floor(msDiff / (3 * 24 * 60 * 60 * 1000))
-    const blockDate = new Date(startDate.getTime() + block * 3 * 24 * 60 * 60 * 1000)
-    return blockDate.toISOString().substring(0, 10)
-  } else {
-    const block = Math.floor(msDiff / (7 * 24 * 60 * 60 * 1000))
-    const blockDate = new Date(startDate.getTime() + block * 7 * 24 * 60 * 60 * 1000)
-    return blockDate.toISOString().substring(0, 10)
-  }
-}
-
 export const load = (async (event) => {
   const user = event.locals.user
 
@@ -58,6 +33,8 @@ export const load = (async (event) => {
         createdAt: true
       }
     })
+    const profiles = await db.profile.findMany({ select: { isDefault: true, id: true, slug: true, name: true } })
+    const defaultProfile = profiles.find((p) => p.isDefault)!
 
     let totalStartups = 0
     let totalLaunches = 0
@@ -101,6 +78,8 @@ export const load = (async (event) => {
 
           if (parsed.profile) {
             profileDistribution[parsed.profile] = (profileDistribution[parsed.profile] || 0) + 1
+          } else {
+            profileDistribution[defaultProfile.slug] = (profileDistribution[defaultProfile.slug] || 0) + 1
           }
 
           if (parsed.minRam || parsed.maxRam) {
@@ -126,20 +105,51 @@ export const load = (async (event) => {
         return { date: bucket, min: minStats, max: maxStats }
       })
 
+    const mappings: Record<string, string> = {
+      '-': '-',
+      win: 'Windows',
+      mac: 'macOS',
+      linux: 'Linux',
+      crack: 'Cracked',
+      microsoft: 'Microsoft',
+      azauth: 'AzAuth',
+      yggdrasil: 'Yggdrasil',
+      ...Object.fromEntries(profiles.map((p) => [p.slug, p.name]))
+    }
+
     const mostPopularProfile =
-      Object.entries(profileDistribution).reduce((max, [profile, count]) => (count > max.count ? { profile, count } : max), { profile: '', count: 0 })
-        .profile || '-'
+      Object.entries(profileDistribution).reduce((max, [profile, count]) => (count > max.count ? { profile, count } : max), {
+        profile: '',
+        count: 0
+      }).profile || '-'
+
     const mostPopularProfileRate = totalLaunches > 0 ? (profileDistribution[mostPopularProfile] / totalLaunches) * 100 : 0
     const funnelConversionRate = totalStartups > 0 ? (totalLaunches / totalStartups) * 100 : 0
 
     const allVersions = Array.from(new Set(Object.values(versionsOverTime).flatMap((day) => Object.keys(day))))
+
+    for (const os in osArch) {
+      const humanReadableOs = mappings[os] || os
+      osArch[humanReadableOs] = osArch[os]
+      delete osArch[os]
+    }
+    for (const auth in authTypes) {
+      const humanReadableAuth = mappings[auth] || auth
+      authTypes[humanReadableAuth] = authTypes[auth]
+      delete authTypes[auth]
+    }
+    for (const profile in profileDistribution) {
+      const humanReadableProfile = mappings[profile] || profile
+      profileDistribution[humanReadableProfile] = profileDistribution[profile]
+      delete profileDistribution[profile]
+    }
 
     return {
       range,
       kpis: {
         totalLaunches,
         funnelConversionRate,
-        mostPopularProfile,
+        mostPopularProfile: mappings[mostPopularProfile] || mostPopularProfile,
         mostPopularProfileRate
       },
       charts: {
@@ -176,5 +186,30 @@ export const actions: Actions = {
       console.error('Unknown error:', err)
       throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
     }
+  }
+}
+
+function getStats(arr: number[]) {
+  if (arr.length === 0) return { avg: 0, std: 0 }
+  const avg = arr.reduce((a, b) => a + b, 0) / arr.length
+  const variance = arr.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / arr.length
+  return { avg: Math.round(avg), std: Math.round(Math.sqrt(variance)) }
+}
+
+function getBucketKey(date: Date, startDate: Date, range: string) {
+  const msDiff = date.getTime() - startDate.getTime()
+
+  if (range === '1d') {
+    return date.toISOString().substring(0, 13) + 'h'
+  } else if (range === '14d') {
+    return date.toISOString().substring(0, 10)
+  } else if (range === '30d') {
+    const block = Math.floor(msDiff / (3 * 24 * 60 * 60 * 1000))
+    const blockDate = new Date(startDate.getTime() + block * 3 * 24 * 60 * 60 * 1000)
+    return blockDate.toISOString().substring(0, 10)
+  } else {
+    const block = Math.floor(msDiff / (7 * 24 * 60 * 60 * 1000))
+    const blockDate = new Date(startDate.getTime() + block * 7 * 24 * 60 * 60 * 1000)
+    return blockDate.toISOString().substring(0, 10)
   }
 }

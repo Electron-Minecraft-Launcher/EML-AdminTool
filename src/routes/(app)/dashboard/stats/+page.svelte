@@ -13,7 +13,7 @@
   let { data }: PageProps = $props()
 
   const env = getEnv()
-
+  
   function chartAction(node: HTMLCanvasElement, config: any) {
     let chart = new Chart(node, config)
     return {
@@ -49,6 +49,7 @@
       }))
     },
     options: {
+      maintainAspectRatio: false,
       scales: { y: { stacked: true, beginAtZero: true } },
       elements: { point: { radius: 0 } },
       interaction: { mode: 'index', intersect: false }
@@ -62,7 +63,7 @@
     return {
       type: 'bar',
       data: {
-        labels: osLabels.map((os) => os.toUpperCase()),
+        labels: osLabels,
         datasets: allArchs.map((arch, i) => ({
           label: arch,
           data: osLabels.map((os) => data.charts.osArch[os][arch] || 0),
@@ -70,7 +71,7 @@
           borderRadius: 4
         }))
       },
-      options: { scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+      options: { maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
     }
   })
 
@@ -86,7 +87,7 @@
         }
       ]
     },
-    options: { cutout: '65%' }
+    options: { maintainAspectRatio: false, cutout: '65%' }
   })
 
   let authConfig = $derived({
@@ -101,7 +102,7 @@
         }
       ]
     },
-    options: { cutout: '65%' }
+    options: { maintainAspectRatio: false, cutout: '65%' }
   })
 
   let ramConfig = $derived({
@@ -160,6 +161,7 @@
       ]
     },
     options: {
+      maintainAspectRatio: false,
       scales: { y: { beginAtZero: true, suggestedMax: 8192 } },
       interaction: { mode: 'index', intersect: false },
       plugins: { legend: { labels: { filter: (item: any) => !item.text.includes('SD') } } }
@@ -318,6 +320,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    min-width: 0;
 
     h4 {
       margin-top: 0;

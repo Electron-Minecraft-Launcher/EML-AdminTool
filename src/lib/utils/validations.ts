@@ -107,7 +107,9 @@ export const editUserSchema = z.object({
   p_newsTags: z.boolean(),
   p_backgrounds: z.boolean(),
   p_stats_1: z.boolean(),
-  p_stats_2: z.boolean()
+  p_stats_2: z.boolean(),
+  p_crashReports_1: z.boolean(),
+  p_crashReports_2: z.boolean()
 })
 
 export const editAccountSchema = z
@@ -317,7 +319,8 @@ export const statSchemas = {
       java: versionSchema,
       loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
       version: z.union([versionSchema, z.literal('unknown')]),
-      profile: z.string(),
+      // string or null
+      profile: z.string().optional().or(z.null()),
       minRam: z.number().int().min(0).max(16384),
       maxRam: z.number().int().min(512).max(65536)
     })

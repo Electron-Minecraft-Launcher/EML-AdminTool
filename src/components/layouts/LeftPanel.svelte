@@ -112,6 +112,12 @@
     </a>
   {/if}
 
+  {#if user.p_crashReports}
+    <a href="/dashboard/crash-reports" class:active={page.url.pathname == '/dashboard/crash-reports'}>
+      <i class="fa-solid fa-bug"></i>Crash Reports
+    </a>
+  {/if}
+
   {#if leftPanelOpen}
     <button class="account" onclick={accountClick}>
       <i class="fa-solid fa-circle-user"></i>{user.username}<i class="fa-solid fa-caret-up"></i>
