@@ -22,9 +22,10 @@ import {
 } from '$lib/server/news'
 import path_ from 'node:path'
 import { randomBytes } from 'node:crypto'
+import { getDomain } from '$lib/utils/utils'
 
 export const load = (async (event) => {
-  const domain = event.url.origin
+  const domain = getDomain(event)
   const user = event.locals.user
 
   if (!user?.p_news) {

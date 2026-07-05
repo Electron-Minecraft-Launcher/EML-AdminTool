@@ -13,6 +13,7 @@
 /files/backgrounds/*
 /files/cache/*
 /files/images/*
+/data/cache/*
 
 /dist
 /update

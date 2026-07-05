@@ -7,10 +7,11 @@ import { NotificationCode } from '$lib/utils/notifications'
 import { finalizeBootstrapsSchema } from '$lib/utils/validations'
 import { getBootstraps, updateBootstraps } from '$lib/server/bootstraps'
 import { deleteFile, getFiles } from '$lib/server/files'
+import { getDomain } from '$lib/utils/utils'
 
 export const load = (async (event) => {
+  const domain = getDomain(event)
   const user = event.locals.user
-  const domain = event.url.origin
 
   if (!user?.p_bootstraps) {
     throw redirect(303, '/dashboard')

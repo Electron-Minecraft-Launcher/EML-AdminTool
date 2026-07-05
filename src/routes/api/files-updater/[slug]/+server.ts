@@ -2,9 +2,10 @@ import { getCachedFiles } from '$lib/server/files'
 import { getProfileBySlug } from '$lib/server/profile'
 import { json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
+import { getDomain } from '$lib/utils/utils'
 
 export const GET: RequestHandler = async (event) => {
-  const domain = event.url.origin
+  const domain = getDomain(event)
   const { slug } = event.params
 
   let profile

@@ -14,9 +14,10 @@ import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$l
 import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
 import { getAccessibleProfiles, resolveProfile } from '$lib/server/profile'
 import type { FileDir } from '$lib/utils/types'
+import { getDomain } from '$lib/utils/utils'
 
 export const load = (async (event) => {
-  const domain = event.url.origin
+  const domain = getDomain(event)
   const user = event.locals.user
 
   if (!user?.profilePermissions.some((p) => p.permission > 0) && !user?.isAdmin) {
@@ -74,8 +75,8 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
   renameFile: async (event) => {
+    const domain = getDomain(event)
     const user = event.locals.user
-    const domain = event.url.origin
 
     if (!user) {
       throw error(401, { message: NotificationCode.UNAUTHORIZED })
@@ -115,8 +116,8 @@ export const actions: Actions = {
   },
 
   createFile: async (event) => {
+    const domain = getDomain(event)
     const user = event.locals.user
-    const domain = event.url.origin
 
     if (!user) {
       throw error(401, { message: NotificationCode.UNAUTHORIZED })
@@ -155,8 +156,8 @@ export const actions: Actions = {
   },
 
   editFile: async (event) => {
+    const domain = getDomain(event)
     const user = event.locals.user
-    const domain = event.url.origin
 
     if (!user) {
       throw error(401, { message: NotificationCode.UNAUTHORIZED })
@@ -196,7 +197,7 @@ export const actions: Actions = {
   },
 
   deleteFiles: async (event) => {
-    const domain = event.url.origin
+    const domain = getDomain(event)
     const user = event.locals.user
 
     if (!user) {
