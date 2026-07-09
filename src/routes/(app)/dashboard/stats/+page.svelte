@@ -187,7 +187,7 @@
     }
   })
 
-  const enhanceForm: SubmitFunction = ({ formData, cancel }) => {
+  const enhanceForm: SubmitFunction = ({ cancel }) => {
     if (!confirm('Are you sure you want to delete all stats? This action cannot be undone.')) {
       cancel()
       return
@@ -198,8 +198,6 @@
       if (result.type === 'failure') {
         const message = $l.notifications[result.data?.failure as NotificationCode] ?? $l.notifications.INTERNAL_SERVER_ERROR
         addNotification('ERROR', message)
-      } else if (result.type === 'success') {
-        goto('/login')
       }
 
       await applyAction(result)

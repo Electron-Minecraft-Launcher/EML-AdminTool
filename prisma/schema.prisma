@@ -182,6 +182,7 @@ model CrashReport {
   version       String
   loader        String
   loaderVersion String?
+  authType      String
   minRam        Float?
   maxRam        Float?
   exitCode      Int

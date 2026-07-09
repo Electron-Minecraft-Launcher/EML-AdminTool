@@ -372,7 +372,12 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     img {
       width: 55px;
       height: 55px;
-      border-radius: 12px;
+      border-radius: 50%;
+      corner-shape: squircle;
+
+      @supports not (corner-shape: squircle) {
+        border-radius: 13px;
+      }
     }
   }
 

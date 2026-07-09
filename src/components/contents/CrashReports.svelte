@@ -43,9 +43,9 @@
     if (!confirm('Are you sure you want to delete the selected crash reports?')) return
 
     const formData = new FormData()
-    for (const { id } of selectedCrashReports) formData.append('cr-id', id)
+    for (const { id } of selectedCrashReports) formData.append('crash-report-id', id)
 
-    await callAction({ url: '/dashboard/crash-reports', action: 'deleteCrashReport', formData }, $l)
+    await callAction({ url: '/dashboard/crash-reports', action: 'deleteCrashReports', formData }, $l)
     invalidateAll()
     selectedCrashReports = []
 
@@ -87,13 +87,13 @@
             </div>
             <div>
               <p class="label">Profile</p>
-              <p>{cr.profile || '-'}</p>
+              <p>{cr.profile}</p>
             </div>
             <div>
               <p class="label">Addressed</p>
               <p>
                 {@html cr.addressedAt
-                  ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>'
+                  ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>&nbsp;&nbsp;' + new Date(cr.addressedAt).toLocaleDateString()
                   : '<i class="fa-solid fa-circle-xmark" style="color: var(--red-color);"></i>'}
               </p>
             </div>

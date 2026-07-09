@@ -11,12 +11,9 @@
 
   let crashReports = $state(data.crashReports)
 
-  function handlePageChange(e: Event) {
-    const target = e.target as HTMLSelectElement
-    const url = new URL(page.url)
-    url.searchParams.set('range', target.value)
-    goto(url.toString(), { keepFocus: true, invalidateAll: true })
-  }
+  $effect(() => {
+    if (data.crashReports) crashReports = data.crashReports
+  })
 </script>
 
 <svelte:head>

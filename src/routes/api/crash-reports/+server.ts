@@ -1,11 +1,50 @@
 import { getBearerToken, verifyScopedToken } from '$lib/server/jwt'
 import { NotificationCode } from '$lib/utils/notifications'
-import { crashReportSchema } from '$lib/utils/validations'
+import { extCrashReportSchema } from '$lib/utils/validations'
 import { json, type RequestHandler } from '@sveltejs/kit'
 import { crashReportsLimiter } from '$lib/server/limiter'
 import { ZodError } from 'zod/v4'
 import { addCrashReport } from '$lib/server/crashreports'
 import { BusinessError, ServerError } from '$lib/utils/errors'
+import fs from 'fs/promises'
+import path_ from 'path'
+
+export const GET: RequestHandler = async ({ request, locals }) => {
+  const user = locals.user
+  const fileId = request.headers.get('file-id')
+  const root = path_.join(process.cwd())
+
+  if (!user) {
+    console.warn('Unauthorized crash report retrieval attempt')
+    return json({ message: NotificationCode.UNAUTHORIZED }, { status: 401 })
+  }
+
+  if (!user.p_crashReports) {
+    console.warn('Forbidden crash report retrieval attempt: insufficient permissions')
+    return json({ message: NotificationCode.FORBIDDEN }, { status: 403 })
+  }
+
+  if (!fileId) {
+    console.warn('Bad request: missing file-id header')
+    return json({ message: NotificationCode.INVALID_INPUT }, { status: 400 })
+  }
+
+  let file
+  try {
+    file = await fs.readFile(`${root}/data/crash-reports/crash_${fileId}.log`, 'utf-8')
+  } catch (err) {
+    console.warn(`File not found for ID ${fileId}:`, err)
+    return json({ message: NotificationCode.NOT_FOUND }, { status: 404 })
+  }
+
+  return new Response(file, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/plain',
+      'Content-Disposition': `attachment; filename="crash-${fileId}.log"`
+    }
+  })
+}
 
 export const POST: RequestHandler = async (event) => {
   const ip = event.getClientAddress()
@@ -32,7 +71,7 @@ export const POST: RequestHandler = async (event) => {
 
   let payload
   try {
-    payload = crashReportSchema.parse(body ?? {})
+    payload = extCrashReportSchema.parse(body ?? {})
   } catch (err) {
     if (err instanceof ZodError) {
       console.warn(`Invalid request body from IP ${ip}:`, err.issues)

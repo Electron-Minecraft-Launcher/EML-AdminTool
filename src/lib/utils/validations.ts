@@ -289,6 +289,13 @@ export const backgroundSchema = z
     message: NotificationCode.MISSING_INPUT
   })
 
+
+export const crashReportSchema = z.object({
+  crashReportId: z.string(),
+  comment: z.string().optional().or(z.null()),
+  addressed: z.boolean().or(z.null())
+})
+
 const platformSchema = z.enum(['win', 'mac', 'lin', 'unknown'])
 const archSchema = z.enum(['x64', 'arm64', 'ia32', 'unknown'])
 const versionSchema = z
@@ -298,7 +305,7 @@ const versionSchema = z
   .max(64)
   .regex(/^[0-9A-Za-z._+-]+$/)
 
-export const statSchemas = {
+export const extStatSchemas = {
   startup: z
     .object({
       os: platformSchema,
@@ -334,7 +341,7 @@ export const statSchemas = {
     .strict()
 }
 
-export const crashReportSchema = z
+export const extCrashReportSchema = z
   .object({
     metadata: z.object({
       date: z.string().min(10).max(100),
@@ -343,6 +350,7 @@ export const crashReportSchema = z
       javaVersion: z.string().min(1).max(64),
       javaArch: z.enum(['64-bit', '32-bit', 'unknown']),
       profile: z.string().max(64).or(z.null()),
+      authType: z.enum(['msa', 'yggdrasil', 'azauth', 'crack']),
       version: z.string().min(1).max(64),
       loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
       loaderVersion: z.string().max(64).or(z.null()),

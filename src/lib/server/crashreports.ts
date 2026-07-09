@@ -6,12 +6,24 @@ import { promisify } from 'node:util'
 import { db } from './db'
 import { deleteFile, uploadFile } from './files'
 import type { CrashReportPayload } from '$lib/utils/db'
+import { Prisma, type CrashReport } from '@prisma/client'
 
 const gunzip = promisify(zlib.gunzip)
 
 const MAX_UNZIPPED_SIZE = 10 * 1024 * 1024
 
-export async function addCrashReport(metadata: CrashReportPayload, logData: string) {
+export async function getCrashReportById(crashReportId: string): Promise<CrashReport | null> {
+  let crashReport
+  try {
+    crashReport = await db.crashReport.findUnique({ where: { id: crashReportId } })
+    return crashReport
+  } catch (err) {
+    console.error('Error fetching crash report by ID:', err)
+    throw new ServerError('Error fetching crash report by ID', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
+export async function addCrashReport(metadata: CrashReportPayload, logData: string): Promise<void> {
   try {
     const compressedBuffer = Buffer.from(logData, 'base64')
     const unzippedBuffer = await gunzip(compressedBuffer, {
@@ -31,6 +43,7 @@ export async function addCrashReport(metadata: CrashReportPayload, logData: stri
         arch: metadata.arch,
         javaVersion: metadata.javaVersion,
         javaArch: metadata.javaArch,
+        authType: metadata.authType,
         profile: metadata.profile,
         version: metadata.version,
         loader: metadata.loader,
@@ -56,15 +69,53 @@ export async function addCrashReport(metadata: CrashReportPayload, logData: stri
   }
 }
 
-export async function deleteCrashReport(id: string): Promise<void> {
+export async function updateCrashReport(crashReport: { id: string; comment?: string | null; addressed?: boolean | null }): Promise<void> {
   try {
-    const report = await db.crashReport.findUnique({ where: { id } })
+    const { id, comment, addressed } = crashReport
+
+    if (addressed === true) {
+      await db.crashReport.update({
+        where: { id },
+        data: {
+          addressedAt: new Date(),
+          comment
+        }
+      })
+    } else if (addressed === false) {
+      await db.crashReport.update({
+        where: { id },
+        data: {
+          addressedAt: null,
+          comment
+        }
+      })
+    } else {
+      await db.crashReport.update({
+        where: { id },
+        data: {
+          comment
+        }
+      })
+    }
+  } catch (err: any) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+      console.warn(`Crash report with ID ${crashReport.id} not found`)
+      throw new BusinessError('Crash report not found', NotificationCode.NOT_FOUND, 404)
+    }
+    console.error('Failed to edit crash report:', err)
+    throw new ServerError('Failed to edit crash report', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
+export async function deleteCrashReport(crashReportId: string): Promise<void> {
+  try {
+    const report = await db.crashReport.findUnique({ where: { id: crashReportId } })
 
     if (!report) {
       throw new BusinessError('Crash report not found', NotificationCode.NOT_FOUND, 404)
     }
 
-    await db.crashReport.delete({ where: { id } })
+    await db.crashReport.delete({ where: { id: crashReportId } })
     const fileName = `crash_${report.fileId}.log`
 
     await deleteFile('crash-reports', fileName, false)

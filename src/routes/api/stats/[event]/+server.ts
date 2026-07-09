@@ -1,6 +1,6 @@
 import { getBearerToken, verifyScopedToken } from '$lib/server/jwt'
 import { NotificationCode } from '$lib/utils/notifications'
-import { statSchemas } from '$lib/utils/validations'
+import { extStatSchemas } from '$lib/utils/validations'
 import { json, type RequestHandler } from '@sveltejs/kit'
 import { statsLimiter } from '$lib/server/limiter'
 import { ZodError } from 'zod/v4'
@@ -9,10 +9,10 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 
 export const POST: RequestHandler = async (event) => {
   const ip = event.getClientAddress()
-  const ev = (event.params.event ?? '') as keyof typeof statSchemas
+  const ev = (event.params.event ?? '') as keyof typeof extStatSchemas
   const tk = getBearerToken(event.request) ?? ''
 
-  if (!(ev in statSchemas)) {
+  if (!(ev in extStatSchemas)) {
     console.warn(`Invalid stat event: ${ev} from IP ${ip}`)
     return json({ message: NotificationCode.NOT_FOUND }, { status: 404 })
   }
@@ -38,7 +38,7 @@ export const POST: RequestHandler = async (event) => {
 
   let payload
   try {
-    payload = statSchemas[ev].parse(body ?? {})
+    payload = extStatSchemas[ev].parse(body ?? {})
   } catch (err) {
     if (err instanceof ZodError) {
       console.warn(`Invalid request body for event ${ev} from IP ${ip}:`, err.issues)
