@@ -204,9 +204,11 @@ function getBucketKey(date: Date, startDate: Date, range: string) {
   } else if (range === '14d') {
     return date.toISOString().substring(0, 10)
   } else if (range === '30d') {
-    const block = Math.floor(msDiff / (3 * 24 * 60 * 60 * 1000))
-    const blockDate = new Date(startDate.getTime() + block * 3 * 24 * 60 * 60 * 1000)
-    return blockDate.toISOString().substring(0, 10)
+    return date.toISOString().substring(0, 10)
+    // 3-day buckets for 30 days range... maybe... let's keep it simple for now and just use daily buckets.
+    // const block = Math.floor(msDiff / (3 * 24 * 60 * 60 * 1000))
+    // const blockDate = new Date(startDate.getTime() + block * 3 * 24 * 60 * 60 * 1000)
+    // return blockDate.toISOString().substring(0, 10)
   } else {
     const block = Math.floor(msDiff / (7 * 24 * 60 * 60 * 1000))
     const blockDate = new Date(startDate.getTime() + block * 7 * 24 * 60 * 60 * 1000)

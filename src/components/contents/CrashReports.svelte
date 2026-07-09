@@ -1,14 +1,11 @@
 <script lang="ts">
   import getUser from '$lib/utils/user'
-  import type { ExtendedNews } from '$lib/utils/db'
-  import type { CrashReport, NewsCategory, NewsTag } from '@prisma/client'
+  import type { CrashReport } from '@prisma/client'
   import type { PageData } from '../../routes/(app)/dashboard/crash-reports/$types'
-  import type { File as File_ } from '$lib/utils/types'
-  import AddEditNewsModal from '../modals/AddEditNewsModal.svelte'
-  import ReadNewsModal from '../modals/ReadNewsModal.svelte'
   import { callAction } from '$lib/utils/call'
   import { l } from '$lib/stores/language'
   import { invalidateAll } from '$app/navigation'
+  import ReadCrashReportModal from '../modals/ReadCrashReportModal.svelte'
 
   interface Props {
     crashReports: PageData['crashReports']
@@ -61,7 +58,7 @@
 </script>
 
 {#if showReadCrashReportModal && selectedCrashReportId}
-  <!-- <ReadNewsModal bind:show={showReadCrashReportModal} selectedNewsId={selectedCrashReportId} {news} {newsCategories} {newsTags} {images} /> -->
+  <ReadCrashReportModal bind:show={showReadCrashReportModal} selectedCrashReportId={selectedCrashReportId} {crashReports} />
 {/if}
 
 <button class="secondary small" disabled={selectedCrashReports.length === 0} onclick={deleteCrasheport}>
@@ -72,20 +69,36 @@
   <div class="list">
     {#each crashReports as cr, i}
       {#if i >= iStart && i < iStart + iLength}
-        <!-- <button class="list news" class:focused={selectedCrashReports.includes(cr)} onclick={() => showCrashReport(cr)} aria-label="Crash report item">
+        <button class="list" class:focused={selectedCrashReports.includes(cr)} onclick={() => showCrashReport(cr)} aria-label="Crash report item">
           <div class="checkbox">
-            <input type="checkbox" disabled={user.p_news !== 2 && cr.authorId != user.id} onclick={(e) => selectCrashReport(e, cr)} />
+            <input type="checkbox" disabled={user.p_crashReports !== 2} onclick={(e) => selectCrashReport(e, cr)} />
           </div>
           <div class="content">
-            <p class="label">
-              <span style="margin-right: 20px">
-                <i class="fa-solid fa-calendar"></i>&nbsp;&nbsp;{new Date(cr.createdAt).formatDate()}
-              </span>
-            </p>
-            <h4>{cr.title}</h4>
-            <p class="content">{removeNl(cr.content)}</p>
+            <div>
+              <p class="label">ID</p>
+              <p>#{cr.fileId.substring(0, 7)}</p>
+            </div>
+            <div>
+              <p class="label">Submitted on</p>
+              <p>
+                {new Date(cr.createdAt).toLocaleDateString()}
+                {new Date(cr.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </div>
+            <div>
+              <p class="label">Profile</p>
+              <p>{cr.profile || '-'}</p>
+            </div>
+            <div>
+              <p class="label">Addressed</p>
+              <p>
+                {@html cr.addressedAt
+                  ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>'
+                  : '<i class="fa-solid fa-circle-xmark" style="color: var(--red-color);"></i>'}
+              </p>
+            </div>
           </div>
-        </button> -->
+        </button>
       {/if}
     {/each}
   </div>
@@ -97,7 +110,8 @@
 
 <div class="info">
   <p>
-    {crashReports.length > 0 ? iStart + 1 : 0}-{crashReports.length <= iStart + iLength ? crashReports.length : iStart + iLength} of {crashReports.length} crash reports
+    {crashReports.length > 0 ? iStart + 1 : 0}-{crashReports.length <= iStart + iLength ? crashReports.length : iStart + iLength} of {crashReports.length}
+    crash reports
   </p>
   <p>
     <button
@@ -160,11 +174,12 @@
 
   div.list-container {
     margin-top: 30px;
-    overflow-y: inherit !important;
+    overflow-y: visible !important;
 
     div.list {
       min-height: auto !important;
-      overflow-y: inherit !important;
+      overflow-y: hidden !important;
+      padding-bottom: 2px;
     }
   }
 
@@ -192,42 +207,28 @@
     div.content {
       border-top-right-radius: 5px;
       border-bottom-right-radius: 5px;
+      display: flex;
+      flex-direction: row;
+      gap: 50px;
+      flex: 1;
+      justify-content: space-between;
 
-      h4 {
-        margin: 8px 0 8px 0;
-        font-weight: 400;
-        font-size: 16px;
-      }
-
-      p.label {
-        margin-top: 0;
-        font-size: 13px;
-      }
-
-      p.content {
-        margin: 0;
-        font-size: 13px;
-        overflow: hidden;
-        display: -webkit-box;
-        text-overflow: ellipsis;
-        line-clamp: 3;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        max-height: 62.39px;
-      }
-
-      span.tag {
-        display: inline-block;
-        margin-top: 5px;
-        margin-right: 5px;
-        padding: 5px 10px;
-        border-radius: 5px;
-        font-size: 12px;
-
-        i {
-          margin-right: 5px;
+      div {
+        width: 150px;
+        p.label {
+          margin-top: 0;
         }
       }
+    }
+  }
+
+  i.fa-solid {
+    .fa-circle-check {
+      color: green;
+    }
+
+    .fa-circle-xmark {
+      color: red;
     }
   }
 

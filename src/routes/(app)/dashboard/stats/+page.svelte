@@ -36,6 +36,19 @@
 
   const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4']
 
+  const osColors: Record<string, string> = {
+    'Windows': '#0079d6',
+    'macOS': '#272729',
+    'Linux': '#b03a47'
+  }
+
+  const authColors: Record<string, string> = {
+    'Cracked': '#424242',
+    'Microsoft': '#107b10',
+    'AzAuth': '#034ce2',
+    'Yggdrasil': '#db1f2a'
+  }
+
   let versionsEvolutionConfig = $derived({
     type: 'line',
     data: {
@@ -59,6 +72,9 @@
   let osArchConfig = $derived.by(() => {
     const osLabels = Object.keys(data.charts.osArch)
     const allArchs = Array.from(new Set(osLabels.flatMap((os) => Object.keys(data.charts.osArch[os]))))
+    
+    // Dégradé d'opacité pour différencier les architectures
+    const opacities = ['FF', 'B3', '66']
 
     return {
       type: 'bar',
@@ -67,7 +83,7 @@
         datasets: allArchs.map((arch, i) => ({
           label: arch,
           data: osLabels.map((os) => data.charts.osArch[os][arch] || 0),
-          backgroundColor: palette[i % palette.length],
+          backgroundColor: osLabels.map((os) => (osColors[os] || '#cbd5e1') + (opacities[i % opacities.length] || 'FF')),
           borderRadius: 4
         }))
       },
@@ -90,19 +106,22 @@
     options: { maintainAspectRatio: false, cutout: '65%' }
   })
 
-  let authConfig = $derived({
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(data.charts.authTypes),
-      datasets: [
-        {
-          data: Object.values(data.charts.authTypes),
-          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
-          borderWidth: 0
-        }
-      ]
-    },
-    options: { maintainAspectRatio: false, cutout: '65%' }
+  let authConfig = $derived.by(() => {
+    const authKeys = Object.keys(data.charts.authTypes)
+    return {
+      type: 'doughnut',
+      data: {
+        labels: authKeys,
+        datasets: [
+          {
+            data: Object.values(data.charts.authTypes),
+            backgroundColor: authKeys.map(a => authColors[a] || '#cbd5e1'),
+            borderWidth: 0
+          }
+        ]
+      },
+      options: { maintainAspectRatio: false, cutout: '65%' }
+    }
   })
 
   let ramConfig = $derived({
@@ -201,7 +220,7 @@
   <select class="range-select" onchange={handleRangeChange} value={data.range}>
     <option value="1d">Last 24h (per hour)</option>
     <option value="14d">2 last weeks (daily blocks)</option>
-    <option value="30d">Last 30 days (3-day blocks)</option>
+    <option value="30d">Last 30 days (day blocks)</option>
     <option value="90d">3 last months (weekly blocks)</option>
   </select>
 
@@ -251,7 +270,7 @@
   <h3>Minecraft ecosystem</h3>
   <div class="chart-grid">
     <div class="chart-container full-width">
-      <h4>Used modpack profiles</h4>
+      <h4>Used profiles</h4>
       <div class="canvas-wrapper line-wrapper">
         <canvas use:chartAction={profilesConfig}></canvas>
       </div>

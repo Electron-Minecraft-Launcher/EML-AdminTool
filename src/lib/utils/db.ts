@@ -79,4 +79,4 @@ export type UserProfilePermissionInfo = {
   permission: 0 | 1 | 2
 }
 
-export type CrashReportPayload = Omit<CrashReport, 'id' | 'fileId' | 'createdAt'>
+export type CrashReportPayload = Omit<CrashReport, 'id' | 'fileId' | 'createdAt' | 'addressedAt' | 'comment'>

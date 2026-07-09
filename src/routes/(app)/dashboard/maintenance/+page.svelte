@@ -119,7 +119,7 @@ You will need to disable maintenance manually.`
       margin-left: 5px;
       position: relative;
       background: none;
-      color: rgb(24, 170, 24);
+      color: var(--green-color);
       vertical-align: middle;
 
       &:hover {

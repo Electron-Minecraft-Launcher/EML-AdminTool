@@ -207,7 +207,8 @@
 
     div.list {
       min-height: auto !important;
-      overflow-y: inherit !important;
+      overflow-y: hidden !important;
+      padding-bottom: 2px;
     }
   }
 

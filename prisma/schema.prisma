@@ -178,10 +178,10 @@ model CrashReport {
   arch          String
   javaVersion   String
   javaArch      String
-  profile       String
+  profile       String?
   version       String
   loader        String
-  loaderVersion String
+  loaderVersion String?
   minRam        Float?
   maxRam        Float?
   exitCode      Int

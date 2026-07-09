@@ -303,7 +303,7 @@ export const statSchemas = {
     .object({
       os: platformSchema,
       arch: archSchema,
-      current: versionSchema,
+      current: versionSchema
     })
     .strict(),
   login: z
@@ -334,20 +334,30 @@ export const statSchemas = {
     .strict()
 }
 
-export const crashReportSchema = z.object({
-  metadata: z.object({
-    date: z.string().min(10).max(100),
-    os: platformSchema,
-    arch: z.enum(['64', '32']),
-    javaVersion: z.string().min(1).max(64),
-    javaArch: z.enum(['64-bit', '32-bit', 'unknown']),
-    profile: z.string().min(1).max(64),
-    version: z.string().min(1).max(64),
-    loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
-    loaderVersion: z.string().min(1).max(64),
-    minRam: z.number().int().min(0).max(16384),
-    maxRam: z.number().int().min(512).max(65536),
-    exitCode: z.int()
-  }),
-  logData: z.string()
-})
+export const crashReportSchema = z
+  .object({
+    metadata: z.object({
+      date: z.string().min(10).max(100),
+      os: platformSchema,
+      arch: z.enum(['64', '32']),
+      javaVersion: z.string().min(1).max(64),
+      javaArch: z.enum(['64-bit', '32-bit', 'unknown']),
+      profile: z.string().max(64).or(z.null()),
+      version: z.string().min(1).max(64),
+      loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
+      loaderVersion: z.string().max(64).or(z.null()),
+      minRam: z.number().int().min(0).max(16384),
+      maxRam: z.number().int().min(512).max(65536),
+      exitCode: z
+        .number()
+        .int()
+        .transform((val) => new Int32Array([val])[0])
+    }),
+    logData: z.string()
+  })
+  .transform((schema) => {
+    if (schema.metadata.loaderVersion === null) {
+      schema.metadata.loaderVersion = schema.metadata.version
+    }
+    return schema
+  })
