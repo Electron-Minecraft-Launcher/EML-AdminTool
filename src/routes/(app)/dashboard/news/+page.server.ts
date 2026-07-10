@@ -22,26 +22,36 @@ import {
 } from '$lib/server/news'
 import path_ from 'node:path'
 import { randomBytes } from 'node:crypto'
+import { getDomain } from '$lib/utils/utils'
+
+const PAGE_SIZE = 25
 
 export const load = (async (event) => {
-  const domain = event.url.origin
+  const domain = getDomain(event)
   const user = event.locals.user
+  const page = getPage(event.url.searchParams.get('page'))
 
   if (!user?.p_news) {
     throw redirect(303, '/dashboard')
   }
 
   try {
-    const [news, newsCategories, newsTags] = await Promise.all([
+    const [news, newsCount, newsCategories, newsTags] = await Promise.all([
       db.news
         .findMany({
           orderBy: { createdAt: 'desc' },
+          skip: (page - 1) * PAGE_SIZE,
+          take: PAGE_SIZE,
           include: { author: { select: { id: true, username: true } }, categories: true, tags: true }
         })
         .catch((err) => {
           console.error('Failed to load news:', err)
           throw new ServerError('Failed to load news', err, NotificationCode.DATABASE_ERROR, 500)
         }),
+      db.news.count().catch((err) => {
+        console.error('Failed to count news:', err)
+        throw new ServerError('Failed to count news', err, NotificationCode.DATABASE_ERROR, 500)
+      }),
       db.newsCategory.findMany({ orderBy: { name: 'asc' } }).catch((err) => {
         console.error('Failed to load news categories:', err)
         throw new ServerError('Failed to load news categories', err, NotificationCode.DATABASE_ERROR, 500)
@@ -54,7 +64,7 @@ export const load = (async (event) => {
 
     const images = await getFiles(domain, 'images')
 
-    return { news, newsCategories, newsTags, images }
+    return { news, newsCount, newsPage: page, newsPageSize: PAGE_SIZE, newsCategories, newsTags, images }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
 
@@ -62,6 +72,12 @@ export const load = (async (event) => {
     throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
   }
 }) satisfies PageServerLoad
+
+function getPage(value: string | null): number {
+  const page = Number.parseInt(value ?? '1', 10)
+  if (!Number.isFinite(page) || page < 1) return 1
+  return page
+}
 
 export const actions: Actions = {
   addEditNews: async (event) => {
@@ -96,6 +112,7 @@ export const actions: Actions = {
         }
 
         if (user.id !== news.authorId) {
+          console.warn(`User ${user.id} is not the author of news ${newsId}`)
           throw new BusinessError('You are not the author of this news', NotificationCode.FORBIDDEN, 403)
         }
 
@@ -133,6 +150,7 @@ export const actions: Actions = {
         }
 
         if (user.id !== news.authorId && !user.isAdmin && user.p_news !== 2) {
+          console.warn(`User ${user.id} is not the author of news ${id} and does not have permission to delete it`)
           throw new BusinessError('You are not the author of this news', NotificationCode.FORBIDDEN, 403)
         }
 
@@ -327,4 +345,3 @@ export const actions: Actions = {
     }
   }
 }
-

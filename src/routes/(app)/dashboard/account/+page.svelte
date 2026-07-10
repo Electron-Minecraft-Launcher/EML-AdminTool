@@ -72,13 +72,6 @@
   <div class="container">
     <div>
       <p class="label">Files updater</p>
-      <!-- {#if user.p_filesUpdater}
-        {#if user.p_filesUpdater >= 1}
-          <p>Add, edit and delete files</p>
-        {/if}
-        {#if user.p_filesUpdater === 2}
-          <p>Change Minecraft loader</p>
-        {/if} -->
       {#if user.isAdmin}
         <p>All permissions</p>
       {:else if user.profilePermissions.length > 0}
@@ -145,6 +138,17 @@
         <p>View stats</p>
       {:else if user.p_stats === 2}
         <p>View and delete stats</p>
+      {:else}
+        <p>-</p>
+      {/if}
+    </div>
+
+    <div>
+      <p class="label">Crash Reports</p>
+      {#if user.p_crashReports === 1}
+        <p>View crash reports</p>
+      {:else if user.p_crashReports === 2}
+        <p>View and delete crash reports</p>
       {:else}
         <p>-</p>
       {/if}

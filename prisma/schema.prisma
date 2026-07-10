@@ -44,7 +44,7 @@ enum StatAction {
   STARTUP
   LOGIN
   LAUNCH
-  DEVTOOLS
+  BOOTSTRAP
 }
 
 model Environment {
@@ -70,6 +70,7 @@ model User {
   p_newsTags         Int                     @default(0) // 0 = no access, 1 = read and write
   p_backgrounds      Int                     @default(0) // 0 = no access, 1 = read and write
   p_stats            Int                     @default(0) // 0 = no access, 1 = read, 2 = read and reset
+  p_crashReports     Int                     @default(0) // 0 = no access, 1 = read, 2 = read and delete
   profilePermissions UserProfilePermission[]
   createdAt          DateTime                @default(now())
   updatedAt          DateTime                @updatedAt
@@ -168,6 +169,27 @@ model Stat {
   action    StatAction
   value     String?
   createdAt DateTime   @default(now())
+}
+
+model CrashReport {
+  id            String    @id @default(cuid(2))
+  date          String
+  os            String
+  arch          String
+  javaVersion   String
+  javaArch      String
+  profile       String?
+  version       String
+  loader        String
+  loaderVersion String?
+  authType      String
+  minRam        Float?
+  maxRam        Float?
+  exitCode      Int
+  addressedAt   DateTime?
+  comment       String?
+  createdAt     DateTime  @default(now())
+  fileId        String    @unique
 }
 
 model ExpiredToken {

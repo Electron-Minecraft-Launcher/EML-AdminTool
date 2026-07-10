@@ -27,10 +27,10 @@ export const editEMLATSchema = z.object({
 export const profileSchema = z
   .object({
     profileId: z.string().optional(),
-    name: z.string().min(1, NotificationCode.PROFIL_NAME_TOO_SHORT).max(64, NotificationCode.PROFIL_NAME_TOO_LONG),
+    name: z.string().min(1, NotificationCode.PROFILE_NAME_TOO_SHORT).max(64, NotificationCode.PROFILE_NAME_TOO_LONG),
     ip: z.string().optional(),
     port: z.number().optional(),
-    tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFIL_INVALID_TCP_PROTOCOL).optional()
+    tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFILE_INVALID_TCP_PROTOCOL).optional()
   })
   .transform((data) => {
     if (!data.ip) {
@@ -45,7 +45,7 @@ export const profileSchema = z
     }
     return data
   })
-  .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFIL_PORT_WITHOUT_IP, path: ['port'] })
+  .refine((schema) => schema.ip || !schema.port, { message: NotificationCode.PROFILE_PORT_WITHOUT_IP, path: ['port'] })
 
 const profilePermissionItemSchema = z.object({
   userId: z.string(),
@@ -107,7 +107,9 @@ export const editUserSchema = z.object({
   p_newsTags: z.boolean(),
   p_backgrounds: z.boolean(),
   p_stats_1: z.boolean(),
-  p_stats_2: z.boolean()
+  p_stats_2: z.boolean(),
+  p_crashReports_1: z.boolean(),
+  p_crashReports_2: z.boolean()
 })
 
 export const editAccountSchema = z
@@ -287,7 +289,87 @@ export const backgroundSchema = z
     message: NotificationCode.MISSING_INPUT
   })
 
+export const crashReportSchema = z.object({
+  crashReportId: z.string(),
+  comment: z.string().optional().or(z.null()),
+  addressed: z.boolean().or(z.null())
+})
 
+export const uuidSchema = z.uuid()
+const platformSchema = z.enum(['win', 'mac', 'lin', 'unknown'])
+const archSchema = z.enum(['x64', 'arm64', 'ia32', 'unknown'])
+const versionSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(64)
+  .regex(/^[0-9A-Za-z._+-]+$/)
 
+export const extStatSchemas = {
+  startup: z
+    .object({
+      os: platformSchema,
+      arch: archSchema,
+      current: versionSchema
+    })
+    .strict(),
+  login: z
+    .object({
+      type: z.enum(['microsoft', 'yggdrasil', 'azauth', 'crack'])
+    })
+    .strict(),
+  launch: z
+    .object({
+      current: versionSchema,
+      os: platformSchema,
+      arch: archSchema,
+      java: versionSchema,
+      loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
+      version: z.union([versionSchema, z.literal('unknown')]),
+      // string or null
+      profile: z.string().optional().or(z.null()),
+      minRam: z.number().int().min(0).max(16384),
+      maxRam: z.number().int().min(512).max(65536)
+    })
+    .strict(),
+  bootstrap: z
+    .object({
+      os: platformSchema,
+      current: versionSchema,
+      latest: versionSchema
+    })
+    .strict()
+}
 
-
+export const extCrashReportSchema = z
+  .object({
+    metadata: z.object({
+      date: z.string().min(10).max(100),
+      os: platformSchema,
+      arch: z.string().min(1).max(8),
+      javaVersion: z.string().min(1).max(64),
+      javaArch: z.enum(['64-bit', '32-bit', 'unknown']),
+      profile: z.string().max(64).or(z.null()),
+      authType: z.enum(['msa', 'yggdrasil', 'azauth', 'crack']),
+      version: z.string().min(1).max(64),
+      loader: z.enum(['vanilla', 'forge', 'neoforge', 'fabric', 'quilt']),
+      loaderVersion: z.string().max(64).or(z.null()),
+      minRam: z.number().int().min(0).max(16384),
+      maxRam: z.number().int().min(512).max(65536),
+      exitCode: z
+        .number()
+        .int()
+        .transform((val) => new Int32Array([val])[0])
+    }),
+    logData: z
+      .string()
+      .min(1)
+      .max(4 * 1024 * 1024)
+      .regex(/^[A-Za-z0-9+/]+={0,2}$/)
+  })
+  .transform((schema) => {
+    if (schema.metadata.loaderVersion === null) {
+      schema.metadata.loaderVersion = schema.metadata.version
+    }
+    return schema
+  })

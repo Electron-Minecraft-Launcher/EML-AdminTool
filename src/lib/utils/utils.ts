@@ -1,4 +1,5 @@
 import type { File as File_ } from '$lib/utils/types'
+import type { RequestEvent } from '@sveltejs/kit'
 
 /**
  * Pauses execution for a specified duration.
@@ -47,6 +48,19 @@ export async function waitForServerRestart(retrying: number = 10, reload: boolea
 
   console.error('Failed to contact server after multiple attempts.')
   alert('The server seems to be taking a long time to restart. Please try refreshing the page manually.')
+}
+
+/**
+ * Returns the domain of the request, taking into account possible reverse proxies that set 
+ * `x-forwarded-proto` and `x-forwarded-host` headers.
+ * @param event The request event from which to extract the domain.
+ * @returns The domain as a string, including the protocol (e.g., `https://example.com`).
+ */
+export function getDomain(event: RequestEvent): string {
+  const headers = event.request.headers
+  const protocol = headers.get('x-forwarded-proto')?.split(',')[0].trim() || event.url.protocol.replace(':', '')
+  const host = headers.get('x-forwarded-host')?.split(',')[0].trim() || headers.get('host') || event.url.host
+  return `${protocol}://${host}`
 }
 
 /**

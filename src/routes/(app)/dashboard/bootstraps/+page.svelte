@@ -19,7 +19,7 @@
   async function download(file: File_) {
     try {
       const response = await fetch(file.url)
-      if (!response.ok) throw new Error(response.statusText)
+      if (!response.ok) throw new Error(response.statusText) // new Error is ok because catch block will handle it
 
       const blob = await response.blob()
       const downloadUrl = window.URL.createObjectURL(blob)

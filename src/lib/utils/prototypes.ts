@@ -10,6 +10,10 @@ declare global {
      * Remove all forbidden chars in a filename.
      */
     removeUnwantedFilenameChars(): string
+    /**
+     * Capitalize the first char of the string and make the rest lowercase.
+     */
+    firstCharToUpperCase(): string
   }
 
   interface Date {
@@ -41,6 +45,10 @@ String.prototype.removeUnwantedFilenameChars = function (): string {
     .replace(/^\.{2,}/, '')
     .replace(/\.+$/, '')
     .trim()
+}
+
+String.prototype.firstCharToUpperCase = function (): string {
+  return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
 }
 
 Date.prototype.formatDate = function (): string {

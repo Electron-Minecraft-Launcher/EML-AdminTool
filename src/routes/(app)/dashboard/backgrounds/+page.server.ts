@@ -12,6 +12,7 @@ import { addBackground, updateBackground, enableBackground, getBackgroundById, d
 import { randomBytes } from 'node:crypto'
 import path_ from 'node:path'
 import { deleteFile, getFiles, uploadFile } from '$lib/server/files'
+import { getDomain } from '$lib/utils/utils'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -46,7 +47,7 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
   addEditBackground: async (event) => {
-    const domain = event.url.origin
+    const domain = getDomain(event)
     const user = event.locals.user
 
     if (!user?.p_backgrounds) {
