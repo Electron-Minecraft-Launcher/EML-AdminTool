@@ -144,6 +144,8 @@ export const actions: Actions = {
       p_crashReports_2: form.get('p_crash-reports_2') === 'on'
     }
 
+    console.log(raw.p_crashReports_1, raw.p_crashReports_2)
+
     const result = editUserSchema.safeParse(raw)
 
     if (!result.success) {
@@ -159,7 +161,6 @@ export const actions: Actions = {
     }
 
     const { p_filesUpdater } = filesUpdaterPermissionsResult.data
-
     const userId = result.data.userId
     const username = result.data.username
     const status = IUserStatus.ACTIVE

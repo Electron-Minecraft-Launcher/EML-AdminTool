@@ -19,8 +19,9 @@ export const load = (async (event) => {
   try {
     const crashReports = await db.crashReport.findMany({
       orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * 25,
-      take: 25
+      // TODO: Implement pagination for crash reports
+      // skip: (page - 1) * 25,
+      // take: 25
     })
 
     const count = await db.crashReport.count()

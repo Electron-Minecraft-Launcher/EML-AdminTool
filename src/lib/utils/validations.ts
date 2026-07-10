@@ -346,7 +346,7 @@ export const extCrashReportSchema = z
     metadata: z.object({
       date: z.string().min(10).max(100),
       os: platformSchema,
-      arch: z.enum(['64', '32']),
+      arch: z.string().min(1).max(8),
       javaVersion: z.string().min(1).max(64),
       javaArch: z.enum(['64-bit', '32-bit', 'unknown']),
       profile: z.string().max(64).or(z.null()),

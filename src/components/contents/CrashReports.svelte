@@ -58,12 +58,14 @@
 </script>
 
 {#if showReadCrashReportModal && selectedCrashReportId}
-  <ReadCrashReportModal bind:show={showReadCrashReportModal} selectedCrashReportId={selectedCrashReportId} {crashReports} />
+  <ReadCrashReportModal bind:show={showReadCrashReportModal} {selectedCrashReportId} {crashReports} />
 {/if}
 
-<button class="secondary small" disabled={selectedCrashReports.length === 0} onclick={deleteCrasheport}>
-  <i class="fa-solid fa-trash"></i>&nbsp;&nbsp;Delete
-</button>
+{#if user.p_crashReports === 2}
+  <button class="secondary small" disabled={selectedCrashReports.length === 0} onclick={deleteCrasheport}>
+    <i class="fa-solid fa-trash"></i>&nbsp;&nbsp;Delete
+  </button>
+{/if}
 
 <div class="list-container">
   <div class="list">
@@ -93,7 +95,8 @@
               <p class="label">Addressed</p>
               <p>
                 {@html cr.addressedAt
-                  ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>&nbsp;&nbsp;' + new Date(cr.addressedAt).toLocaleDateString()
+                  ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>&nbsp;&nbsp;' +
+                    new Date(cr.addressedAt).toLocaleDateString()
                   : '<i class="fa-solid fa-circle-xmark" style="color: var(--red-color);"></i>'}
               </p>
             </div>

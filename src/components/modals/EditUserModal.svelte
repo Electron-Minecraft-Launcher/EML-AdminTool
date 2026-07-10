@@ -227,22 +227,22 @@
       <div class="permission">
         <p>Crash Reports</p>
         <div class="right">
-          <label class="p" for="p_crashReports_1">
+          <label class="p" for="p_crash-reports_1">
             <input
               type="checkbox"
-              id="p_crashReports_1"
-              name="p_crashReports_1"
+              id="p_crash-reports_1"
+              name="p_crash-reports_1"
               bind:checked={p_crashReports_1}
               onchange={() => {
                 if (!p_crashReports_1) p_crashReports_2 = false
               }}
             /> View crash reports
           </label>
-          <label class="p" for="p_crashReports_2">
+          <label class="p" for="p_crash-reports_2">
             <input
               type="checkbox"
-              id="p_crashReports_2"
-              name="p_crashReports_2"
+              id="p_crash-reports_2"
+              name="p_crash-reports_2"
               bind:checked={p_crashReports_2}
               onchange={() => {
                 if (p_crashReports_2) p_crashReports_1 = true
