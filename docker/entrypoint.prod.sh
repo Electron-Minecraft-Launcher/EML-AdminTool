@@ -21,7 +21,7 @@ until nc -z dbs 5432; do
 done
 
 echo "✅ Database available. Applying 'prisma db push'..."
-npx dotenv -e /app/.env -- npx prisma db push
+npx dotenv -e /app/.env -- npx prisma db push --accept-data-loss
 
 echo "📦 Running data and file migrations..."
 npx dotenv -e /app/.env -- node /app/migration-scripts/migrate.js
