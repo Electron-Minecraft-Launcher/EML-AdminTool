@@ -144,18 +144,16 @@ export const actions: Actions = {
       p_crashReports_2: form.get('p_crash-reports_2') === 'on'
     }
 
-    console.log(raw.p_crashReports_1, raw.p_crashReports_2)
-
     const result = editUserSchema.safeParse(raw)
 
     if (!result.success) {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
-    
+
     const rawFilesUpdaterPermissions = { p_filesUpdater: form.get('p_files-updater') || undefined }
-    
+
     const filesUpdaterPermissionsResult = userProfilePermissionsSchema.safeParse(rawFilesUpdaterPermissions)
-    
+
     if (!filesUpdaterPermissionsResult.success) {
       return fail(event, 400, { failure: JSON.parse(filesUpdaterPermissionsResult.error.message)[0].message })
     }
@@ -337,5 +335,3 @@ function getCrashReportsPermissions(result: any) {
   if (result.data.p_crashReports_1) return 1
   return 0
 }
-
-

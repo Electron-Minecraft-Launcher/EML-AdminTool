@@ -7,6 +7,8 @@ import { fail } from '$lib/server/action'
 import { crashReportSchema } from '$lib/utils/validations'
 import { deleteCrashReport, getCrashReportById, updateCrashReport } from '$lib/server/crashreports'
 
+const PAGE_SIZE = 25
+
 export const load = (async (event) => {
   const user = event.locals.user
 
@@ -14,14 +16,13 @@ export const load = (async (event) => {
     throw redirect(303, '/dashboard')
   }
 
-  const page = parseInt(event.url.searchParams.get('page') || '1')
+  const page = getPage(event.url.searchParams.get('page'))
 
   try {
     const crashReports = await db.crashReport.findMany({
       orderBy: { createdAt: 'desc' },
-      // TODO: Implement pagination for crash reports
-      // skip: (page - 1) * 25,
-      // take: 25
+      skip: (page - 1) * PAGE_SIZE,
+      take: PAGE_SIZE
     })
 
     const count = await db.crashReport.count()
@@ -58,6 +59,7 @@ export const load = (async (event) => {
       yggdrasil: 'Yggdrasil',
       ...Object.fromEntries(profiles.map((p) => [p.slug, p.name]))
     }
+
     for (const cr of crashReports) {
       const profile = profiles.find((p) => p.slug === cr.profile)
       cr.profile = profile?.name ?? defaultProfile.name
@@ -65,13 +67,19 @@ export const load = (async (event) => {
       cr.authType = mappings[cr.authType] ?? cr.authType
     }
 
-    return { crashReports, page, count, unadressed, crashProneProfile }
+    return { crashReports, page, pageSize: PAGE_SIZE, count, unadressed, crashProneProfile }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
     console.error('Unknown error:', err)
     throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
   }
 }) satisfies PageServerLoad
+
+function getPage(value: string | null): number {
+  const page = Number.parseInt(value ?? '1', 10)
+  if (!Number.isFinite(page) || page < 1) return 1
+  return page
+}
 
 export const actions: Actions = {
   editCrashReport: async (event) => {

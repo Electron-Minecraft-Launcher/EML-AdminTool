@@ -10,10 +10,18 @@
   const env = getEnv()
 
   let crashReports = $state(data.crashReports)
+  let count = $state(data.count)
 
   $effect(() => {
     if (data.crashReports) crashReports = data.crashReports
+    if (data.count) count = data.count
   })
+
+  function handleCrashReportsPageChange(crashReportsPage: number) {
+    const url = new URL(page.url)
+    url.searchParams.set('page', crashReportsPage.toString())
+    goto(url.toString(), { keepFocus: true, invalidateAll: true })
+  }
 </script>
 
 <svelte:head>
@@ -44,7 +52,7 @@
 <section class="section">
   <h3>Crash Reports</h3>
 
-  <CrashReports {crashReports} />
+  <CrashReports {crashReports} {count} pageSize={data.pageSize} page={data.page} onPageChange={handleCrashReportsPageChange} />
 </section>
 
 <style lang="scss">

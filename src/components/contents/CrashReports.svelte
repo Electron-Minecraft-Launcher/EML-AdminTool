@@ -9,9 +9,13 @@
 
   interface Props {
     crashReports: PageData['crashReports']
+    page: number
+    pageSize: number
+    count: number
+    onPageChange: (page: number) => void
   }
 
-  let { crashReports }: Props = $props()
+  let { crashReports, page, pageSize, count, onPageChange }: Props = $props()
 
   const user = getUser()
 
@@ -19,8 +23,8 @@
   let selectedCrashReportId: string | null = $state(null)
   let selectedCrashReports: CrashReport[] = $state([])
 
-  let iLength = 25
-  let iStart = $state(0)
+  let start = $derived((page - 1) * pageSize)
+  let end = $derived(Math.min(start + crashReports.length, count))
 
   function showCrashReport(cr: CrashReport) {
     selectedCrashReportId = cr.id
@@ -69,40 +73,38 @@
 
 <div class="list-container">
   <div class="list">
-    {#each crashReports as cr, i}
-      {#if i >= iStart && i < iStart + iLength}
-        <button class="list" class:focused={selectedCrashReports.includes(cr)} onclick={() => showCrashReport(cr)} aria-label="Crash report item">
-          <div class="checkbox">
-            <input type="checkbox" disabled={user.p_crashReports !== 2} onclick={(e) => selectCrashReport(e, cr)} />
+    {#each crashReports as cr}
+      <button class="list" class:focused={selectedCrashReports.includes(cr)} onclick={() => showCrashReport(cr)} aria-label="Crash report item">
+        <div class="checkbox">
+          <input type="checkbox" disabled={user.p_crashReports !== 2} onclick={(e) => selectCrashReport(e, cr)} />
+        </div>
+        <div class="content">
+          <div>
+            <p class="label">ID</p>
+            <p>#{cr.fileId.substring(0, 7)}</p>
           </div>
-          <div class="content">
-            <div>
-              <p class="label">ID</p>
-              <p>#{cr.fileId.substring(0, 7)}</p>
-            </div>
-            <div>
-              <p class="label">Submitted on</p>
-              <p>
-                {new Date(cr.createdAt).toLocaleDateString()}
-                {new Date(cr.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-              </p>
-            </div>
-            <div>
-              <p class="label">Profile</p>
-              <p>{cr.profile}</p>
-            </div>
-            <div>
-              <p class="label">Addressed</p>
-              <p>
-                {@html cr.addressedAt
-                  ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>&nbsp;&nbsp;' +
-                    new Date(cr.addressedAt).toLocaleDateString()
-                  : '<i class="fa-solid fa-circle-xmark" style="color: var(--red-color);"></i>'}
-              </p>
-            </div>
+          <div>
+            <p class="label">Submitted on</p>
+            <p>
+              {new Date(cr.createdAt).toLocaleDateString()}
+              {new Date(cr.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+            </p>
           </div>
-        </button>
-      {/if}
+          <div>
+            <p class="label">Profile</p>
+            <p>{cr.profile}</p>
+          </div>
+          <div>
+            <p class="label">Addressed</p>
+            <p>
+              {@html cr.addressedAt
+                ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>&nbsp;&nbsp;' +
+                  new Date(cr.addressedAt).toLocaleDateString()
+                : '<i class="fa-solid fa-circle-xmark" style="color: var(--red-color);"></i>'}
+            </p>
+          </div>
+        </div>
+      </button>
     {/each}
   </div>
 </div>
@@ -113,15 +115,15 @@
 
 <div class="info">
   <p>
-    {crashReports.length > 0 ? iStart + 1 : 0}-{crashReports.length <= iStart + iLength ? crashReports.length : iStart + iLength} of {crashReports.length}
+    {count > 0 ? start + 1 : 0}-{end} of {count}
     crash reports
   </p>
   <p>
     <button
       class="page"
-      disabled={iStart === 0}
+      disabled={page <= 1}
       onclick={() => {
-        iStart -= iLength
+        onPageChange(page - 1)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }}
       aria-label="Previous page"
@@ -130,9 +132,9 @@
     </button>
     <button
       class="page"
-      disabled={iStart + iLength >= crashReports.length}
+      disabled={end >= count}
       onclick={() => {
-        iStart += iLength
+        onPageChange(page + 1)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }}
       aria-label="Next page"

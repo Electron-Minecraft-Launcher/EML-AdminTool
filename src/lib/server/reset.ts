@@ -95,7 +95,7 @@ ${devWarning}
 IS_CONFIGURED="false"
 DATABASE_URL="${databaseUrl}"
 JWT_SECRET_KEY="${jwtSecretKey}"
-BODY_SIZE_LIMIT=Infinity`
+BODY_SIZE_LIMIT=16M`
 
   try {
     if (!fs.existsSync('./env')) fs.mkdirSync('./env')

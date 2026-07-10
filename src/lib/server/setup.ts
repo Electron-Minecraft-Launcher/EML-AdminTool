@@ -228,7 +228,7 @@ IS_CONFIGURED="true"
 DATABASE_URL="${databaseUrl}"
 JWT_SECRET_KEY="${jwtSecretKey}"
 UPDATER_HTTP_API_TOKEN="${apiToken}"
-BODY_SIZE_LIMIT=Infinity
+BODY_SIZE_LIMIT=16M
 `
 
   try {
@@ -307,7 +307,7 @@ IS_CONFIGURED="${isConfigured}"
 DATABASE_URL="${newDatabaseUrl}"
 JWT_SECRET_KEY="${newJwtSecretKey}"
 UPDATER_HTTP_API_TOKEN="${newApiToken}"
-BODY_SIZE_LIMIT=Infinity
+BODY_SIZE_LIMIT=16M
 `
 
   try {

@@ -23,6 +23,15 @@ export async function getCrashReportById(crashReportId: string): Promise<CrashRe
   }
 }
 
+export async function getCrashReportByFileId(fileId: string): Promise<CrashReport | null> {
+  try {
+    return await db.crashReport.findUnique({ where: { fileId } })
+  } catch (err) {
+    console.error('Error fetching crash report by file ID:', err)
+    throw new ServerError('Error fetching crash report by file ID', err, NotificationCode.DATABASE_ERROR, 500)
+  }
+}
+
 export async function addCrashReport(metadata: CrashReportPayload, logData: string): Promise<void> {
   try {
     const compressedBuffer = Buffer.from(logData, 'base64')

@@ -89,7 +89,7 @@
   function handleAddredding(elt: HTMLButtonElement) {
     if (elt.name === 'mark-addressed') {
       return 'true'
-    } 
+    }
     if (elt.name === 'mark-unaddressed') {
       return 'false'
     }
@@ -107,9 +107,15 @@
 
     <div class="data-tabs">
       <button type="button" class:active={tab === 'metadata'} onclick={() => (tab = 'metadata')} aria-label="View metadata">Metadata</button>
-      <button type="button" class:active={tab === 'launcher-logs'} onclick={() => (tab = 'launcher-logs')} aria-label="View launcher logs">Launcher logs</button>
-      <button type="button" class:active={tab === 'crash-report'} onclick={() => (tab = 'crash-report')} aria-label="View crash report">Crash report</button>
-      <button type="button" class:active={tab === 'latest-logs'} onclick={() => (tab = 'latest-logs')} aria-label="View latest logs">Latest logs</button>
+      <button type="button" class:active={tab === 'launcher-logs'} onclick={() => (tab = 'launcher-logs')} aria-label="View launcher logs"
+        >Launcher logs</button
+      >
+      <button type="button" class:active={tab === 'crash-report'} onclick={() => (tab = 'crash-report')} aria-label="View crash report"
+        >Crash report</button
+      >
+      <button type="button" class:active={tab === 'latest-logs'} onclick={() => (tab = 'latest-logs')} aria-label="View latest logs"
+        >Latest logs</button
+      >
     </div>
 
     {#if tab === 'metadata'}

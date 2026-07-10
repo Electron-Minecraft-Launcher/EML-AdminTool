@@ -1,6 +1,8 @@
 <script lang="ts">
   import getEnv from '$lib/utils/env'
   import getUser from '$lib/utils/user'
+  import { goto } from '$app/navigation'
+  import { page } from '$app/state'
   import News from '../../../../components/contents/News.svelte'
   import NewsCategories from '../../../../components/contents/NewsCategories.svelte'
   import NewsTags from '../../../../components/contents/NewsTags.svelte'
@@ -15,6 +17,7 @@
   let newsCategories = $state(data.newsCategories)
   let newsTags = $state(data.newsTags)
   let images = $state(data.images)
+  let count = $state(data.newsCount)
 
   let showAddEditCategoryModal = $state(false)
   let selectedCategoryId: string | null = $state(null)
@@ -27,7 +30,14 @@
     if (data.newsCategories) newsCategories = data.newsCategories
     if (data.newsTags) newsTags = data.newsTags
     if (data.images) images = data.images
+    if (data.newsCount) count = data.newsCount
   })
+
+  function handleNewsPageChange(newsPage: number) {
+    const url = new URL(page.url)
+    url.searchParams.set('page', newsPage.toString())
+    goto(url.toString(), { keepFocus: true, invalidateAll: true })
+  }
 </script>
 
 <svelte:head>
@@ -39,7 +49,7 @@
 <section class="section">
   <h3>News</h3>
 
-  <News {news} {newsCategories} {newsTags} {images} />
+  <News {news} {newsCategories} {newsTags} {images} {count} page={data.newsPage} pageSize={data.newsPageSize} onPageChange={handleNewsPageChange} />
 </section>
 
 {#if user.p_newsCategories}

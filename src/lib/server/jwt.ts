@@ -3,6 +3,7 @@ import { NotificationCode } from '$lib/utils/notifications'
 import type { User } from '@prisma/client'
 import type { RequestEvent } from '@sveltejs/kit'
 import { errors, jwtVerify, SignJWT, type JWTPayload } from 'jose'
+import { getBearerToken } from './request'
 
 export async function createSessionToken(user: User): Promise<string> {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
@@ -44,20 +45,19 @@ export async function checkSession(session: string): Promise<JWTPayload> {
   return payload
 }
 
-export async function createScopedToken(scope: string, expirationTime: string = '10m'): Promise<string> {
+export async function createScopedToken(scope: string, expirationTime: string = '10m', claims: JWTPayload = {}): Promise<string> {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
-  return new SignJWT({ scope }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime(expirationTime).sign(secret)
+  return new SignJWT({ ...claims, scope }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime(expirationTime).sign(secret)
 }
 
-export async function verifyScopedToken(token?: string, scope?: string): Promise<boolean> {
+export async function verifyScopedToken(token?: string, scope?: string, claims: JWTPayload = {}): Promise<boolean> {
   if (!token || token.trim() === '') return false
 
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
 
-  let payload
   try {
-    payload = (await jwtVerify(token, secret)).payload
-    return payload.scope === scope
+    const payload: JWTPayload = (await jwtVerify(token, secret)).payload
+    return payload.scope === scope && Object.entries(claims).every(([key, value]) => payload[key] === value)
   } catch (err) {
     if (
       err instanceof errors.JWTExpired ||
@@ -74,8 +74,4 @@ export async function verifyScopedToken(token?: string, scope?: string): Promise
   }
 }
 
-export function getBearerToken(request: Request): string | null {
-  const authorization = request.headers.get('authorization')
-  const match = authorization?.match(/^Bearer\s+(.+)$/i)
-  return match?.[1] ?? null
-}
+export { getBearerToken }

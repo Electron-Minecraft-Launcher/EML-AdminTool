@@ -6,6 +6,9 @@ import { statsLimiter } from '$lib/server/limiter'
 import { ZodError } from 'zod/v4'
 import { addStat } from '$lib/server/stats'
 import { BusinessError, ServerError } from '$lib/utils/errors'
+import { readLimitedText } from '$lib/server/request'
+
+const MAX_STATS_BODY_SIZE = 4 * 1024
 
 export const POST: RequestHandler = async (event) => {
   const ip = event.getClientAddress()
@@ -17,7 +20,7 @@ export const POST: RequestHandler = async (event) => {
     return json({ message: NotificationCode.NOT_FOUND }, { status: 404 })
   }
 
-  if (!(await verifyScopedToken(tk, 'stats'))) {
+  if (!(await verifyScopedToken(tk, 'stats', { ip }))) {
     console.warn(`Unauthorized stat submission attempt from IP ${ip}`)
     return json({ message: NotificationCode.UNAUTHORIZED }, { status: 401 })
   }
@@ -29,9 +32,12 @@ export const POST: RequestHandler = async (event) => {
 
   let body
   try {
-    const text = await event.request.text()
+    const text = await readLimitedText(event.request, MAX_STATS_BODY_SIZE)
     body = text.trim() ? JSON.parse(text) : {}
   } catch (err) {
+    if (err instanceof BusinessError) {
+      return json({ message: err.code }, { status: err.httpStatus })
+    }
     console.warn(`Invalid JSON body from IP ${ip}:`, err)
     return json({ message: NotificationCode.INVALID_INPUT }, { status: 400 })
   }

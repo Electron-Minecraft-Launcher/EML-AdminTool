@@ -289,13 +289,13 @@ export const backgroundSchema = z
     message: NotificationCode.MISSING_INPUT
   })
 
-
 export const crashReportSchema = z.object({
   crashReportId: z.string(),
   comment: z.string().optional().or(z.null()),
   addressed: z.boolean().or(z.null())
 })
 
+export const uuidSchema = z.uuid()
 const platformSchema = z.enum(['win', 'mac', 'lin', 'unknown'])
 const archSchema = z.enum(['x64', 'arm64', 'ia32', 'unknown'])
 const versionSchema = z
@@ -361,7 +361,11 @@ export const extCrashReportSchema = z
         .int()
         .transform((val) => new Int32Array([val])[0])
     }),
-    logData: z.string()
+    logData: z
+      .string()
+      .min(1)
+      .max(4 * 1024 * 1024)
+      .regex(/^[A-Za-z0-9+/]+={0,2}$/)
   })
   .transform((schema) => {
     if (schema.metadata.loaderVersion === null) {

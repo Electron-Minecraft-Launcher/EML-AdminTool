@@ -12,7 +12,7 @@ export const GET: RequestHandler = async (event) => {
   }
 
   try {
-    const token = await createScopedToken('crashreports', '30m')
+    const token = await createScopedToken('crashreports', '30m', { ip })
     crashReportsLimiter.registerHandshakeToken(ip)
     return json({ token })
   } catch (err) {

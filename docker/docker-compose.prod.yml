@@ -32,7 +32,7 @@ services:
         required: false
     environment:
       NODE_ENV: 'production'
-      BODY_SIZE_LIMIT: 'Infinity'
+      BODY_SIZE_LIMIT: '16M'
     volumes:
       - files:/app/files
       - env:/app/env

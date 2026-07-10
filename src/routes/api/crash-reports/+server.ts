@@ -1,18 +1,20 @@
 import { getBearerToken, verifyScopedToken } from '$lib/server/jwt'
 import { NotificationCode } from '$lib/utils/notifications'
-import { extCrashReportSchema } from '$lib/utils/validations'
+import { extCrashReportSchema, uuidSchema } from '$lib/utils/validations'
 import { json, type RequestHandler } from '@sveltejs/kit'
 import { crashReportsLimiter } from '$lib/server/limiter'
 import { ZodError } from 'zod/v4'
-import { addCrashReport } from '$lib/server/crashreports'
+import { addCrashReport, getCrashReportByFileId } from '$lib/server/crashreports'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import fs from 'fs/promises'
-import path_ from 'path'
+import { readLimitedText } from '$lib/server/request'
+import { sanitizePath } from '$lib/server/files'
+
+const MAX_CRASH_REPORT_BODY_SIZE = 5 * 1024 * 1024
 
 export const GET: RequestHandler = async ({ request, locals }) => {
   const user = locals.user
   const fileId = request.headers.get('file-id')
-  const root = path_.join(process.cwd())
 
   if (!user) {
     console.warn('Unauthorized crash report retrieval attempt')
@@ -29,9 +31,21 @@ export const GET: RequestHandler = async ({ request, locals }) => {
     return json({ message: NotificationCode.INVALID_INPUT }, { status: 400 })
   }
 
+  const fileIdResult = uuidSchema.safeParse(fileId)
+  if (!fileIdResult.success) {
+    console.warn('Bad request: invalid file-id header')
+    return json({ message: NotificationCode.INVALID_INPUT }, { status: 400 })
+  }
+
   let file
   try {
-    file = await fs.readFile(`${root}/data/crash-reports/crash_${fileId}.log`, 'utf-8')
+    const report = await getCrashReportByFileId(fileIdResult.data)
+    if (!report) {
+      return json({ message: NotificationCode.NOT_FOUND }, { status: 404 })
+    }
+
+    const filePath = sanitizePath('data', 'crash-reports', `crash_${report.fileId}.log`)
+    file = await fs.readFile(filePath, 'utf-8')
   } catch (err) {
     console.warn(`File not found for ID ${fileId}:`, err)
     return json({ message: NotificationCode.NOT_FOUND }, { status: 404 })
@@ -41,7 +55,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
     status: 200,
     headers: {
       'Content-Type': 'text/plain',
-      'Content-Disposition': `attachment; filename="crash-${fileId}.log"`
+      'Content-Disposition': `attachment; filename="crash_${fileIdResult.data}.log"`
     }
   })
 }
@@ -50,7 +64,7 @@ export const POST: RequestHandler = async (event) => {
   const ip = event.getClientAddress()
   const tk = getBearerToken(event.request) ?? ''
 
-  if (!(await verifyScopedToken(tk, 'crashreports'))) {
+  if (!(await verifyScopedToken(tk, 'crashreports', { ip }))) {
     console.warn(`Unauthorized crash report submission attempt from IP ${ip}`)
     return json({ message: NotificationCode.UNAUTHORIZED }, { status: 401 })
   }
@@ -62,9 +76,12 @@ export const POST: RequestHandler = async (event) => {
 
   let body
   try {
-    const text = await event.request.text()
+    const text = await readLimitedText(event.request, MAX_CRASH_REPORT_BODY_SIZE)
     body = text.trim() ? JSON.parse(text) : {}
   } catch (err) {
+    if (err instanceof BusinessError) {
+      return json({ message: err.code }, { status: err.httpStatus })
+    }
     console.warn(`Invalid JSON body from IP ${ip}:`, err)
     return json({ message: NotificationCode.INVALID_INPUT }, { status: 400 })
   }
