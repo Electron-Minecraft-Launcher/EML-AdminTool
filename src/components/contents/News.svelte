@@ -15,9 +15,13 @@
     newsCategories: NewsCategory[]
     newsTags: NewsTag[]
     images: File_[]
+    page: number
+    pageSize: number
+    count: number
+    onPageChange: (page: number) => void
   }
 
-  let { news, newsCategories, newsTags, images }: Props = $props()
+  let { news, newsCategories, newsTags, images, page, pageSize, count, onPageChange }: Props = $props()
 
   const user = getUser()
 
@@ -26,8 +30,8 @@
   let selectedNewsId: string | null = $state(null)
   let selectedNews: ExtendedNews[] = $state([])
 
-  let iLength = 25
-  let iStart = $state(0)
+  let start = $derived((page - 1) * pageSize)
+  let end = $derived(Math.min(start + news.length, count))
 
   function showNews(news_: ExtendedNews) {
     selectedNewsId = news_.id
@@ -100,36 +104,34 @@
 
 <div class="list-container">
   <div class="list">
-    {#each news as news_, i}
-      {#if i >= iStart && i < iStart + iLength}
-        <button class="list news" class:focused={selectedNews.includes(news_)} onclick={() => showNews(news_)} aria-label="News item">
-          <div class="checkbox">
-            <input type="checkbox" disabled={user.p_news !== 2 && news_.authorId != user.id} onclick={(e) => selectNews(e, news_)} />
-          </div>
-          <div class="content">
-            <p class="label">
-              {#if news_.categories.length > 0}
-                <span style="margin-right: 20px">
-                  <i class="fa-solid fa-tag"></i>&nbsp;&nbsp;{news_.categories.map((cat) => cat.name).join(', ')}
-                </span>
-              {/if}
-              <span style="margin-right: 20px" title={news_.updatedAt ? 'Edited on ' + new Date(news_.updatedAt).formatDate() : ''}>
-                <i class="fa-solid fa-calendar"></i>&nbsp;&nbsp;{new Date(news_.createdAt).formatDate()}
+    {#each news as news_}
+      <button class="list news" class:focused={selectedNews.includes(news_)} onclick={() => showNews(news_)} aria-label="News item">
+        <div class="checkbox">
+          <input type="checkbox" disabled={user.p_news !== 2 && news_.authorId != user.id} onclick={(e) => selectNews(e, news_)} />
+        </div>
+        <div class="content">
+          <p class="label">
+            {#if news_.categories.length > 0}
+              <span style="margin-right: 20px">
+                <i class="fa-solid fa-tag"></i>&nbsp;&nbsp;{news_.categories.map((cat) => cat.name).join(', ')}
               </span>
-              <span>
-                <i class="fa-solid fa-user"></i>&nbsp;&nbsp;{news_.author?.username ?? 'Unknown author'}
-              </span>
-            </p>
-            <h4>{news_.title}</h4>
-            <p class="content">{removeNl(news_.content)}</p>
-            {#each news_.tags as tag}
-              <span class="tag" style="color: {tag.color}; background-color: {backgroundColor(tag.color)}">
-                <i class="fa-solid fa-hashtag"></i>{tag.name}
-              </span>
-            {/each}
-          </div>
-        </button>
-      {/if}
+            {/if}
+            <span style="margin-right: 20px" title={news_.updatedAt ? 'Edited on ' + new Date(news_.updatedAt).formatDate() : ''}>
+              <i class="fa-solid fa-calendar"></i>&nbsp;&nbsp;{new Date(news_.createdAt).formatDate()}
+            </span>
+            <span>
+              <i class="fa-solid fa-user"></i>&nbsp;&nbsp;{news_.author?.username ?? 'Unknown author'}
+            </span>
+          </p>
+          <h4>{news_.title}</h4>
+          <p class="content">{removeNl(news_.content)}</p>
+          {#each news_.tags as tag}
+            <span class="tag" style="color: {tag.color}; background-color: {backgroundColor(tag.color)}">
+              <i class="fa-solid fa-hashtag"></i>{tag.name}
+            </span>
+          {/each}
+        </div>
+      </button>
     {/each}
   </div>
 </div>
@@ -140,14 +142,14 @@
 
 <div class="info">
   <p>
-    {news.length > 0 ? iStart + 1 : 0}-{news.length <= iStart + iLength ? news.length : iStart + iLength} of {news.length} news
+    {count > 0 ? start + 1 : 0}-{end} of {count} news
   </p>
   <p>
     <button
       class="page"
-      disabled={iStart === 0}
+      disabled={page <= 1}
       onclick={() => {
-        iStart -= iLength
+        onPageChange(page - 1)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }}
       aria-label="Previous page"
@@ -156,9 +158,9 @@
     </button>
     <button
       class="page"
-      disabled={iStart + iLength >= news.length}
+      disabled={end >= count}
       onclick={() => {
-        iStart += iLength
+        onPageChange(page + 1)
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }}
       aria-label="Next page"
@@ -207,7 +209,9 @@
 
     div.list {
       min-height: auto !important;
-      overflow-y: inherit !important;
+      overflow-y: hidden !important;
+      padding-bottom: 2px;
+      max-height: none !important;
     }
   }
 

@@ -139,7 +139,13 @@
         <p>View and delete stats</p>
       {/if}
 
-      {#if !data.userPermissions.some((p) => p.userId === selectedUserId && p.permission > 0) && !selectedUser.p_bootstraps && !selectedUser.p_maintenance && !selectedUser.p_news && !selectedUser.p_newsCategories && !selectedUser.p_newsTags && !selectedUser.p_backgrounds && !selectedUser.p_stats}
+      {#if selectedUser.p_crashReports === 1}
+        <p>View crash reports</p>
+      {:else if selectedUser.p_crashReports === 2}
+        <p>View and delete crash reports</p>
+      {/if}
+
+      {#if !data.userPermissions.some((p) => p.userId === selectedUserId && p.permission > 0) && !selectedUser.p_bootstraps && !selectedUser.p_maintenance && !selectedUser.p_news && !selectedUser.p_newsCategories && !selectedUser.p_newsTags && !selectedUser.p_backgrounds && !selectedUser.p_stats && !selectedUser.p_crashReports}
         <p>No permissions</p>
       {/if}
     {/if}

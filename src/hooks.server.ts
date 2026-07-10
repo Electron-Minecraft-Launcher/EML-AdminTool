@@ -275,6 +275,7 @@ function getUserInfo(user: User, profilePermissions: { profileId: string; name: 
     p_newsTags: user.p_newsTags as 0 | 1,
     p_backgrounds: user.p_backgrounds as 0 | 1,
     p_stats: user.p_stats as 0 | 1 | 2,
+    p_crashReports: user.p_crashReports as 0 | 1 | 2,
     isAdmin: user.isAdmin,
     profilePermissions: profilePermissions as { profileId: string; name: string; permission: 0 | 1 | 2 }[]
   }

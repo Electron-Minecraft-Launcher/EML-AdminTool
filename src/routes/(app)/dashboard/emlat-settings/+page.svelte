@@ -252,7 +252,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       <span class="storage">
         <span class="storage-progress" style={'width: ' + (data.vps.storage[0] / data.vps.storage[1]) * 200 + 'px'}></span>
       </span>
-      {Math.round((data.vps.storage[0] / data.vps.storage[1]) * 100)} %
+      {Math.round((data.vps.storage[0] / data.vps.storage[1]) * 100)}%
     </div>
   </div>
 </section>
@@ -372,7 +372,12 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     img {
       width: 55px;
       height: 55px;
-      border-radius: 12px;
+      border-radius: 50%;
+      corner-shape: squircle;
+
+      @supports not (corner-shape: squircle) {
+        border-radius: 13px;
+      }
     }
   }
 

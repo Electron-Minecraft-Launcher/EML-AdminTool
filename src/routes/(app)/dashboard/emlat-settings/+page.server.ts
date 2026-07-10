@@ -51,12 +51,14 @@ export const load = (async (event) => {
           throw new ServerError('Failed to load permissions', err, NotificationCode.DATABASE_ERROR, 500)
         }),
       getUpdate().catch((err) => {
+        console.error('Failed to load update information:', err)
         throw new ServerError('Failed to load update information', err, NotificationCode.EXTERNAL_API_ERROR, 500)
       }),
       getVanillaVersions()
     ])
 
     if (!environment) {
+      console.error('Environment configuration not found')
       throw new ServerError('Environment configuration not found', null, NotificationCode.INTERNAL_SERVER_ERROR, 500)
     }
 
@@ -137,7 +139,9 @@ export const actions: Actions = {
       p_newsTags: form.get('p_news-tags') === 'on',
       p_backgrounds: form.get('p_backgrounds') === 'on',
       p_stats_1: form.get('p_stats_1') === 'on',
-      p_stats_2: form.get('p_stats_2') === 'on'
+      p_stats_2: form.get('p_stats_2') === 'on',
+      p_crashReports_1: form.get('p_crash-reports_1') === 'on',
+      p_crashReports_2: form.get('p_crash-reports_2') === 'on'
     }
 
     const result = editUserSchema.safeParse(raw)
@@ -145,17 +149,16 @@ export const actions: Actions = {
     if (!result.success) {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
-    
+
     const rawFilesUpdaterPermissions = { p_filesUpdater: form.get('p_files-updater') || undefined }
-    
+
     const filesUpdaterPermissionsResult = userProfilePermissionsSchema.safeParse(rawFilesUpdaterPermissions)
-    
+
     if (!filesUpdaterPermissionsResult.success) {
       return fail(event, 400, { failure: JSON.parse(filesUpdaterPermissionsResult.error.message)[0].message })
     }
 
     const { p_filesUpdater } = filesUpdaterPermissionsResult.data
-
     const userId = result.data.userId
     const username = result.data.username
     const status = IUserStatus.ACTIVE
@@ -166,6 +169,7 @@ export const actions: Actions = {
     const p_newsTags = result.data.p_newsTags ? 1 : 0
     const p_backgrounds = result.data.p_backgrounds ? 1 : 0
     const p_stats = getStatsPermissions(result)
+    const p_crashReports = getCrashReportsPermissions(result)
 
     try {
       await Promise.all([
@@ -178,7 +182,8 @@ export const actions: Actions = {
           p_newsCategories,
           p_newsTags,
           p_backgrounds,
-          p_stats
+          p_stats,
+          p_crashReports
         }),
         updateUserProfilePermissions(userId, p_filesUpdater)
       ])
@@ -229,7 +234,7 @@ export const actions: Actions = {
     const user = event.locals.user
 
     if (!user?.isAdmin) {
-      return error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(403, { message: NotificationCode.FORBIDDEN })
     }
 
     try {
@@ -253,7 +258,7 @@ export const actions: Actions = {
     const user = event.locals.user
 
     if (!user?.isAdmin) {
-      return error(403, { message: NotificationCode.FORBIDDEN })
+      throw error(403, { message: NotificationCode.FORBIDDEN })
     }
 
     try {
@@ -301,7 +306,8 @@ async function refuseDeleteUser(event: RequestEvent<any>) {
       p_newsCategories: 0,
       p_newsTags: 0,
       p_backgrounds: 0,
-      p_stats: 0
+      p_stats: 0,
+      p_crashReports: 0
     })
   } catch (err) {
     if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
@@ -324,4 +330,8 @@ function getStatsPermissions(result: any) {
   return 0
 }
 
-
+function getCrashReportsPermissions(result: any) {
+  if (result.data.p_crashReports_2) return 2
+  if (result.data.p_crashReports_1) return 1
+  return 0
+}

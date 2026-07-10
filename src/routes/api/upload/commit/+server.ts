@@ -27,12 +27,14 @@ async function abortAndCleanup(targetPathKey: string, partPath: string) {
 export const POST: RequestHandler = async ({ request, url, locals }) => {
   const user = locals.user
   if (!user) {
+    console.warn('Unauthorized upload commit attempt')
     return json({ status: 'FAILURE', reason: 'UNAUTHORIZED' }, { status: 401 })
   }
 
   const { uuid, token }: { uuid: string; token: string } = await request.json()
 
   if (!uuid || !token) {
+    console.warn('Missing credentials for upload commit attempt')
     return json({ status: 'FAILURE', reason: 'BAD_REQUEST' }, { status: 400 })
   }
 
@@ -50,6 +52,7 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
   const context = lock?.context as Context | undefined
 
   if (!lock || lock.token !== token || lock.userId !== user.id || !context) {
+    console.warn('Forbidden upload commit attempt: invalid token, session expired, or missing context')
     return json({ status: 'FAILURE', reason: 'FORBIDDEN' }, { status: 403 })
   }
 
@@ -59,12 +62,14 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
     const stats = await fs.stat(partPath)
     if (stats.size !== lock.expectedSize) {
       await abortAndCleanup(targetPathKey, partPath)
+      console.warn(`Upload size mismatch for UUID: ${uuid}. Expected ${lock.expectedSize}, got ${stats.size}`)
       return json({ status: 'FAILURE', reason: 'SIZE_MISMATCH' }, { status: 400 })
     }
 
     const actualSha256 = await getFileSha256(partPath)
     if (actualSha256 !== lock.expectedSha256) {
       await abortAndCleanup(targetPathKey, partPath)
+      console.warn(`Upload checksum mismatch for UUID: ${uuid}`)
       return json({ status: 'FAILURE', reason: 'CHECKSUM_MISMATCH' }, { status: 400 })
     }
 
@@ -86,10 +91,9 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
 
     return json({ status: 'SUCCESS', file: newlyCreatedFile })
   } catch (err) {
-    console.error('Error during commit:', err)
     await abortAndCleanup(targetPathKey, partPath)
+    console.error('Error during commit:', err)
     return json({ status: 'FAILURE', reason: 'SERVER_ERROR' }, { status: 500 })
   }
 }
-
 

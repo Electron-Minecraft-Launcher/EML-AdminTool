@@ -13,10 +13,11 @@ import { checkVanillaLoader, getVanillaVersions } from '$lib/server/loaders/vani
 import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forgelike'
 import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
 import { getAccessibleProfiles, resolveProfile } from '$lib/server/profile'
-import type { Dir } from '$lib/utils/types'
+import type { FileDir } from '$lib/utils/types'
+import { getDomain } from '$lib/utils/utils'
 
 export const load = (async (event) => {
-  const domain = event.url.origin
+  const domain = getDomain(event)
   const user = event.locals.user
 
   if (!user?.profilePermissions.some((p) => p.permission > 0) && !user?.isAdmin) {
@@ -74,8 +75,8 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
   renameFile: async (event) => {
+    const domain = getDomain(event)
     const user = event.locals.user
-    const domain = event.url.origin
 
     if (!user) {
       throw error(401, { message: NotificationCode.UNAUTHORIZED })
@@ -98,7 +99,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       await renameFile(dir, path, name, newName)
       await cacheFiles(dir)
@@ -115,8 +116,8 @@ export const actions: Actions = {
   },
 
   createFile: async (event) => {
+    const domain = getDomain(event)
     const user = event.locals.user
-    const domain = event.url.origin
 
     if (!user) {
       throw error(401, { message: NotificationCode.UNAUTHORIZED })
@@ -138,7 +139,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       await createFile(dir, path, name)
       await cacheFiles(dir)
@@ -155,8 +156,8 @@ export const actions: Actions = {
   },
 
   editFile: async (event) => {
+    const domain = getDomain(event)
     const user = event.locals.user
-    const domain = event.url.origin
 
     if (!user) {
       throw error(401, { message: NotificationCode.UNAUTHORIZED })
@@ -179,7 +180,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       await editFile(dir, path, name, content)
       await cacheFiles(dir)
@@ -196,7 +197,7 @@ export const actions: Actions = {
   },
 
   deleteFiles: async (event) => {
-    const domain = event.url.origin
+    const domain = getDomain(event)
     const user = event.locals.user
 
     if (!user) {
@@ -218,7 +219,7 @@ export const actions: Actions = {
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin)
-      const dir = `files-updater/${profile.slug}` as Dir
+      const dir = `files-updater/${profile.slug}` as FileDir
 
       for (const path of paths) {
         if (typeof path !== 'string') continue

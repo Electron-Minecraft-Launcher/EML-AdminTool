@@ -29,6 +29,8 @@
   let p_backgrounds = $state(selectedUser.p_backgrounds === 1)
   let p_stats_1 = $state(selectedUser.p_stats >= 1)
   let p_stats_2 = $state(selectedUser.p_stats === 2)
+  let p_crashReports_1 = $state(selectedUser.p_crashReports >= 1)
+  let p_crashReports_2 = $state(selectedUser.p_crashReports === 2)
   let p_filesUpdater = $state(
     data.profiles.map((profile) => {
       const existing = data.userPermissions.find((p) => p.profileId === profile.id && p.userId === selectedUserId)
@@ -218,6 +220,34 @@
                 if (p_stats_2) p_stats_1 = true
               }}
             /> Delete stats
+          </label>
+        </div>
+      </div>
+
+      <div class="permission">
+        <p>Crash Reports</p>
+        <div class="right">
+          <label class="p" for="p_crash-reports_1">
+            <input
+              type="checkbox"
+              id="p_crash-reports_1"
+              name="p_crash-reports_1"
+              bind:checked={p_crashReports_1}
+              onchange={() => {
+                if (!p_crashReports_1) p_crashReports_2 = false
+              }}
+            /> View crash reports
+          </label>
+          <label class="p" for="p_crash-reports_2">
+            <input
+              type="checkbox"
+              id="p_crash-reports_2"
+              name="p_crash-reports_2"
+              bind:checked={p_crashReports_2}
+              onchange={() => {
+                if (p_crashReports_2) p_crashReports_1 = true
+              }}
+            /> Delete crash reports
           </label>
         </div>
       </div>

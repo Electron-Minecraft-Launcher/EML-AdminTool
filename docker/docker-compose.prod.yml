@@ -32,11 +32,11 @@ services:
         required: false
     environment:
       NODE_ENV: 'production'
-      BODY_SIZE_LIMIT: 'Infinity'
+      BODY_SIZE_LIMIT: '16M'
     volumes:
       - files:/app/files
       - env:/app/env
-      - /var/run/docker.sock:/var/run/docker.sock
+      - data:/app/data
     ports:
       - '8080:3000'
     depends_on:
@@ -64,7 +64,7 @@ services:
       - ./docker-compose.prod.yml:/app/compose/docker-compose.prod.yml
       - ./.env:/app/compose/.env:ro
       - env:/app/env:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - web
     labels:
@@ -74,3 +74,4 @@ volumes:
   database:
   files:
   env:
+  data:

@@ -26,7 +26,7 @@
     }
   }
 
-  const enhanceForm: SubmitFunction = ({ formData }) => {
+  const enhanceForm: SubmitFunction = () => {
     return async ({ result, update }) => {
       await update({ reset: false })
       if (result.type === 'failure') {
@@ -109,6 +109,12 @@
   {#if user.p_stats}
     <a href="/dashboard/stats" class:active={page.url.pathname == '/dashboard/stats'}>
       <i class="fa-solid fa-chart-simple"></i>Stats
+    </a>
+  {/if}
+
+  {#if user.p_crashReports}
+    <a href="/dashboard/crash-reports" class:active={page.url.pathname == '/dashboard/crash-reports'}>
+      <i class="fa-solid fa-bug"></i>Crash Reports
     </a>
   {/if}
 

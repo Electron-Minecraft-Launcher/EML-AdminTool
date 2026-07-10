@@ -61,7 +61,7 @@ export async function addProfile(name: string, slug: string, ip?: string, port?:
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       console.warn(`Profile with slug ${slug} already exists`)
-      throw new BusinessError('Profile already exists', NotificationCode.PROFIL_ALREADY_EXISTS, 400)
+      throw new BusinessError('Profile already exists', NotificationCode.PROFILE_ALREADY_EXISTS, 400)
     }
     console.error('Failed to add profile:', err)
     throw new ServerError('Failed to add profile', err, NotificationCode.DATABASE_ERROR, 500)
@@ -192,6 +192,7 @@ export async function resolveProfile(profileId: string, userId: string, isAdmin:
   const profile = await getProfileById(profileId)
 
   if (!profile) {
+    console.warn(`Profile with ID ${profileId} not found`)
     throw new BusinessError('Profile not found', NotificationCode.NOT_FOUND, 404)
   }
 
@@ -205,6 +206,7 @@ export async function resolveProfile(profileId: string, userId: string, isAdmin:
     }
 
     if (!permission || permission.permission < minPermission) {
+      console.warn(`User ${userId} does not have permission to access profile ${profileId}`)
       throw new BusinessError('Forbidden', NotificationCode.FORBIDDEN, 403)
     }
   }

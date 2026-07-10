@@ -21,6 +21,7 @@ export default {
     [NotificationCode.FORBIDDEN]: `Forbidden.`,
     [NotificationCode.INVALID_REQUEST]: `Invalid request.`,
     [NotificationCode.NOT_FOUND]: `Not found.`,
+    [NotificationCode.TOO_MANY_REQUESTS]: `Too many requests.`,
 
     [NotificationCode.SETUP_INVALID_LANGUAGE]: `Language must be exactly 2 characters long.`,
     [NotificationCode.SETUP_DATABASE_PASSWORD_TOO_SHORT]: `Database password must be at least 12 characters long.`,
@@ -36,11 +37,11 @@ export default {
     [NotificationCode.EMLAT_UPDATE_FAILED]: `Failed to update EML AdminTool. Please see the logs for more details.`,
     [NotificationCode.EMLAT_RESET_FAILED]: `Failed to reset EML AdminTool. Please see the logs for more details.`,
 
-    [NotificationCode.PROFIL_NAME_TOO_SHORT]: `Profile name must be at least 1 character long.`,
-    [NotificationCode.PROFIL_NAME_TOO_LONG]: `Profile name must be at most 64 characters long.`,
-    [NotificationCode.PROFIL_ALREADY_EXISTS]: `Profile with this ID already exists.`,
-    [NotificationCode.PROFIL_PORT_WITHOUT_IP]: `Port cannot be specified without an IP address.`,
-    [NotificationCode.PROFIL_INVALID_TCP_PROTOCOL]: `TCP protocol must be one of the following: modern, 1.6, 1.4-1.5, beta1.8-1.3.`,
+    [NotificationCode.PROFILE_NAME_TOO_SHORT]: `Profile name must be at least 1 character long.`,
+    [NotificationCode.PROFILE_NAME_TOO_LONG]: `Profile name must be at most 64 characters long.`,
+    [NotificationCode.PROFILE_ALREADY_EXISTS]: `Profile with this ID already exists.`,
+    [NotificationCode.PROFILE_PORT_WITHOUT_IP]: `Port cannot be specified without an IP address.`,
+    [NotificationCode.PROFILE_INVALID_TCP_PROTOCOL]: `TCP protocol must be one of the following: modern, 1.6, 1.4-1.5, beta1.8-1.3.`,
 
     [NotificationCode.EDIT_USER_USERNAME_TOO_SHORT]: `Username must be at least 2 characters long.`,
     [NotificationCode.EDIT_USER_USERNAME_TOO_LONG]: `Username must be at most 64 characters long.`,

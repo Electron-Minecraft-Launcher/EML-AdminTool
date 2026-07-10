@@ -13,6 +13,8 @@
 /files/backgrounds/*
 /files/cache/*
 /files/images/*
+/data/cache/*
+/data/crash-reports/*
 
 /dist
 /update

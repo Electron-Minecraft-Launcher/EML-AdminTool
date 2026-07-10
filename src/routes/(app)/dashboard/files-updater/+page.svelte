@@ -312,6 +312,7 @@
     gap: 10px;
     border-bottom: 2px solid var(--border-color);
     overflow-x: auto;
+    overflow-y: hidden;
 
     button {
       border: none;

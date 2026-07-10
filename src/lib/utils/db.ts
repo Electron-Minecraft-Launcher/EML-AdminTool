@@ -1,4 +1,4 @@
-import type { Prisma } from '@prisma/client'
+import type { CrashReport, Prisma } from '@prisma/client'
 
 export const IUserStatus = {
   /**
@@ -43,7 +43,7 @@ export const IStatAction = {
   STARTUP: 'STARTUP',
   LOGIN: 'LOGIN',
   LAUNCH: 'LAUNCH',
-  DEVTOOLS: 'DEVTOOLS'
+  BOOTSTRAP: 'BOOTSTRAP'
 } as const
 
 export type UserInfo = {
@@ -61,6 +61,7 @@ export type UserInfo = {
   p_newsTags: 0 | 1
   p_backgrounds: 0 | 1
   p_stats: 0 | 1 | 2
+  p_crashReports: 0 | 1 | 2
   profilePermissions: UserProfilePermissionInfo[]
 }
 
@@ -78,3 +79,4 @@ export type UserProfilePermissionInfo = {
   permission: 0 | 1 | 2
 }
 
+export type CrashReportPayload = Omit<CrashReport, 'id' | 'fileId' | 'createdAt' | 'addressedAt' | 'comment'>
