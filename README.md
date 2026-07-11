@@ -78,8 +78,6 @@ The _Crash Reports_ feature allows you to collect and analyze crash reports from
 
 _Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/crash-reports)._
 
-> Work in progress, coming soon.
-
 ## Comparison with other approaches
 
 Managing a modpack server-side can be done in several ways. Here is how EML AdminTool compares to common alternatives.
