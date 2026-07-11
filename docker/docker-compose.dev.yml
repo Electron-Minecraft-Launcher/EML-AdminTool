@@ -47,7 +47,6 @@ services:
       - ../vite.config.ts:/app/vite.config.ts
       - ../files:/app/files
       - ../data:/app/data
-      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - '5173:5173'
     depends_on:

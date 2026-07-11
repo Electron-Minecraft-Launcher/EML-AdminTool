@@ -14,8 +14,6 @@ FROM node:24-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache docker-cli
-
 COPY --from=build /app/dist .
 COPY --from=build /app/dist-scripts ./migration-scripts
 COPY --from=build /app/env ./env
