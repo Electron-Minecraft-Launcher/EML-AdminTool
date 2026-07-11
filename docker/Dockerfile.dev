@@ -4,8 +4,6 @@ WORKDIR /app
 
 ENV CHOKIDAR_USEPOLLING=true
 
-RUN apk add --no-cache docker-cli
-
 COPY package.json ./
 COPY prisma.config.ts ./
 COPY docker/entrypoint.dev.sh ./
