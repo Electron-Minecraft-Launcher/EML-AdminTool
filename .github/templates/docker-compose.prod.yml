@@ -36,7 +36,6 @@ services:
     volumes:
       - files:/app/files
       - env:/app/env
-      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - '8080:3000'
     depends_on:
@@ -64,7 +63,7 @@ services:
       - ./docker-compose.prod.yml:/app/compose/docker-compose.prod.yml
       - ./.env:/app/compose/.env:ro
       - env:/app/env:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - web
     labels:
