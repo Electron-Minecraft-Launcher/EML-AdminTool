@@ -95,8 +95,8 @@ model Loader {
   format           LoaderFormat
   file             Json?
   updatedAt        DateTime     @updatedAt
-  profileId        String       @default("1")
-  profile          Profile      @relation(fields: [profileId], references: [id])
+  profileId        String       @unique @default("1")
+  profile          Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 model Profile {
@@ -109,7 +109,7 @@ model Profile {
   tcpProtocol     String?
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
-  loaders         Loader[]
+  loader          Loader?
   userPermissions UserProfilePermission[]
 }
 
