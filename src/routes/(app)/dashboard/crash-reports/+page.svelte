@@ -40,7 +40,7 @@
     </div>
     <div>
       <p class="label">Unaddressed crashes</p>
-      <p>{data.unadressed} ({((data.unadressed / data.count) * 100 || 0).toFixed(0)}%)</p>
+      <p>{data.unaddressed} ({((data.unaddressed / data.count) * 100 || 0).toFixed(0)}%)</p>
     </div>
     <div>
       <p class="label">Most crash-prone profile</p>

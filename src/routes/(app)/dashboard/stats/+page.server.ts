@@ -23,17 +23,27 @@ export const load = (async (event) => {
   else startDate.setDate(startDate.getDate() - 30)
 
   try {
-    const rawStats = await db.stat.findMany({
-      where: {
-        createdAt: { gte: startDate }
-      },
-      select: {
-        action: true,
-        value: true,
-        createdAt: true
-      }
-    })
-    const profiles = await db.profile.findMany({ select: { isDefault: true, id: true, slug: true, name: true } })
+    const [rawStats, profiles] = await Promise.all([
+      db.stat
+        .findMany({
+          where: {
+            createdAt: { gte: startDate }
+          },
+          select: {
+            action: true,
+            value: true,
+            createdAt: true
+          }
+        })
+        .catch((err) => {
+          console.error('Failed to load stats:', err)
+          throw new ServerError('Failed to load stats', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+        }),
+      db.profile.findMany({ select: { isDefault: true, id: true, slug: true, name: true } }).catch((err) => {
+        console.error('Failed to load profiles:', err)
+        throw new ServerError('Failed to load profiles', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+      })
+    ])
     const defaultProfile = profiles.find((p) => p.isDefault)!
 
     let totalStartups = 0
@@ -215,3 +225,4 @@ function getBucketKey(date: Date, startDate: Date, range: string) {
     return blockDate.toISOString().substring(0, 10)
   }
 }
+

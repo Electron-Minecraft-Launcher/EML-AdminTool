@@ -1,1 +1,0 @@
-// TODO ensure that the modele correction (from 1:N to 1:1 between Loader and Profile) does not break anything -> remove extra lines from Loader if to keep only one profile per loader
