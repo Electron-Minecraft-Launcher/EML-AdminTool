@@ -269,7 +269,7 @@ function getUserInfo(user: User, profilePermissions: { profileId: string; name: 
     username: user.username,
     p_filesUpdater: user.p_filesUpdater as 0 | 1 | 2,
     p_bootstraps: user.p_bootstraps as 0 | 1,
-    p_maintenance: user.p_maintenance as 0 | 1,
+    p_maintenance: user.p_maintenance as 0 | 1 | 2,
     p_news: user.p_news as 0 | 1 | 2,
     p_newsCategories: user.p_newsCategories as 0 | 1,
     p_newsTags: user.p_newsTags as 0 | 1,

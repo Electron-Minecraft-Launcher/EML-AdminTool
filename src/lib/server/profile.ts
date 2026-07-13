@@ -2,6 +2,7 @@ import { db } from './db'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { Prisma, type Profile } from '@prisma/client'
+import type { ProfilePayload } from '$lib/utils/db'
 
 export async function getProfiles(limit: number = 20): Promise<Profile[]> {
   let profiles
@@ -46,21 +47,23 @@ export async function getProfileBySlug(slug: string): Promise<Profile | null> {
   }
 }
 
-export async function addProfile(name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string): Promise<string> {
+export async function addProfile(profile: ProfilePayload): Promise<string> {
   try {
     const res = await db.profile.create({
       data: {
-        name,
-        slug,
-        ip,
-        port,
-        tcpProtocol
+        name: profile.name,
+        slug: profile.slug,
+        hidden: profile.hidden,
+        allowedPseudos: profile.allowedPseudos,
+        ip: profile.ip,
+        port: profile.port,
+        tcpProtocol: profile.tcpProtocol
       }
     })
     return res.id
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-      console.warn(`Profile with slug ${slug} already exists`)
+      console.warn(`Profile with slug ${profile.slug} already exists`)
       throw new BusinessError('Profile already exists', NotificationCode.PROFILE_ALREADY_EXISTS, 400)
     }
     console.error('Failed to add profile:', err)
@@ -68,21 +71,23 @@ export async function addProfile(name: string, slug: string, ip?: string, port?:
   }
 }
 
-export async function updateProfile(profileId: string, name: string, slug: string, ip?: string, port?: number, tcpProtocol?: string): Promise<void> {
+export async function updateProfile(id: string, profile: ProfilePayload): Promise<void> {
   try {
     let t = await db.profile.update({
-      where: { id: profileId },
+      where: { id: id },
       data: {
-        name,
-        slug,
-        ip: ip ?? null,
-        port: port ?? null,
-        tcpProtocol: tcpProtocol ?? null
+        name: profile.name,
+        slug: profile.slug,
+        hidden: profile.hidden,
+        allowedPseudos: profile.allowedPseudos,
+        ip: profile.ip,
+        port: profile.port,
+        tcpProtocol: profile.tcpProtocol
       }
     })
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-      console.warn(`Profile with ID ${profileId} not found`)
+      console.warn(`Profile with ID ${id} not found`)
       throw new BusinessError('Profile not found', NotificationCode.NOT_FOUND, 404)
     }
     console.error('Failed to edit profile:', err)

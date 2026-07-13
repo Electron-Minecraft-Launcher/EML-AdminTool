@@ -117,7 +117,7 @@ export const actions: Actions = {
     const { crashReportId, comment, addressed } = result.data
 
     try {
-      await updateCrashReport({ id: crashReportId, comment, addressed })
+      await updateCrashReport(crashReportId, { comment, addressed })
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })

@@ -21,7 +21,8 @@
 
   let selectedUser = $state(data.users.find((user) => user.id === selectedUserId) ?? emptyUser)
   let p_bootstraps = $state(selectedUser.p_bootstraps === 1)
-  let p_maintenance = $state(selectedUser.p_maintenance === 1)
+  let p_maintenance_1 = $state(selectedUser.p_maintenance >= 1)
+  let p_maintenance_2 = $state(selectedUser.p_maintenance === 2)
   let p_news_1 = $state(selectedUser.p_news >= 1)
   let p_news_2 = $state(selectedUser.p_news === 2)
   let p_newsCategories = $state(selectedUser.p_newsCategories === 1)
@@ -127,8 +128,29 @@
       <div class="permission">
         <p>Maintenance</p>
         <div class="right">
-          <label class="p" for="p_maintenance">
-            <input type="checkbox" id="p_maintenance" name="p_maintenance" bind:checked={p_maintenance} /> Change maintenance status
+          <label class="p" for="p_maintenance_1">
+            <input
+              type="checkbox"
+              id="p_maintenance_1"
+              name="p_maintenance_1"
+              bind:checked={p_maintenance_1}
+              onchange={() => {
+                if (!p_maintenance_1) {
+                  p_maintenance_2 = false
+                }
+              }}
+            /> Change maintenance status
+          </label>
+          <label class="p" for="p_maintenance_2">
+            <input
+              type="checkbox"
+              id="p_maintenance_2"
+              name="p_maintenance_2"
+              bind:checked={p_maintenance_2}
+              onchange={() => {
+                if (p_maintenance_2) p_maintenance_1 = true
+              }}
+            /> Update allowed pseudos
           </label>
         </div>
       </div>

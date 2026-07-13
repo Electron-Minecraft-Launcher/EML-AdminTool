@@ -28,6 +28,11 @@ export const profileSchema = z
   .object({
     profileId: z.string().optional(),
     name: z.string().min(1, NotificationCode.PROFILE_NAME_TOO_SHORT).max(64, NotificationCode.PROFILE_NAME_TOO_LONG),
+    hidden: z.boolean(),
+    allowedPseudos: z.array(z.string()).optional().transform((arr) => {
+      const uniquePseudos = Array.from(new Set(arr?.map((pseudo) => pseudo.trim()).filter((pseudo) => pseudo !== '')))
+      return uniquePseudos
+    }),
     ip: z.string().optional(),
     port: z.number().optional(),
     tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFILE_INVALID_TCP_PROTOCOL).optional()
@@ -100,7 +105,8 @@ export const editUserSchema = z.object({
     .refine((val) => val.length >= 2, { message: NotificationCode.EDIT_USER_USERNAME_TOO_SHORT })
     .refine((val) => val.length <= 64, { message: NotificationCode.EDIT_USER_USERNAME_TOO_LONG }),
   p_bootstraps: z.boolean(),
-  p_maintenance: z.boolean(),
+  p_maintenance_1: z.boolean(),
+  p_maintenance_2: z.boolean(),
   p_news_1: z.boolean(),
   p_news_2: z.boolean(),
   p_newsCategories: z.boolean(),
@@ -231,7 +237,11 @@ export const maintenanceSchema = z
       .string()
       .optional()
       .nullable()
-      .transform((val) => val?.trim() ?? '')
+      .transform((val) => val?.trim() ?? ''),
+    allowedPseudos: z.array(z.string()).optional().transform((arr) => {
+      const uniquePseudos = Array.from(new Set(arr?.map((pseudo) => pseudo.trim()).filter((pseudo) => pseudo !== '')))
+      return uniquePseudos
+    })
   })
   .refine(
     (schema) => {

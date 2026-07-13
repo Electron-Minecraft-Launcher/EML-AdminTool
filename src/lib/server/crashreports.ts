@@ -78,37 +78,35 @@ export async function addCrashReport(metadata: CrashReportPayload, logData: stri
   }
 }
 
-export async function updateCrashReport(crashReport: { id: string; comment?: string | null; addressed?: boolean | null }): Promise<void> {
+export async function updateCrashReport(id: string, crashReport: { comment?: string | null; addressed?: boolean | null }): Promise<void> {
   try {
-    const { id, comment, addressed } = crashReport
-
-    if (addressed === true) {
+    if (crashReport.addressed === true) {
       await db.crashReport.update({
         where: { id },
         data: {
           addressedAt: new Date(),
-          comment
+          comment: crashReport.comment
         }
       })
-    } else if (addressed === false) {
+    } else if (crashReport.addressed === false) {
       await db.crashReport.update({
         where: { id },
         data: {
           addressedAt: null,
-          comment
+          comment: crashReport.comment
         }
       })
     } else {
       await db.crashReport.update({
         where: { id },
         data: {
-          comment
+          comment: crashReport.comment
         }
       })
     }
   } catch (err: any) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-      console.warn(`Crash report with ID ${crashReport.id} not found`)
+      console.warn(`Crash report with ID ${id} not found`)
       throw new BusinessError('Crash report not found', NotificationCode.NOT_FOUND, 404)
     }
     console.error('Failed to edit crash report:', err)

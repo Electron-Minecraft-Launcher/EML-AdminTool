@@ -26,9 +26,13 @@ export const load = (async (event) => {
     maintenance ??= {
       startTime: null,
       endTime: null,
-      message: ''
+      message: '',
+      allowedPseudos: []
     }
 
+    if (user.p_maintenance !== 2) {
+      maintenance.allowedPseudos = []
+    }
     return { maintenance }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
@@ -50,7 +54,8 @@ export const actions: Actions = {
     const raw = {
       startTime: form.get('start-time'),
       endTime: form.get('end-time'),
-      message: form.get('message')
+      message: form.get('message'),
+      allowedPseudos: form.getAll('allowed-pseudos')
     }
 
     const result = maintenanceSchema.safeParse(raw)
@@ -58,10 +63,26 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { startTime, endTime, message } = result.data
+    const { startTime, endTime, message, allowedPseudos } = result.data
+
+    const maintenance = {
+      startTime: startTime,
+      endTime: endTime,
+      message: message,
+      allowedPseudos: allowedPseudos
+    }
 
     try {
-      await updateMaintenance({ id: '1', startTime, endTime, message })
+      const existingMaintenance = (await db.maintenance.findFirst()) ?? {
+        startTime: null,
+        endTime: null,
+        message: '',
+        allowedPseudos: []
+      }
+      if (user.p_maintenance !== 2) {
+        maintenance.allowedPseudos = existingMaintenance.allowedPseudos
+      }
+      await updateMaintenance(maintenance)
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
@@ -71,3 +92,4 @@ export const actions: Actions = {
     }
   }
 }
+

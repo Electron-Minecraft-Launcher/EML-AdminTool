@@ -106,10 +106,14 @@ export const actions: Actions = {
     }
 
     const { name, language, regeneratePin } = result.data
-
     try {
-      const newPin = regeneratePin ? generateRandomPin() : await getPin()
-      await editEMLAT(name, language as LanguageCode, newPin)
+      const environment = {
+        name: name,
+        language: language as LanguageCode,
+        pin: ''
+      }
+      environment.pin = regeneratePin ? generateRandomPin() : await getPin()
+      await editEMLAT(environment)
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
@@ -132,7 +136,8 @@ export const actions: Actions = {
       userId: form.get('user-id'),
       username: form.get('username'),
       p_bootstraps: form.get('p_bootstraps') === 'on',
-      p_maintenance: form.get('p_maintenance') === 'on',
+      p_maintenance_1: form.get('p_maintenance_1') === 'on',
+      p_maintenance_2: form.get('p_maintenance_2') === 'on',
       p_news_1: form.get('p_news_1') === 'on',
       p_news_2: form.get('p_news_2') === 'on',
       p_newsCategories: form.get('p_news-categories') === 'on',
@@ -163,7 +168,7 @@ export const actions: Actions = {
     const username = result.data.username
     const status = IUserStatus.ACTIVE
     const p_bootstraps = result.data.p_bootstraps ? 1 : 0
-    const p_maintenance = result.data.p_maintenance ? 1 : 0
+    const p_maintenance = getMaintenancePermissions(result)
     const p_news = getNewsPermissions(result)
     const p_newsCategories = result.data.p_newsCategories ? 1 : 0
     const p_newsTags = result.data.p_newsTags ? 1 : 0
@@ -318,6 +323,12 @@ async function refuseDeleteUser(event: RequestEvent<any>) {
   }
 }
 
+function getMaintenancePermissions(result: any) {
+  if (result.data.p_maintenance_2) return 2
+  if (result.data.p_maintenance_1) return 1
+  return 0
+}
+
 function getNewsPermissions(result: any) {
   if (result.data.p_news_2) return 2
   if (result.data.p_news_1 || result.data.p_newsCategories || result.data.p_newsTags) return 1
@@ -335,3 +346,4 @@ function getCrashReportsPermissions(result: any) {
   if (result.data.p_crashReports_1) return 1
   return 0
 }
+

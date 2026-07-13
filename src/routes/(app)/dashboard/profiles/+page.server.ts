@@ -65,7 +65,7 @@ export const actions: Actions = {
       throw error(403, { message: NotificationCode.FORBIDDEN })
     }
 
-    const user_ = await verify(session) // oversecurity measure to ensure the user is still valid
+    const user_ = await verify(session) // over-security measure to ensure the user is still valid
     if (!user_?.isAdmin) {
       throw error(403, { message: NotificationCode.FORBIDDEN })
     }
@@ -74,6 +74,8 @@ export const actions: Actions = {
     const raw = {
       profileId: form.get('profile-id'),
       name: form.get('name'),
+      hidden: form.get('visibility') === 'true',
+      allowedPseudos: form.getAll('allowed-pseudos'),
       ip: form.get('ip') || undefined,
       port: form.get('port') ? Number(form.get('port')) : undefined,
       tcpProtocol: form.get('tcp-protocol') || undefined
@@ -84,7 +86,7 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { profileId, name, ip, port, tcpProtocol } = result.data
+    const { profileId, name, hidden, allowedPseudos, ip, port, tcpProtocol } = result.data
 
     const rawPermissions = { permissions: form.get('permissions') || undefined }
 
@@ -101,26 +103,41 @@ export const actions: Actions = {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '')
 
+    const profile = {
+      name: name,
+      slug: slug,
+      hidden: hidden,
+      allowedPseudos: allowedPseudos ?? [],
+      ip: ip ?? null,
+      port: port ?? null,
+      tcpProtocol: tcpProtocol ?? null
+    }
     try {
       if (profileId) {
-        const profile = await getProfileById(profileId)
-        if (!profile) {
+        const existingProfile = await getProfileById(profileId)
+        if (!existingProfile) {
           console.warn(`Profile with ID ${profileId} not found`)
           throw new BusinessError('Profile not found', NotificationCode.NOT_FOUND, 404)
         }
 
-        await updateProfile(profileId, name, slug, ip, port, tcpProtocol)
+        if (existingProfile.isDefault) {
+          profile.hidden = false
+          profile.allowedPseudos = []
+        }
 
-        if (slug !== profile.slug) {
-          await renameFile('files-updater', '', profile.slug, slug, false)
-          await deleteFile('cache', `files-updater-${profile.slug}.json`, false)
+        await updateProfile(profileId, profile)
+
+        if (slug !== existingProfile.slug) {
+          await renameFile('files-updater', '', existingProfile.slug, slug, false)
+          await deleteFile('cache', `files-updater-${existingProfile.slug}.json`, false)
           await cacheFiles(`files-updater/${slug}`)
         }
+        
         if (permissions) {
           await updateProfileUserPermissions(profileId, permissions)
         }
       } else {
-        const profileId = await addProfile(name, slug, ip, port, tcpProtocol)
+        const profileId = await addProfile(profile)
         return { profileId }
       }
     } catch (err) {
@@ -147,19 +164,19 @@ export const actions: Actions = {
     }
 
     try {
-      const profile = await getProfileById(profileId)
+      const existingProfile = await getProfileById(profileId)
 
-      if (!profile) {
+      if (!existingProfile) {
         return fail(event, 404, { failure: NotificationCode.NOT_FOUND })
       }
 
-      if (profile.isDefault) {
+      if (existingProfile.isDefault) {
         return fail(event, 403, { failure: NotificationCode.FORBIDDEN })
       }
 
-      await deleteLoader(profile.id)
-      await deleteFile('files-updater', profile.slug, false)
-      await deleteFile('cache', `files-updater-${profile.slug}.json`, false)
+      await deleteLoader(existingProfile.id)
+      await deleteFile('files-updater', existingProfile.slug, false)
+      await deleteFile('cache', `files-updater-${existingProfile.slug}.json`, false)
       await deleteProfile(profileId)
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })

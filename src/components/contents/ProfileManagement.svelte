@@ -30,6 +30,8 @@
     ip: '',
     port: null,
     tcpProtocol: '',
+    hidden: false,
+    allowedPseudos: [],
     updatedAt: new Date(),
     createdAt: new Date()
   }
@@ -141,12 +143,39 @@
       </div>
     {/each}
   </div>
+
+  <div class="container">
+    <div>
+      <p class="label">Visibility</p>
+      <p>{selectedProfile.hidden ? 'Hidden' : 'Visible'} {selectedProfile.isDefault ? '(default profile)' : ''}</p>
+      {#if selectedProfile.hidden}
+      <div class="note">
+        <p class="note"><i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;Note</p>
+        <p>
+          Hiding a profile is not a security mesure. It only prevents the profile from being displayed in the public list of profiles. <a
+            href="https://emlproject.com/docs/eml-admintool/administration-and-features/profiles"
+            target="_blank">Learn more...</a
+          >
+        </p>
+      </div>
+      {/if}
+    </div>
+    {#if selectedProfile.hidden}
+      <div>
+        <p class="label">Allowed pseudos</p>
+        {#each selectedProfile.allowedPseudos as pseudo}
+          <p class="allowed-pseudo">{pseudo}</p>
+        {:else}
+          <p>-</p>
+        {/each}
+      </div>
+    {/if}
+  </div>
 </div>
 
 <style lang="scss">
   div.info {
     min-height: 200px;
-    max-height: 400px;
     overflow-y: auto;
   }
 
@@ -223,6 +252,31 @@
       border-radius: 4px;
       background: var(--secondary-color);
       color: #505050;
+    }
+  }
+
+  p.allowed-pseudo {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--secondary-color);
+    color: #505050;
+    margin-right: 5px;
+  }
+
+  div.note {
+    margin-top: 10px;
+
+    p {
+      font-size: 14px;
+      color: #505050;
+    }
+
+    p.note {
+      color: #0869da;
+      font-weight: 600;
+      margin-bottom: 5px;
     }
   }
 </style>

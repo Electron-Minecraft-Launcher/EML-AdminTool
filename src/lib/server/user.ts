@@ -21,15 +21,15 @@ export async function getUserById(userId: string): Promise<User | null> {
 /**
  * @param user.password Must already be **encrypted** if provided.
  */
-export async function updateUser(userId: string, user: Partial<User>): Promise<void> {
+export async function updateUser(id: string, user: Partial<User>): Promise<void> {
   if (user.id) delete user.id // ensure the ID is not updated
   if (user.isAdmin != undefined) delete user.isAdmin // ensure the admin status cannot be changed through this function
 
   try {
-    await db.user.update({ where: { id: userId }, data: user })
+    await db.user.update({ where: { id: id }, data: user })
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-      console.warn(`User with ID ${userId} not found`)
+      console.warn(`User with ID ${id} not found`)
       throw new BusinessError('User not found', NotificationCode.NOT_FOUND, 404)
     }
     console.error('Error updating user:', err)

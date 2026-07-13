@@ -2,6 +2,7 @@ import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import type { Maintenance } from '@prisma/client'
 import { db } from './db'
+import type { MaintenancePayload } from '$lib/utils/db'
 
 export async function getMaintenance(): Promise<Maintenance | null> {
   try {
@@ -13,7 +14,7 @@ export async function getMaintenance(): Promise<Maintenance | null> {
   }
 }
 
-export async function updateMaintenance(maintenance: Maintenance): Promise<void> {
+export async function updateMaintenance(maintenance: MaintenancePayload): Promise<void> {
   let existingMaintenance
   try {
     existingMaintenance = await db.maintenance.findUnique({ where: { id: '1' } })
@@ -26,7 +27,13 @@ export async function updateMaintenance(maintenance: Maintenance): Promise<void>
     if (existingMaintenance) {
       await db.maintenance.update({ where: { id: '1' }, data: maintenance })
     } else {
-      await db.maintenance.create({ data: maintenance })
+      await db.maintenance.create({ data: {
+        id: '1',
+        startTime: maintenance.startTime,
+        endTime: maintenance.endTime,
+        message: maintenance.message,
+        allowedPseudos: maintenance.allowedPseudos
+      } })
     }
   } catch (err) {
     console.error('Failed to update maintenance:', err)
