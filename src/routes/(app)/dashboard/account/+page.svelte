@@ -97,7 +97,11 @@
     <div>
       <p class="label">Maintenance</p>
       {#if user.p_maintenance}
-        <p>Change maintenance status</p>
+        {#if user.p_maintenance === 1}
+          <p>Change maintenance status</p>
+        {:else if user.p_maintenance === 2}
+          <p>Change maintenance status and allowed pseudos</p>
+        {/if}
       {:else}
         <p>-</p>
       {/if}

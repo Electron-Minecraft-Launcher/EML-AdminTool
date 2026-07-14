@@ -2,7 +2,7 @@ import { db } from './db'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { Prisma, type News, type NewsCategory, type NewsTag } from '@prisma/client'
-import type { ExtendedNews } from '$lib/utils/db'
+import type { ExtendedNews, NewsPayload } from '$lib/utils/db'
 
 export async function getNews(limit: number = 20): Promise<ExtendedNews[]> {
   let news
@@ -34,15 +34,15 @@ export async function getNewsById(newsId: string): Promise<News | null> {
   }
 }
 
-export async function addNews(title: string, content: string, authorId: string, categoriesId: string[], tagsId: string[]): Promise<void> {
+export async function addNews(news: NewsPayload, categoriesId?: string[], tagsId?: string[]): Promise<void> {
   try {
     await db.news.create({
       data: {
-        title,
-        content,
-        authorId,
-        categories: { connect: categoriesId.map((category) => ({ id: category })) },
-        tags: { connect: tagsId.map((tag) => ({ id: tag })) }
+        title: news.title,
+        content: news.content,
+        authorId: news.authorId,
+        categories: { connect: (categoriesId ?? []).map((category) => ({ id: category })) },
+        tags: { connect: (tagsId ?? []).map((tag) => ({ id: tag })) }
       }
     })
   } catch (err) {
@@ -51,15 +51,15 @@ export async function addNews(title: string, content: string, authorId: string, 
   }
 }
 
-export async function updateNews(newsId: string, news: { title: string; content: string }, categoriesId: string[], tagsId: string[]): Promise<void> {
+export async function updateNews(newsId: string, news: NewsPayload, categoriesId?: string[], tagsId?: string[]): Promise<void> {
   try {
     await db.news.update({
       where: { id: newsId },
       data: {
         title: news.title,
         content: news.content,
-        categories: { set: categoriesId.map((category) => ({ id: category })) },
-        tags: { set: tagsId.map((tag) => ({ id: tag })) }
+        categories: { set: (categoriesId ?? []).map((category) => ({ id: category })) },
+        tags: { set: (tagsId ?? []).map((tag) => ({ id: tag })) }
       }
     })
   } catch (err) {

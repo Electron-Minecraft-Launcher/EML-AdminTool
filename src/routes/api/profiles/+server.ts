@@ -2,7 +2,9 @@ import { getProfiles } from '$lib/server/profile'
 import { json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ request }) => {
+  const pseudo = request.headers.get('pseudo')
+
   let profiles
   try {
     profiles = await getProfiles()
@@ -12,17 +14,19 @@ export const GET: RequestHandler = async () => {
 
   const res = {
     success: true,
-    profiles: profiles.map((profile) => ({
-      id: profile.id,
-      isDefault: profile.isDefault, 
-      name: profile.name,
-      slug: profile.slug,
-      ip: profile.ip,
-      port: profile.port,
-      tcpProtocol: profile.tcpProtocol,
-      createdAt: profile.createdAt,
-      updatedAt: profile.updatedAt
-    }))
+    profiles: profiles
+      .filter((profile) => !profile.hidden || (pseudo && profile.allowedPseudos.includes(pseudo)))
+      .map((profile) => ({
+        id: profile.id,
+        isDefault: profile.isDefault,
+        name: profile.name,
+        slug: profile.slug,
+        ip: profile.ip,
+        port: profile.port,
+        tcpProtocol: profile.tcpProtocol,
+        createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt
+      }))
   }
 
   return json(res)

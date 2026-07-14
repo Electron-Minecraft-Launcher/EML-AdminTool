@@ -111,7 +111,11 @@
       {/if}
 
       {#if selectedUser.p_maintenance}
-        <p>Change maintenance status</p>
+        {#if selectedUser.p_maintenance === 1}
+          <p>Change maintenance status</p>
+        {:else if selectedUser.p_maintenance === 2}
+          <p>Change maintenance status and allowed pseudos</p>
+        {/if}
       {/if}
 
       {#if selectedUser.p_news || selectedUser.p_newsCategories || selectedUser.p_newsTags}

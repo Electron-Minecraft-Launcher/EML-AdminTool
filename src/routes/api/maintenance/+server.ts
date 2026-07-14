@@ -2,9 +2,10 @@ import { json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 import { getMaintenance } from '$lib/server/maintenance'
 
-export const GET: RequestHandler = async () => {
-  let maintenance
+export const GET: RequestHandler = async ({ request }) => {
+  const pseudo = request.headers.get('pseudo')
 
+  let maintenance
   try {
     maintenance = await getMaintenance()
   } catch (err) {
@@ -18,14 +19,16 @@ export const GET: RequestHandler = async () => {
       success: true,
       startTime: null,
       endTime: null,
-      message: ''
+      message: '',
+      canBypass: false
     }
   } else {
     res = {
       success: true,
       startTime: maintenance.startTime,
       endTime: maintenance.endTime,
-      message: maintenance.message
+      message: maintenance.message,
+      canBypass: !!(pseudo && maintenance.allowedPseudos.includes(pseudo))
     }
   }
 

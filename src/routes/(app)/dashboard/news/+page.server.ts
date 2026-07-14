@@ -103,22 +103,28 @@ export const actions: Actions = {
 
     const { newsId, title, content, categoriesId, tagsId } = result.data
 
+    const news = {
+      title: title,
+      content: content,
+      authorId: user.id
+    }
+
     try {
       if (newsId) {
-        const news = await getNewsById(newsId)
-        if (!news) {
+        const existingNews = await getNewsById(newsId)
+        if (!existingNews) {
           console.warn(`News with ID ${newsId} not found`)
           throw new BusinessError('News not found', NotificationCode.NOT_FOUND, 404)
         }
 
-        if (user.id !== news.authorId) {
+        if (user.id !== existingNews.authorId) {
           console.warn(`User ${user.id} is not the author of news ${newsId}`)
           throw new BusinessError('You are not the author of this news', NotificationCode.FORBIDDEN, 403)
         }
 
-        await updateNews(newsId, { title, content }, categoriesId ?? [], tagsId ?? [])
+        await updateNews(newsId, news, categoriesId, tagsId)
       } else {
-        await addNews(title, content, user.id, categoriesId ?? [], tagsId ?? [])
+        await addNews(news, categoriesId ?? [], tagsId ?? [])
       }
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
@@ -345,3 +351,4 @@ export const actions: Actions = {
     }
   }
 }
+

@@ -1,4 +1,4 @@
-import type { CrashReport, Prisma } from '@prisma/client'
+import type { CrashReport, Environment, Maintenance, News, Prisma, Profile, User } from '@prisma/client'
 
 export const IUserStatus = {
   /**
@@ -55,7 +55,7 @@ export type UserInfo = {
    */
   p_filesUpdater: 0 | 1 | 2
   p_bootstraps: 0 | 1
-  p_maintenance: 0 | 1
+  p_maintenance: 0 | 1 | 2
   p_news: 0 | 1 | 2
   p_newsCategories: 0 | 1
   p_newsTags: 0 | 1
@@ -79,4 +79,10 @@ export type UserProfilePermissionInfo = {
   permission: 0 | 1 | 2
 }
 
+export type EnvironmentPayload = Omit<Environment, 'id' | 'updatedAt' | 'theme'>
+export type UserPayload = Omit<User, 'id' | 'createdAt' | 'updatedAt'>
+export type ProfilePayload = Omit<Profile, 'id' | 'createdAt' | 'updatedAt' | 'isDefault'>
+export type MaintenancePayload = Omit<Maintenance, 'id'>
+export type NewsPayload = Omit<News, 'id' | 'createdAt' | 'updatedAt'>
 export type CrashReportPayload = Omit<CrashReport, 'id' | 'fileId' | 'createdAt' | 'addressedAt' | 'comment'>
+
