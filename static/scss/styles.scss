@@ -112,7 +112,7 @@ a.not-a {
   text-decoration: none;
 }
 
-input:not([type=checkbox]) {
+input:not([type=checkbox]):not([type=radio]) {
   display: block;
   width: calc(100% - 32px);
   margin-top: 5px;
@@ -141,7 +141,7 @@ input:not([type=checkbox]) {
   }
 }
 
-input[type=checkbox] {
+input[type=checkbox], input[type=radio] {
   margin-top: 5px;
   accent-color: var(--primary-color);
 }

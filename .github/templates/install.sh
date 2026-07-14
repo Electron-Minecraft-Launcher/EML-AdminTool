@@ -107,6 +107,32 @@ else
   exit 1
 fi
 
+# Timezone
+echo ""
+echo "${BOLD}• Checking timezone...${RESET}"
+echo ""
+
+HOST_TZ=""
+
+tz=""
+if command -v timedatectl >/dev/null 2>&1; then
+  tz=$(timedatectl show --property=Timezone --value 2>/dev/null)
+fi
+if [ -z "$tz" ] && [ -f /etc/timezone ]; then
+  tz=$(cat /etc/timezone 2>/dev/null)
+fi
+if [ -z "$tz" ] && [ -L /etc/localtime ]; then
+  tz=$(readlink /etc/localtime | sed 's|.*zoneinfo/||' 2>/dev/null)
+fi
+
+if [ -z "$tz" ]; then
+  HOST_TZ="UTC"
+  echo "Timezone not detected, using UTC."
+else
+  HOST_TZ="$tz"
+  echo "Detected timezone: $HOST_TZ"
+fi
+
 # Configuration
 echo ""
 echo "${BOLD}• Network configuration...${RESET}"
@@ -137,7 +163,7 @@ fi
 echo ""
 echo "Do you have a custom domain pointing to this server?"
 echo "Example: admintool.myserver.com (enter ${BOLD}without${RESET} http:// or https://)"
-# Read compatiblity fix for zsh/bash
+
 if [ -n "$BASH_VERSION" ]; then
     read -p "Domain (leave empty if none): " CUSTOM_DOMAIN < /dev/tty
 else
@@ -170,6 +196,7 @@ echo "# EML AdminTool Environment Configuration" > "$ENV_FILE"
 echo "NODE_ENV=production" >> "$ENV_FILE"
 echo "ORIGIN=$PRIMARY_ORIGIN" >> "$ENV_FILE"
 echo "ALLOWED_ORIGINS=$ORIGINS" >> "$ENV_FILE"
+echo "TZ=$HOST_TZ" >> "$ENV_FILE"
 
 echo ""
 echo "Configuration saved to $ENV_FILE"
@@ -178,6 +205,8 @@ echo "Allowed origins: $ORIGINS"
 # Install EML AdminTool
 echo ""
 echo "${BOLD}• Installing EML AdminTool...${RESET}"
+echo ""
+echo "This could take a while, please wait..."
 
 URL="https://github.com/Electron-Minecraft-Launcher/EML-AdminTool/releases/download/v{{VERSION}}/docker-compose.prod.yml"
 

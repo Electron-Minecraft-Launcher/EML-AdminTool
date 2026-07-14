@@ -150,7 +150,7 @@
       <i class="fa-solid fa-cloud-arrow-down"></i>&nbsp;&nbsp;Download file
     </button>
 
-    <p class="label">Files Updater/{path}</p>
+    <p class="label">{selectedProfile.slug}/{path}</p>
     <p class="name">{name}</p>
 
     <div class="editor" bind:this={editorContainer}></div>

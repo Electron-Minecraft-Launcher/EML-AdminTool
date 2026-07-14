@@ -61,7 +61,7 @@
   <form method="POST" action="?/renameFile" use:enhance={enhanceForm}>
     <h2>Rename {type === 'FOLDER' ? 'folder' : 'file'}</h2>
 
-    <label for="new-name">Files Updater/{path}</label>
+    <label for="new-name">{selectedProfile.slug}/{path}</label>
     <input type="text" id="new-name" name="new-name" bind:value={newName} bind:this={newNameInput} />
 
     <div class="actions">

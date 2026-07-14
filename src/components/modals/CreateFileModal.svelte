@@ -83,7 +83,7 @@
   <form method="POST" action="?/createFile" use:enhance={enhanceForm}>
     <h2>New {type === 'FOLDER' ? 'folder' : 'file'}</h2>
 
-    <label for="name">Files Updater/{currentPath}</label>
+    <label for="name">{selectedProfile.slug}/{currentPath}</label>
     <input type="text" id="name" bind:value={name} bind:this={newFileInput} />
 
     <div class="actions">

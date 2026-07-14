@@ -6,10 +6,12 @@
   import { callAction } from '$lib/utils/call'
   import { l } from '$lib/stores/language'
   import { invalidateAll } from '$app/navigation'
+  import getUser from '$lib/utils/user'
 
   let { data }: PageProps = $props()
 
   const env = getEnv()
+  const user = getUser()
 
   const startDateInfo = 'Maintenance starts automatically on the date.'
   const endDateInfo = `Maintenance will NOT end on this date; this date is given as an indication for Launcher users.
@@ -88,6 +90,17 @@ You will need to disable maintenance manually.`
         <p class="no-link">-</p>
       {/if}
     </div>
+
+    {#if user.p_maintenance === 2 || user.isAdmin}
+      <div>
+        <p class="label">Allowed pseudos</p>
+        {#each data.maintenance?.allowedPseudos as pseudo}
+          <p class="allowed-pseudo">{pseudo}</p>
+        {:else}
+          <p>-</p>
+        {/each}
+      </div>
+    {/if}
   </div>
 </section>
 
@@ -150,5 +163,15 @@ You will need to disable maintenance manually.`
     text-overflow: ellipsis;
     white-space: nowrap;
     vertical-align: bottom;
+  }
+
+  p.allowed-pseudo {
+    display: inline-block;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: var(--secondary-color);
+    color: #505050;
+    margin-right: 5px;
   }
 </style>

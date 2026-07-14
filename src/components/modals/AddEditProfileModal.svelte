@@ -8,6 +8,7 @@
   import LoadingSplash from '../layouts/LoadingSplash.svelte'
   import type { Profile } from '@prisma/client'
   import type { PageData } from '../../routes/(app)/dashboard/profiles/$types'
+  import AllowedPseudos from '../contents/AllowedPseudos.svelte'
 
   interface Props {
     show: boolean
@@ -26,6 +27,8 @@
     ip: '',
     port: null,
     tcpProtocol: '',
+    hidden: false,
+    allowedPseudos: [],
     updatedAt: new Date(),
     createdAt: new Date()
   }
@@ -38,9 +41,12 @@
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '')
   })
+  let isDefault = $state(selectedProfile.isDefault)
   let ip = $state(selectedProfile.ip)
   let port = $state(selectedProfile.port)
   let tcpProtocol = $state(selectedProfile.tcpProtocol ?? 'modern')
+  let hidden = $state(selectedProfile.hidden)
+  let allowedPseudos = $state(selectedProfile.allowedPseudos)
   let permissions = $state(
     data.users.map((u) => {
       const existing = data.userPermissions.find((p) => p.profileId === selectedProfileIdModal && p.userId === u.id)
@@ -51,6 +57,8 @@
       }
     })
   )
+
+  let pseudoInput = $state('')
 
   let disabled = $derived.by(() => {
     if (
@@ -74,6 +82,8 @@
 
     formData.set('profile-id', selectedProfileIdModal ?? '')
     formData.set('permissions', JSON.stringify(serializedPermissions))
+    formData.set('hidden', hidden.toString())
+    for (const pseudo of allowedPseudos) formData.append('allowed-pseudos', pseudo)
 
     return async ({ result, update }) => {
       await update({ reset: false })
@@ -181,6 +191,41 @@
       </div>
     {/if}
 
+    {#if !isDefault}
+      <div class="flex">
+        <div style="flex: 0.7">
+          <p class="label">Visibility</p>
+          <div class="flex">
+            <label for="visible" class="visibility p">
+              <input type="radio" id="visible" name="visibility" bind:group={hidden} value={false} />
+              Visible
+            </label>
+            <label for="hidden" class="visibility p">
+              <input type="radio" id="hidden" name="visibility" bind:group={hidden} value={true} />
+              Hidden
+            </label>
+          </div>
+          <div class="note">
+            <p class="note"><i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;Note</p>
+            <p>
+              Hiding a profile is not a security mesure. It only prevents the profile from being displayed in the public list of profiles. Add an
+              allowed profile to the list so the profile is visible to those users. <a
+                href="https://emlproject.com/docs/eml-admintool/administration-and-features/profiles"
+                target="_blank">Learn more...</a
+              >
+            </p>
+          </div>
+        </div>
+        {#if hidden}
+          <div>
+            <AllowedPseudos bind:allowedPseudos label="Allowed pseudos to view the profile" />
+          </div>
+        {:else}
+          <div></div>
+        {/if}
+      </div>
+    {/if}
+
     <div class="actions">
       <button type="button" class="secondary" onclick={() => (show = false)}>{$l.common.cancel}</button>
       <button type="submit" class="primary" {disabled}>{$l.common.save}</button>
@@ -206,8 +251,13 @@
     display: flex;
     gap: 20px;
     vertical-align: top;
+
     div {
       flex: 1;
+    }
+
+    label.visibility {
+      margin-top: 0;
     }
   }
 
@@ -215,7 +265,7 @@
     max-height: 200px;
     overflow-y: auto;
   }
-  
+
   div.permission {
     display: flex;
     gap: 20px;
@@ -237,6 +287,21 @@
 
     label {
       margin-top: 0;
+    }
+  }
+
+  div.note {
+    margin-top: 10px;
+
+    p {
+      font-size: 14px;
+      color: #505050;
+    }
+
+    p.note {
+      color: #0869da;
+      font-weight: 600;
+      margin-bottom: 5px;
     }
   }
 </style>

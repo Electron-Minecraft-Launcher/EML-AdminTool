@@ -19,32 +19,45 @@ export const load = (async (event) => {
   const page = getPage(event.url.searchParams.get('page'))
 
   try {
-    const crashReports = await db.crashReport.findMany({
-      orderBy: { createdAt: 'desc' },
-      skip: (page - 1) * PAGE_SIZE,
-      take: PAGE_SIZE
-    })
-
-    const count = await db.crashReport.count()
-
-    const unadressed = await db.crashReport.count({ where: { addressedAt: null } })
-
-    const profiles = await db.profile.findMany({
-      select: { id: true, name: true, slug: true, isDefault: true }
-    })
-
-    const defaultProfile = profiles.find((p) => p.isDefault)!
-
-    let crashProneProfile =
-      (
-        await db.crashReport.groupBy({
+    const [crashReports, count, unaddressed, profiles, crashingProfiles] = await Promise.all([
+      db.crashReport
+        .findMany({
+          orderBy: { createdAt: 'desc' },
+          skip: (page - 1) * PAGE_SIZE,
+          take: PAGE_SIZE
+        })
+        .catch((err) => {
+          console.error('Failed to load crash reports:', err)
+          throw new ServerError('Failed to load crash reports', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+        }),
+      db.crashReport.count().catch((err) => {
+        console.error('Failed to count crash reports:', err)
+        throw new ServerError('Failed to count crash reports', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+      }),
+      db.crashReport.count({ where: { addressedAt: null } }).catch((err) => {
+        console.error('Failed to count unaddressed crash reports:', err)
+        throw new ServerError('Failed to count unaddressed crash reports', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+      }),
+      db.profile.findMany({ select: { id: true, name: true, slug: true, isDefault: true } }).catch((err) => {
+        console.error('Failed to load profiles:', err)
+        throw new ServerError('Failed to load profiles', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+      }),
+      db.crashReport
+        .groupBy({
           by: ['profile'],
           _count: { profile: true },
           orderBy: { _count: { profile: 'desc' } },
           take: 1
         })
-      )[0]?.profile || defaultProfile.slug
+        .catch((err) => {
+          console.error('Failed to load crashing profiles:', err)
+          throw new ServerError('Failed to load crashing profiles', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+        })
+    ])
 
+    const defaultProfile = profiles.find((p) => p.isDefault)!
+
+    let crashProneProfile = crashingProfiles[0]?.profile || defaultProfile.slug
     const profile = profiles.find((p) => p.slug === crashProneProfile)
     crashProneProfile = profile?.name ?? defaultProfile.name
 
@@ -67,7 +80,7 @@ export const load = (async (event) => {
       cr.authType = mappings[cr.authType] ?? cr.authType
     }
 
-    return { crashReports, page, pageSize: PAGE_SIZE, count, unadressed, crashProneProfile }
+    return { crashReports, page, pageSize: PAGE_SIZE, count, unaddressed, crashProneProfile }
   } catch (err) {
     if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
     console.error('Unknown error:', err)
@@ -104,7 +117,7 @@ export const actions: Actions = {
     const { crashReportId, comment, addressed } = result.data
 
     try {
-      await updateCrashReport({ id: crashReportId, comment, addressed })
+      await updateCrashReport(crashReportId, { comment, addressed })
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
@@ -145,3 +158,4 @@ export const actions: Actions = {
     }
   }
 }
+

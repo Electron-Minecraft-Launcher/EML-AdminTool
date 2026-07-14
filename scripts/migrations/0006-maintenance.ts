@@ -1,0 +1,12 @@
+import type { PrismaClient } from '@prisma/client'
+
+export async function up(prisma: PrismaClient) {
+  await prisma.user.updateMany({
+    where: { isAdmin: true },
+    data: {
+      p_maintenance: 2
+    }
+  })
+
+  console.log(`Migrated permissions for admin user to have full maintenance access.`)
+}

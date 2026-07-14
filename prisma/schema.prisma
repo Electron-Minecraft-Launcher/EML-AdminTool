@@ -64,7 +64,7 @@ model User {
   isAdmin            Boolean                 @default(false)
   p_filesUpdater     Int                     @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
   p_bootstraps       Int                     @default(0) // 0 = no access, 1 = read and write
-  p_maintenance      Int                     @default(0) // 0 = no access, 1 = read and write
+  p_maintenance      Int                     @default(0) // 0 = no access, 1 = read and write, 2 = admin (can change allowed pseudos)
   p_news             Int                     @default(0) // 0 = no access, 1 = read and write, 2 = admin (can delete news they did not create)
   p_newsCategories   Int                     @default(0) // 0 = no access, 1 = read and write
   p_newsTags         Int                     @default(0) // 0 = no access, 1 = read and write
@@ -95,8 +95,8 @@ model Loader {
   format           LoaderFormat
   file             Json?
   updatedAt        DateTime     @updatedAt
-  profileId        String       @default("1")
-  profile          Profile      @relation(fields: [profileId], references: [id])
+  profileId        String       @unique @default("1")
+  profile          Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 model Profile {
@@ -109,7 +109,9 @@ model Profile {
   tcpProtocol     String?
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
-  loaders         Loader[]
+  loader          Loader?
+  hidden          Boolean                 @default(false)
+  allowedPseudos  String[]                @default([])
   userPermissions UserProfilePermission[]
 }
 
@@ -123,10 +125,11 @@ model Bootstrap {
 }
 
 model Maintenance {
-  id        String    @id @default(cuid(2))
-  startTime DateTime?
-  endTime   DateTime?
-  message   String    @default("")
+  id             String    @id @default(cuid(2))
+  startTime      DateTime?
+  endTime        DateTime?
+  message        String    @default("")
+  allowedPseudos String[]  @default([])
 }
 
 model News {
