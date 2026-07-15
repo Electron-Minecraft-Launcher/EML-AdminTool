@@ -81,7 +81,7 @@ export type UserProfilePermissionInfo = {
 
 export type EnvironmentPayload = Omit<Environment, 'id' | 'updatedAt' | 'theme'>
 export type UserPayload = Omit<User, 'id' | 'createdAt' | 'updatedAt'>
-export type ProfilePayload = Omit<Profile, 'id' | 'createdAt' | 'updatedAt' | 'isDefault'>
+export type ProfilePayload = Omit<Profile, 'id' | 'createdAt' | 'updatedAt' | 'isDefault' | 'hidden'>
 export type MaintenancePayload = Omit<Maintenance, 'id'>
 export type NewsPayload = Omit<News, 'id' | 'createdAt' | 'updatedAt'>
 export type CrashReportPayload = Omit<CrashReport, 'id' | 'fileId' | 'createdAt' | 'addressedAt' | 'comment'>

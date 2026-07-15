@@ -3,6 +3,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { Prisma, type Profile } from '@prisma/client'
 import type { ProfilePayload } from '$lib/utils/db'
+import bcrypt from 'bcrypt'
 
 export async function getProfiles(limit: number = 20): Promise<Profile[]> {
   let profiles
@@ -47,19 +48,12 @@ export async function getProfileBySlug(slug: string): Promise<Profile | null> {
   }
 }
 
+/**
+ * @param profile.password must already be **encrypted** if provided.
+ */
 export async function addProfile(profile: ProfilePayload): Promise<string> {
   try {
-    const res = await db.profile.create({
-      data: {
-        name: profile.name,
-        slug: profile.slug,
-        hidden: profile.hidden,
-        allowedPseudos: profile.allowedPseudos,
-        ip: profile.ip,
-        port: profile.port,
-        tcpProtocol: profile.tcpProtocol
-      }
-    })
+    const res = await db.profile.create({ data: profile })
     return res.id
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
@@ -71,20 +65,12 @@ export async function addProfile(profile: ProfilePayload): Promise<string> {
   }
 }
 
-export async function updateProfile(id: string, profile: ProfilePayload): Promise<void> {
+/**
+ * @param profile.password must already be **encrypted** if provided.
+ */
+export async function updateProfile(id: string, profile: Partial<Profile>): Promise<void> {
   try {
-    let t = await db.profile.update({
-      where: { id: id },
-      data: {
-        name: profile.name,
-        slug: profile.slug,
-        hidden: profile.hidden,
-        allowedPseudos: profile.allowedPseudos,
-        ip: profile.ip,
-        port: profile.port,
-        tcpProtocol: profile.tcpProtocol
-      }
-    })
+    let t = await db.profile.update({ where: { id: id }, data: profile })
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
       console.warn(`Profile with ID ${id} not found`)

@@ -49,6 +49,7 @@
     type="text"
     id="allowed-pseudos"
     name="allowed-pseudos"
+    style="margin-top: 0"
     placeholder="Enter allowed pseudos separated by commas"
     bind:value={pseudoInput}
     oninput={handleAllowedPseudosInput}
@@ -57,7 +58,7 @@
   <button
     type="button"
     class="secondary"
-    style="margin-top: 5px"
+    style="margin-top: 0"
     disabled={pseudoInput.trim() === ''}
     aria-label="Add allowed pseudo"
     onclick={handleAllowedPseudosButton}
@@ -95,12 +96,12 @@
   }
 
   div.pseudos {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.5rem;
     margin-top: 1rem;
     display: flex;
-    max-height: 112px;
-    overflow-y: auto;
+    max-height: 33px;
+    overflow-x: auto;
 
     span.allowed-pseudo {
       border: 1px solid var(--border-color);

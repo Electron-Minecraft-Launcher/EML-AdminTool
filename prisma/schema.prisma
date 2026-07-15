@@ -20,6 +20,12 @@ enum UserStatus {
   DELETED // User is deleted and cannot log in
 }
 
+enum ProfileVisibility {
+  PUBLIC
+  HIDDEN
+  PROTECTED
+}
+
 enum LoaderType {
   VANILLA
   FORGE
@@ -110,8 +116,10 @@ model Profile {
   createdAt       DateTime                @default(now())
   updatedAt       DateTime                @updatedAt
   loader          Loader?
-  hidden          Boolean                 @default(false)
+  hidden          Boolean?                @default(false)
+  visibility      ProfileVisibility?      @default(PUBLIC)
   allowedPseudos  String[]                @default([])
+  password        String?
   userPermissions UserProfilePermission[]
 }
 
