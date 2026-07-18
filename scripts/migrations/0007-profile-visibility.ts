@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client'
+import { ProfileVisibility, type PrismaClient } from '@prisma/client'
 
 export async function up(prisma: PrismaClient) {
   const profiles = await prisma.profile.findMany()
@@ -7,12 +7,12 @@ export async function up(prisma: PrismaClient) {
     if (profile.hidden) {
       await prisma.profile.update({
         where: { id: profile.id },
-        data: { visibility: 'HIDDEN' }
+        data: { visibility: ProfileVisibility.HIDDEN }
       })
     } else {
       await prisma.profile.update({
         where: { id: profile.id },
-        data: { visibility: 'PUBLIC' }
+        data: { visibility: ProfileVisibility.PROTECTED }
       })
     }
   }

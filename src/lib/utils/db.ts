@@ -76,6 +76,7 @@ export type ExtendedNews = Prisma.NewsGetPayload<{
 export type UserProfilePermissionInfo = {
   profileId: string
   name: string
+  slug: string
   permission: 0 | 1 | 2
 }
 

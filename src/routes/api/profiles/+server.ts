@@ -2,7 +2,7 @@ import { getProfiles } from '$lib/server/profile'
 import { json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 import { getBearerToken, verifyScopedToken, getTokenPayload } from '$lib/server/jwt'
-import type { Profile } from '@prisma/client'
+import { ProfileVisibility, type Profile } from '@prisma/client'
 
 export const GET: RequestHandler = async ({ request }) => {
   const pseudo = request.headers.get('pseudo')
@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ request }) => {
     try {
       const isValid = await verifyScopedToken(token, 'profile')
       const payload = getTokenPayload(token)
-      const profile = profiles.find((p) => p.visibility === 'PROTECTED' && p.id === (payload?.profileId ?? null))
+      const profile = profiles.find((p) => p.visibility === ProfileVisibility.PROTECTED && p.slug === (payload?.slug ?? null))
       if (isValid && profile) {
         extraProfiles.push(profile)
       } else {
@@ -33,7 +33,9 @@ export const GET: RequestHandler = async ({ request }) => {
   }
 
   if (pseudo) {
-    const filteredProfiles = profiles.filter((profile) => profile.visibility === 'HIDDEN' && profile.allowedPseudos.includes(pseudo))
+    const filteredProfiles = profiles.filter(
+      (profile) => profile.visibility === ProfileVisibility.HIDDEN && profile.allowedPseudos.includes(pseudo)
+    )
     extraProfiles = extraProfiles.concat(filteredProfiles)
   }
 
@@ -50,7 +52,7 @@ export const GET: RequestHandler = async ({ request }) => {
     updatedAt: profile.updatedAt
   }))
   const publicProfiles = profiles
-    .filter((profile) => profile.visibility === 'PUBLIC')
+    .filter((profile) => profile.visibility === ProfileVisibility.PUBLIC)
     .map((profile) => ({
       id: profile.id,
       isDefault: profile.isDefault,
@@ -64,7 +66,7 @@ export const GET: RequestHandler = async ({ request }) => {
       updatedAt: profile.updatedAt
     }))
   const protectedProfiles = profiles
-    .filter((profile) => profile.visibility === 'PROTECTED' && !extraProfiles.some((p) => p.id === profile.id))
+    .filter((profile) => profile.visibility === ProfileVisibility.PROTECTED && !extraProfiles.some((p) => p.id === profile.id))
     .map((profile) => ({
       id: profile.id,
       isDefault: profile.isDefault,

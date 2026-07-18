@@ -50,7 +50,7 @@ export async function createScopedToken(scope: string, expirationTime: string = 
   return new SignJWT({ ...claims, scope }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime(expirationTime).sign(secret)
 }
 
-export async function verifyScopedToken(token?: string, scope?: string, claims: JWTPayload = {}): Promise<boolean> {
+export async function verifyScopedToken(token?: string | null, scope?: string, claims: JWTPayload = {}): Promise<boolean> {
   if (!token || token.trim() === '') return false
 
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)

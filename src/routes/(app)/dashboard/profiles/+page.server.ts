@@ -11,6 +11,7 @@ import { IUserStatus, type ProfilePayload } from '$lib/utils/db'
 import { cacheFiles, deleteFile, renameFile } from '$lib/server/files'
 import { deleteLoader } from '$lib/server/loader'
 import bcrypt from 'bcrypt'
+import { ProfileVisibility } from '@prisma/client'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -74,7 +75,7 @@ export const actions: Actions = {
     const raw = {
       profileId: form.get('profile-id'),
       name: form.get('name'),
-      visibility: form.get('visibility') || 'PUBLIC',
+      visibility: form.get('visibility') || ProfileVisibility.PUBLIC,
       allowedPseudos: form.getAll('allowed-pseudos'),
       password: form.get('password') || undefined,
       ip: form.get('ip') || undefined,
@@ -127,12 +128,12 @@ export const actions: Actions = {
         }
 
         if (existingProfile.isDefault) {
-          profile.visibility = 'PUBLIC'
+          profile.visibility = ProfileVisibility.PUBLIC
           profile.allowedPseudos = []
           if (profile.password) profile.password = null
         }
 
-        if (profile.visibility === 'PROTECTED' && !existingProfile.password && !profile.password) {
+        if (profile.visibility === ProfileVisibility.PROTECTED && !existingProfile.password && !profile.password) {
           return fail(event, 400, { failure: NotificationCode.INVALID_INPUT })
         }
 
