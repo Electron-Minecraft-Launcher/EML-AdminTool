@@ -36,11 +36,11 @@ export const POST: RequestHandler = async (event) => {
     return json({ success: false, message: 'Profile not found' }, { status: 404 })
   }
 
-  if (profile.visibility !== ProfileVisibility.PROTECTED || !profile.password) {
+  if (profile.visibility !== ProfileVisibility.PROTECTED) {
     return json({ success: false, message: 'Profile is not protected' }, { status: 400 })
   }
 
-  const isPasswordValid = await bcrypt.compare(credentials.password, profile.password)
+  const isPasswordValid = await bcrypt.compare(credentials.password, profile.password ?? '')
 
   if (!isPasswordValid) {
     return json({ success: false, message: 'Invalid password' }, { status: 401 })
@@ -53,3 +53,4 @@ export const POST: RequestHandler = async (event) => {
     token
   })
 }
+
