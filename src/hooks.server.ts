@@ -1,27 +1,30 @@
-import { error, redirect, type Handle, type HandleServerError, type RequestEvent } from '@sveltejs/kit'
+import { error, json, redirect, type Handle, type HandleServerError, type RequestEvent } from '@sveltejs/kit'
 import { env as dynEnv } from '$env/dynamic/private'
 import pkg from '../package.json'
 import { db } from '$lib/server/db'
 import type { LanguageCode } from '$lib/stores/language'
-import { verify } from '$lib/server/auth'
-import { deleteSession } from '$lib/server/jwt'
+import { sweepPermissions, userPermissionsCache, verify } from '$lib/server/auth'
+import { deleteSession, getBearerToken, verifyScopedToken } from '$lib/server/jwt'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import type { User } from '@prisma/client'
+import { ProfileVisibility, type User } from '@prisma/client'
 import { defaultPgURL } from '$lib/server/setup'
 import path from 'node:path'
 import fs from 'node:fs/promises'
+import stream from 'node:stream'
+import { createReadStream } from 'node:fs'
 import mime from 'mime-types'
 import { dev } from '$app/environment'
 import { sequence } from '@sveltejs/kit/hooks'
 import '$lib/utils/prototypes'
+import { protectedProfilesCache } from '$lib/server/profile'
 
 const DEFAULT_ORIGINS = ['http://localhost:8080', 'http://127.0.0.1:8080', 'http://localhost:5173']
-
 const filesDir = path.resolve(process.cwd(), 'files')
+await initProtectedProfiles()
 
 const app: Handle = async ({ event, resolve }) => {
-  const securityResponse = handleSecurityBlocking(event)
+  const securityResponse = await handleSecurityBlocking(event)
   if (securityResponse) return securityResponse
 
   if (event.url.pathname.startsWith('/files/')) {
@@ -105,14 +108,15 @@ function getAllowedOrigins() {
   return allowed.filter(Boolean)
 }
 
-function handleSecurityBlocking(event: RequestEvent) {
-  if (dev) return null
-
+async function handleSecurityBlocking(event: RequestEvent) {
+  const user = event.locals.user
   const requestOrigin = event.request.headers.get('origin')
   const method = event.request.method
   const allowedOrigins = getAllowedOrigins()
+  const pathname = event.url.pathname
 
   if (method === 'OPTIONS') {
+    if (dev) return null
     if (requestOrigin && allowedOrigins.includes(requestOrigin)) {
       return new Response(null, {
         headers: {
@@ -128,12 +132,44 @@ function handleSecurityBlocking(event: RequestEvent) {
 
   if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
     if (requestOrigin && !allowedOrigins.includes(requestOrigin)) {
+      if (dev) return null
       console.error(`CSRF Blocked: ${requestOrigin} is not allowed.`)
       console.error(`Allowed origins: ${allowedOrigins.join(', ')}`)
-      return new Response(JSON.stringify({ message: 'Forbidden: Invalid origin' }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      })
+      return json(
+        { success: false, message: 'Forbidden: Invalid origin' },
+        {
+          status: 403,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      )
+    }
+  }
+
+  if (pathname.startsWith('/files/')) {
+    const parts = pathname.split('/')
+    if (parts.length >= 4) {
+      const slug = parts[3]
+
+      if (protectedProfilesCache.has(slug)) {
+        const token = getBearerToken(event.request)
+        const session = event.cookies.get('session')
+
+        if (token && (await verifyScopedToken(token, 'profile', { slug }))) {
+          return null
+        }
+
+        if (session) {
+          try {
+            const user = await verify(session)
+            await ensureUserPermissionsLoaded(user.id)
+            const cache = userPermissionsCache.get(user.id)
+            if (user.isAdmin || cache?.permissions.has(slug)) {
+              return null
+            }
+          } catch {}
+        }
+        return json({ success: false, message: 'Unauthorized' }, { status: 401 })
+      }
     }
   }
 
@@ -166,17 +202,23 @@ async function serveStaticFile(pathname: string) {
 
   try {
     relativePath = decodeURIComponent(relativePath)
-  } catch (e) {
-    return new Response('Malformed URL', { status: 400 })
+  } catch {
+    return json({ success: false, message: 'Malformed URL' }, { status: 400 })
   }
 
   const resolvedPath = path.resolve(path.join(filesDir, relativePath))
 
   if (!resolvedPath.startsWith(filesDir)) {
-    return new Response('Forbidden', { status: 403 })
+    return json({ success: false, message: 'Forbidden' }, { status: 403 })
   }
 
   try {
+    const fileStats = await fs.stat(resolvedPath)
+
+    if (!fileStats.isFile()) {
+      return json({ success: false, message: 'Forbidden' }, { status: 403 })
+    }
+
     const extension = path.extname(resolvedPath).toLowerCase()
     const fileName = path.basename(resolvedPath)
     let mimeType: string
@@ -187,12 +229,14 @@ async function serveStaticFile(pathname: string) {
       mimeType = mime.lookup(resolvedPath) || 'application/octet-stream'
     }
 
-    const fileContent = await fs.readFile(resolvedPath)
+    const nodeStream = createReadStream(resolvedPath)
+    const webStream = stream.Readable.toWeb(nodeStream)
 
-    return new Response(fileContent, {
+    return new Response(webStream as ReadableStream, {
       status: 200,
       headers: {
         'Content-Type': mimeType,
+        'Content-Length': fileStats.size.toString(),
         'X-Content-Type-Options': 'nosniff',
         'Cache-Control': 'no-transform',
         'Content-Disposition': `inline; filename="${fileName}"`
@@ -200,10 +244,10 @@ async function serveStaticFile(pathname: string) {
     })
   } catch (err: unknown) {
     if (err && typeof err === 'object' && 'code' in err && err.code === 'ENOENT') {
-      return new Response('File not found', { status: 404 })
+      return json({ success: false, message: 'File not found' }, { status: 404 })
     } else {
       console.error('Error serving file:', err)
-      return new Response('Internal Server Error', { status: 500 })
+      return json({ success: false, message: 'Internal Server Error' }, { status: 500 })
     }
   }
 }
@@ -239,6 +283,8 @@ async function handleUserSession(event: RequestEvent, session: string) {
   try {
     const user = await verify(session)
     event.locals.user = getUserInfo(user, user.profilePermissions)
+
+    sweepPermissions()
   } catch (err) {
     deleteSession(event)
 
@@ -263,7 +309,7 @@ function getDefaultEnv() {
   }
 }
 
-function getUserInfo(user: User, profilePermissions: { profileId: string; name: string; permission: number }[] = []) {
+function getUserInfo(user: User, profilePermissions: { profileId: string; name: string; slug: string; permission: number }[] = []) {
   return {
     id: user.id,
     username: user.username,
@@ -277,7 +323,38 @@ function getUserInfo(user: User, profilePermissions: { profileId: string; name: 
     p_stats: user.p_stats as 0 | 1 | 2,
     p_crashReports: user.p_crashReports as 0 | 1 | 2,
     isAdmin: user.isAdmin,
-    profilePermissions: profilePermissions as { profileId: string; name: string; permission: 0 | 1 | 2 }[]
+    profilePermissions: profilePermissions as { profileId: string; name: string; slug: string; permission: 0 | 1 | 2 }[]
   }
 }
 
+async function initProtectedProfiles() {
+  try {
+    const profiles = await db.profile.findMany({
+      where: { visibility: ProfileVisibility.PROTECTED },
+      select: { slug: true }
+    })
+
+    protectedProfilesCache.clear()
+    profiles.forEach((profile) => {
+      protectedProfilesCache.add(profile.slug)
+    })
+  } catch (err) {
+    console.error('Unknown database error:', err)
+    throw error(500, { message: NotificationCode.DATABASE_ERROR })
+  }
+}
+
+async function ensureUserPermissionsLoaded(userId: string) {
+  if (userPermissionsCache.has(userId)) return
+
+  const permissions = await db.userProfilePermission.findMany({
+    where: { userId },
+    select: { profileId: true, permission: true }
+  })
+
+  const allowedProfiles = new Set(permissions.filter((p) => p.permission > 0).map((p) => p.profileId))
+  userPermissionsCache.set(userId, {
+    permissions: allowedProfiles,
+    expiresAt: Date.now() + 24 * 60 * 60 * 1000
+  })
+}

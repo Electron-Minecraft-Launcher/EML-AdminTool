@@ -3,10 +3,14 @@ import { getProfileBySlug } from '$lib/server/profile'
 import { json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 import { getDomain } from '$lib/utils/utils'
+import { getBearerToken } from '$lib/server/request'
+import { ProfileVisibility } from '@prisma/client'
+import { verifyScopedToken } from '$lib/server/jwt'
 
 export const GET: RequestHandler = async (event) => {
   const domain = getDomain(event)
-  const { slug } = event.params
+  const slug = event.params.slug
+  const token = getBearerToken(event.request)
 
   let profile
   try {
@@ -17,6 +21,17 @@ export const GET: RequestHandler = async (event) => {
 
   if (!profile) {
     return json({ success: false, message: 'Profile not found' }, { status: 404 })
+  }
+
+  if (profile.visibility === ProfileVisibility.PROTECTED) {
+    if (!token) {
+      return json({ success: false, message: 'Missing Authorization header' }, { status: 401 })
+    }
+    console.log(token, profile.slug)
+    const isValid = await verifyScopedToken(token, `profile`, { slug })
+    if (!isValid) {
+      return json({ success: false, message: 'Invalid or expired token' }, { status: 401 })
+    }
   }
 
   let cache
@@ -41,4 +56,3 @@ export const GET: RequestHandler = async (event) => {
 
   return json(res)
 }
-
