@@ -19,24 +19,24 @@ class FeatureLimiter {
 
   constructor(private readonly config: LimiterConfig) {}
 
-  public canCreateHandshakeToken(ip: string, now = Date.now()): boolean {
-    const expiresAt = this.handshakeCooldowns.get(ip)
+  public canCreateHandshakeToken(key: string, now = Date.now()): boolean {
+    const expiresAt = this.handshakeCooldowns.get(key)
     return !(expiresAt && expiresAt > now)
   }
 
-  public registerHandshakeToken(ip: string, now = Date.now()): void {
-    this.handshakeCooldowns.set(ip, now + this.config.handshakeWindowMs)
+  public registerHandshakeToken(key: string, now = Date.now()): void {
+    this.handshakeCooldowns.set(key, now + this.config.handshakeWindowMs)
   }
 
-  public canPerformAction(ip: string, now = Date.now()): boolean {
-    let windows = this.actionWindows.get(ip)
+  public canPerformAction(key: string, now = Date.now()): boolean {
+    let windows = this.actionWindows.get(key)
 
     if (!windows || windows.length !== this.config.actionLimits.length) {
       windows = this.config.actionLimits.map((rule) => ({
         count: 0,
         expiresAt: now + rule.windowMs
       }))
-      this.actionWindows.set(ip, windows)
+      this.actionWindows.set(key, windows)
     }
 
     for (let i = 0; i < windows.length; i++) {
@@ -60,25 +60,28 @@ class FeatureLimiter {
   }
 
   public sweep(now = Date.now()): void {
-    for (const [ip, expiresAt] of this.handshakeCooldowns.entries()) {
-      if (expiresAt <= now) this.handshakeCooldowns.delete(ip)
+    for (const [key, expiresAt] of this.handshakeCooldowns.entries()) {
+      if (expiresAt <= now) this.handshakeCooldowns.delete(key)
     }
 
-    for (const [ip, windows] of this.actionWindows.entries()) {
+    for (const [key, windows] of this.actionWindows.entries()) {
       const maxExpiresAt = Math.max(...windows.map((w) => w.expiresAt))
 
       if (maxExpiresAt <= now) {
-        this.actionWindows.delete(ip)
+        this.actionWindows.delete(key)
       }
     }
   }
 }
 
+export const profileLimiter = new FeatureLimiter({
+  handshakeWindowMs: 0,
+  actionLimits: [{ windowMs: 60 * 1000, maxRequests: 5 }]
+})
+
 export const statsLimiter = new FeatureLimiter({
   handshakeWindowMs: 10 * 60 * 1000,
-  actionLimits: [
-    { windowMs: 10 * 60 * 1000, maxRequests: 10 }
-  ]
+  actionLimits: [{ windowMs: 10 * 60 * 1000, maxRequests: 10 }]
 })
 
 export const crashReportsLimiter = new FeatureLimiter({

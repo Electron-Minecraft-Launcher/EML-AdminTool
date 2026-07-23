@@ -28,11 +28,12 @@ export const profileSchema = z
   .object({
     profileId: z.string().optional(),
     name: z.string().min(1, NotificationCode.PROFILE_NAME_TOO_SHORT).max(64, NotificationCode.PROFILE_NAME_TOO_LONG),
-    hidden: z.boolean(),
+    visibility: z.enum(['PUBLIC', 'HIDDEN', 'PROTECTED']),
     allowedPseudos: z.array(z.string()).optional().transform((arr) => {
       const uniquePseudos = Array.from(new Set(arr?.map((pseudo) => pseudo.trim()).filter((pseudo) => pseudo !== '')))
       return uniquePseudos
     }),
+    password: z.string().optional(),
     ip: z.string().optional(),
     port: z.number().optional(),
     tcpProtocol: z.enum(['modern', '1.6', '1.4-1.5', 'beta1.8-1.3'], NotificationCode.PROFILE_INVALID_TCP_PROTOCOL).optional()

@@ -3,14 +3,15 @@ import type { Actions, PageServerLoad } from './$types'
 import { db } from '$lib/server/db'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import { getVanillaVersions } from '$lib/server/loaders/vanilla'
 import { verify } from '$lib/server/auth'
 import { profileUserPermissionsSchema, profileSchema } from '$lib/utils/validations'
 import { fail } from '$lib/server/action'
 import { addProfile, getProfileById, updateProfileUserPermissions, updateProfile, deleteProfile } from '$lib/server/profile'
-import { IUserStatus } from '$lib/utils/db'
+import { IUserStatus, type ProfilePayload } from '$lib/utils/db'
 import { cacheFiles, deleteFile, renameFile } from '$lib/server/files'
 import { deleteLoader } from '$lib/server/loader'
+import bcrypt from 'bcrypt'
+import { ProfileVisibility } from '@prisma/client'
 
 export const load = (async (event) => {
   const user = event.locals.user
@@ -22,7 +23,7 @@ export const load = (async (event) => {
   try {
     const [profiles, users, userPermissions] = await Promise.all([
       db.profile
-        .findMany({ orderBy: { name: 'asc' } })
+        .findMany({ orderBy: { name: 'asc' }, omit: { password: true } })
         .then((profiles) => {
           const defaultIndex = profiles.findIndex((p) => p.isDefault)
           if (defaultIndex > 0) {
@@ -74,8 +75,9 @@ export const actions: Actions = {
     const raw = {
       profileId: form.get('profile-id'),
       name: form.get('name'),
-      hidden: form.get('visibility') === 'true',
+      visibility: form.get('visibility') || ProfileVisibility.PUBLIC,
       allowedPseudos: form.getAll('allowed-pseudos'),
+      password: form.get('password') || undefined,
       ip: form.get('ip') || undefined,
       port: form.get('port') ? Number(form.get('port')) : undefined,
       tcpProtocol: form.get('tcp-protocol') || undefined
@@ -86,7 +88,7 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { profileId, name, hidden, allowedPseudos, ip, port, tcpProtocol } = result.data
+    const { profileId, name, visibility, allowedPseudos, password, ip, port, tcpProtocol } = result.data
 
     const rawPermissions = { permissions: form.get('permissions') || undefined }
 
@@ -103,15 +105,20 @@ export const actions: Actions = {
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '')
 
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined
+
     const profile = {
       name: name,
       slug: slug,
-      hidden: hidden,
+      visibility: visibility,
       allowedPseudos: allowedPseudos ?? [],
+      password: hashedPassword as string | undefined | null,
       ip: ip ?? null,
       port: port ?? null,
       tcpProtocol: tcpProtocol ?? null
     }
+    if (!hashedPassword) delete profile.password
+
     try {
       if (profileId) {
         const existingProfile = await getProfileById(profileId)
@@ -121,8 +128,13 @@ export const actions: Actions = {
         }
 
         if (existingProfile.isDefault) {
-          profile.hidden = false
+          profile.visibility = ProfileVisibility.PUBLIC
           profile.allowedPseudos = []
+          if (profile.password) profile.password = null
+        }
+
+        if (profile.visibility === ProfileVisibility.PROTECTED && !existingProfile.password && !profile.password) {
+          return fail(event, 400, { failure: NotificationCode.INVALID_INPUT })
         }
 
         await updateProfile(profileId, profile)
@@ -132,12 +144,12 @@ export const actions: Actions = {
           await deleteFile('cache', `files-updater-${existingProfile.slug}.json`, false)
           await cacheFiles(`files-updater/${slug}`)
         }
-        
+
         if (permissions) {
           await updateProfileUserPermissions(profileId, permissions)
         }
       } else {
-        const profileId = await addProfile(profile)
+        const profileId = await addProfile(profile as ProfilePayload)
         return { profileId }
       }
     } catch (err) {
