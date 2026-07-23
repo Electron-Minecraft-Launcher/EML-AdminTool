@@ -109,7 +109,6 @@ function getAllowedOrigins() {
 }
 
 async function handleSecurityBlocking(event: RequestEvent) {
-  const user = event.locals.user
   const requestOrigin = event.request.headers.get('origin')
   const method = event.request.method
   const allowedOrigins = getAllowedOrigins()
