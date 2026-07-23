@@ -15,31 +15,29 @@ export const GET: RequestHandler = async ({ request }) => {
     return json({ success: false, message: 'Failed to get profiles' }, { status: 500 })
   }
 
-  let meta = {}
-  let extraProfiles: Profile[] = []
+  let unlockedProfiles: Profile[] = []
   if (token) {
     try {
       const isValid = await verifyScopedToken(token, 'profile')
       const payload = getTokenPayload(token)
       const profile = profiles.find((p) => p.visibility === ProfileVisibility.PROTECTED && p.slug === (payload?.slug ?? null))
       if (isValid && profile) {
-        extraProfiles.push(profile)
+        unlockedProfiles.push(profile)
       } else {
-        meta = { success: false, message: 'Invalid token scope' }
+        return json({ success: false, message: 'Invalid token scope' }, { status: 401 })
       }
     } catch (err) {
-      meta = { success: false, message: 'Invalid token' }
+      return json({ success: false, message: 'Invalid token' }, { status: 401 })
     }
   }
 
+  let allowedProfiles: Profile[] = []
   if (pseudo) {
-    const filteredProfiles = profiles.filter(
-      (profile) => profile.visibility === ProfileVisibility.HIDDEN && profile.allowedPseudos.includes(pseudo)
-    )
-    extraProfiles = extraProfiles.concat(filteredProfiles)
+    const filteredProfiles = profiles.filter((profile) => profile.visibility === ProfileVisibility.HIDDEN && profile.allowedPseudos.includes(pseudo))
+    allowedProfiles = allowedProfiles.concat(filteredProfiles)
   }
 
-  const additionalProfiles = extraProfiles.map((profile) => ({
+  const mappedUnlockedProfiles = unlockedProfiles.map((profile) => ({
     id: profile.id,
     isDefault: profile.isDefault,
     name: profile.name,
@@ -49,9 +47,10 @@ export const GET: RequestHandler = async ({ request }) => {
     tcpProtocol: profile.tcpProtocol,
     visibility: profile.visibility,
     createdAt: profile.createdAt,
-    updatedAt: profile.updatedAt
+    updatedAt: profile.updatedAt,
+    token: token
   }))
-  const publicProfiles = profiles
+  const mappedPublicProfiles = profiles
     .filter((profile) => profile.visibility === ProfileVisibility.PUBLIC)
     .map((profile) => ({
       id: profile.id,
@@ -65,8 +64,20 @@ export const GET: RequestHandler = async ({ request }) => {
       createdAt: profile.createdAt,
       updatedAt: profile.updatedAt
     }))
-  const protectedProfiles = profiles
-    .filter((profile) => profile.visibility === ProfileVisibility.PROTECTED && !extraProfiles.some((p) => p.id === profile.id))
+  const mappedAllowedProfiles = allowedProfiles.map((profile) => ({
+    id: profile.id,
+    isDefault: profile.isDefault,
+    name: profile.name,
+    slug: profile.slug,
+    ip: profile.ip,
+    port: profile.port,
+    tcpProtocol: profile.tcpProtocol,
+    visibility: profile.visibility,
+    createdAt: profile.createdAt,
+    updatedAt: profile.updatedAt
+  }))
+  const mappedProtectedProfiles = profiles
+    .filter((profile) => profile.visibility === ProfileVisibility.PROTECTED && !allowedProfiles.some((p) => p.id === profile.id))
     .map((profile) => ({
       id: profile.id,
       isDefault: profile.isDefault,
@@ -75,7 +86,10 @@ export const GET: RequestHandler = async ({ request }) => {
       visibility: profile.visibility
     }))
 
-  const res = { success: true, ...meta, profiles: [...publicProfiles, ...protectedProfiles, ...additionalProfiles] }
-
+  const res = {
+    success: true,
+    profiles: [...mappedUnlockedProfiles, ...mappedPublicProfiles, ...mappedProtectedProfiles, ...mappedAllowedProfiles]
+  }
   return json(res)
 }
+
