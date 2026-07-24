@@ -1,8 +1,11 @@
 import { db } from './db'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
-import { Prisma, type Profile } from '@prisma/client'
+import { Prisma, ProfileVisibility, type Profile } from '@prisma/client'
 import type { ProfilePayload } from '$lib/utils/db'
+import { invalidateUserPermissions } from './auth'
+
+export const protectedProfilesCache = new Set<string>()
 
 export async function getProfiles(limit: number = 20): Promise<Profile[]> {
   let profiles
@@ -47,19 +50,15 @@ export async function getProfileBySlug(slug: string): Promise<Profile | null> {
   }
 }
 
+/**
+ * @param profile.password must already be **encrypted** if provided.
+ */
 export async function addProfile(profile: ProfilePayload): Promise<string> {
   try {
-    const res = await db.profile.create({
-      data: {
-        name: profile.name,
-        slug: profile.slug,
-        hidden: profile.hidden,
-        allowedPseudos: profile.allowedPseudos,
-        ip: profile.ip,
-        port: profile.port,
-        tcpProtocol: profile.tcpProtocol
-      }
-    })
+    const res = await db.profile.create({ data: profile })
+    if (profile.visibility === ProfileVisibility.PROTECTED) {
+      protectedProfilesCache.add(profile.slug)
+    }
     return res.id
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
@@ -71,20 +70,15 @@ export async function addProfile(profile: ProfilePayload): Promise<string> {
   }
 }
 
-export async function updateProfile(id: string, profile: ProfilePayload): Promise<void> {
+/**
+ * @param profile.password must already be **encrypted** if provided.
+ */
+export async function updateProfile(id: string, profile: Partial<Profile>): Promise<void> {
   try {
-    let t = await db.profile.update({
-      where: { id: id },
-      data: {
-        name: profile.name,
-        slug: profile.slug,
-        hidden: profile.hidden,
-        allowedPseudos: profile.allowedPseudos,
-        ip: profile.ip,
-        port: profile.port,
-        tcpProtocol: profile.tcpProtocol
-      }
-    })
+    const res = await db.profile.update({ where: { id: id }, data: profile })
+    if (profile.visibility === ProfileVisibility.PROTECTED) {
+      protectedProfilesCache.add(res.slug)
+    }
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
       console.warn(`Profile with ID ${id} not found`)
@@ -95,12 +89,15 @@ export async function updateProfile(id: string, profile: ProfilePayload): Promis
   }
 }
 
-export async function deleteProfile(profileId: string): Promise<void> {
+export async function deleteProfile(id: string): Promise<void> {
   try {
-    await db.profile.delete({ where: { id: profileId } })
+    const res = await db.profile.delete({ where: { id } })
+    if (res.visibility === ProfileVisibility.PROTECTED) {
+      protectedProfilesCache.delete(res.slug)
+    }
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-      console.warn(`Profile with ID ${profileId} not found`)
+      console.warn(`Profile with ID ${id} not found`)
       throw new BusinessError('Profile not found', NotificationCode.NOT_FOUND, 404)
     }
     console.error('Error deleting profile:', err)
@@ -135,6 +132,9 @@ export async function updateProfileUserPermissions(profileId: string, permission
           })
         )
     ])
+    for (const p of permissions) {
+      invalidateUserPermissions(p.userId)
+    }
   } catch (err) {
     console.error('Failed to set profile user permissions:', err)
     throw new ServerError('Failed to set profile user permissions', err, NotificationCode.DATABASE_ERROR, 500)
@@ -156,6 +156,7 @@ export async function updateUserProfilePermissions(userId: string, permissions: 
           })
         )
     ])
+    invalidateUserPermissions(userId)
   } catch (err) {
     console.error('Failed to set user profile permissions:', err)
     throw new ServerError('Failed to set user profile permissions', err, NotificationCode.DATABASE_ERROR, 500)
@@ -218,4 +219,3 @@ export async function resolveProfile(profileId: string, userId: string, isAdmin:
 
   return profile
 }
-

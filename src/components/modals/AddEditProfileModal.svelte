@@ -27,8 +27,10 @@
     ip: '',
     port: null,
     tcpProtocol: '',
-    hidden: false,
+    hidden: false, // IGNORE
+    visibility: 'PUBLIC',
     allowedPseudos: [],
+    password: '',
     updatedAt: new Date(),
     createdAt: new Date()
   }
@@ -46,7 +48,9 @@
   let port = $state(selectedProfile.port)
   let tcpProtocol = $state(selectedProfile.tcpProtocol ?? 'modern')
   let hidden = $state(selectedProfile.hidden)
+  let visibility = $state(selectedProfile.visibility)
   let allowedPseudos = $state(selectedProfile.allowedPseudos)
+  let password = $state('')
   let permissions = $state(
     data.users.map((u) => {
       const existing = data.userPermissions.find((p) => p.profileId === selectedProfileIdModal && p.userId === u.id)
@@ -82,8 +86,9 @@
 
     formData.set('profile-id', selectedProfileIdModal ?? '')
     formData.set('permissions', JSON.stringify(serializedPermissions))
-    formData.set('hidden', hidden.toString())
+    formData.set('visibility', visibility as string)
     for (const pseudo of allowedPseudos) formData.append('allowed-pseudos', pseudo)
+    if (password) formData.set('password', password)
 
     return async ({ result, update }) => {
       await update({ reset: false })
@@ -191,34 +196,46 @@
       </div>
     {/if}
 
+    <!-- TODO Review UI because the permissions + the visibility take up too much space -->
+
     {#if !isDefault}
       <div class="flex">
         <div style="flex: 0.7">
           <p class="label">Visibility</p>
           <div class="flex">
             <label for="visible" class="visibility p">
-              <input type="radio" id="visible" name="visibility" bind:group={hidden} value={false} />
+              <input type="radio" id="visible" name="visibility" bind:group={visibility} value="PUBLIC" />
               Visible
             </label>
             <label for="hidden" class="visibility p">
-              <input type="radio" id="hidden" name="visibility" bind:group={hidden} value={true} />
+              <input type="radio" id="hidden" name="visibility" bind:group={visibility} value="HIDDEN" />
               Hidden
+            </label>
+            <label for="protected" class="visibility p">
+              <input type="radio" id="protected" name="visibility" bind:group={visibility} value="PROTECTED" />
+              Protected
             </label>
           </div>
           <div class="note">
             <p class="note"><i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;Note</p>
             <p>
-              Hiding a profile is not a security mesure. It only prevents the profile from being displayed in the public list of profiles. Add an
-              allowed profile to the list so the profile is visible to those users. <a
-                href="https://emlproject.com/docs/eml-admintool/administration-and-features/profiles"
-                target="_blank">Learn more...</a
+              <a href="https://emlproject.com/docs/eml-admintool/administration-and-features/profiles" target="_blank"
+                >Learn more about visibility...</a
               >
             </p>
           </div>
         </div>
-        {#if hidden}
-          <div>
+        {#if visibility === 'HIDDEN'}
+          <div style="width: 430px">
             <AllowedPseudos bind:allowedPseudos label="Allowed pseudos to view the profile" />
+          </div>
+        {:else if visibility === 'PROTECTED'}
+          <div>
+            <label for="password">Password</label>
+            <input type="password" id="password" bind:value={password} required={selectedProfile.visibility !== 'PROTECTED' && visibility === 'PROTECTED'} />
+            {#if selectedProfile.visibility === 'PROTECTED'}
+              <p style="margin-top: 5px; font-size: 14px; color: #555"><i>Leave empty if you don't want to change it.</i></p>
+            {/if}
           </div>
         {:else}
           <div></div>
@@ -262,7 +279,7 @@
   }
 
   div.permissions {
-    max-height: 200px;
+    max-height: 115px;
     overflow-y: auto;
   }
 
@@ -292,6 +309,7 @@
 
   div.note {
     margin-top: 10px;
+    height: 55px;
 
     p {
       font-size: 14px;

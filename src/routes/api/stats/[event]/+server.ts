@@ -17,17 +17,17 @@ export const POST: RequestHandler = async (event) => {
 
   if (!(ev in extStatSchemas)) {
     console.warn(`Invalid stat event: ${ev} from IP ${ip}`)
-    return json({ message: NotificationCode.NOT_FOUND }, { status: 404 })
+    return json({ success: false, message: NotificationCode.NOT_FOUND }, { status: 404 })
   }
 
   if (!(await verifyScopedToken(tk, 'stats', { ip }))) {
     console.warn(`Unauthorized stat submission attempt from IP ${ip}`)
-    return json({ message: NotificationCode.UNAUTHORIZED }, { status: 401 })
+    return json({ success: false, message: NotificationCode.UNAUTHORIZED }, { status: 401 })
   }
 
   if (!statsLimiter.canPerformAction(ip)) {
     console.warn(`Too many stat submissions from IP ${ip}`)
-    return json({ message: NotificationCode.TOO_MANY_REQUESTS }, { status: 429 })
+    return json({ success: false, message: NotificationCode.TOO_MANY_REQUESTS }, { status: 429 })
   }
 
   let body
@@ -36,10 +36,10 @@ export const POST: RequestHandler = async (event) => {
     body = text.trim() ? JSON.parse(text) : {}
   } catch (err) {
     if (err instanceof BusinessError) {
-      return json({ message: err.code }, { status: err.httpStatus })
+      return json({ success: false, message: err.code }, { status: err.httpStatus })
     }
     console.warn(`Invalid JSON body from IP ${ip}:`, err)
-    return json({ message: NotificationCode.INVALID_INPUT }, { status: 400 })
+    return json({ success: false, message: NotificationCode.INVALID_INPUT }, { status: 400 })
   }
 
   let payload
@@ -48,25 +48,25 @@ export const POST: RequestHandler = async (event) => {
   } catch (err) {
     if (err instanceof ZodError) {
       console.warn(`Invalid request body for event ${ev} from IP ${ip}:`, err.issues)
-      return json({ message: NotificationCode.INVALID_INPUT, issues: err.issues }, { status: 400 })
+      return json({ success: false, message: NotificationCode.INVALID_INPUT, issues: err.issues }, { status: 400 })
     }
     console.error(`Unexpected error validating request body for event ${ev} from IP ${ip}:`, err)
-    return json({ message: NotificationCode.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return json({ success: false, message: NotificationCode.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 
   try {
     await addStat(ev, payload)
   } catch (err) {
     if (err instanceof BusinessError) {
-      return json({ message: err.code }, { status: err.httpStatus })
+      return json({ success: false, message: err.code }, { status: err.httpStatus })
     }
     if (err instanceof ServerError) {
-      return json({ message: err.code }, { status: err.httpStatus })
+      return json({ success: false, message: err.code }, { status: err.httpStatus })
     }
 
     console.error('Failed to record stat:', err)
-    return json({ message: NotificationCode.INTERNAL_SERVER_ERROR }, { status: 500 })
+    return json({ success: false, message: NotificationCode.INTERNAL_SERVER_ERROR }, { status: 500 })
   }
 
-  return new Response(null, { status: 204 })
+  return json({ success: true })
 }

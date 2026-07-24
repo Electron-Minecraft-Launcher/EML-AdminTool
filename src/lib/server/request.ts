@@ -48,3 +48,12 @@ export function getBearerToken(request: Request): string | null {
   const match = authorization?.match(/^Bearer\s+(.+)$/i)
   return match?.[1] ?? null
 }
+
+export function getBasicAuthCredentials(request: Request): { username: string; password: string } | null {
+  const authorization = request.headers.get('authorization')
+  const match = authorization?.match(/^Basic\s+(.+)$/i)
+  if (!match) return null
+  const decoded = atob(match[1])
+  const [username, password] = decoded.split(':', 2)
+  return { username, password }
+}

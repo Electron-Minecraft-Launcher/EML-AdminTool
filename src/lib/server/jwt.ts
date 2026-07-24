@@ -3,7 +3,7 @@ import { NotificationCode } from '$lib/utils/notifications'
 import type { User } from '@prisma/client'
 import type { RequestEvent } from '@sveltejs/kit'
 import { errors, jwtVerify, SignJWT, type JWTPayload } from 'jose'
-import { getBearerToken } from './request'
+import { getBearerToken, getBasicAuthCredentials } from './request'
 
 export async function createSessionToken(user: User): Promise<string> {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
@@ -50,13 +50,13 @@ export async function createScopedToken(scope: string, expirationTime: string = 
   return new SignJWT({ ...claims, scope }).setProtectedHeader({ alg: 'HS256' }).setIssuedAt().setExpirationTime(expirationTime).sign(secret)
 }
 
-export async function verifyScopedToken(token?: string, scope?: string, claims: JWTPayload = {}): Promise<boolean> {
+export async function verifyScopedToken(token?: string | null, scope?: string, claims: JWTPayload = {}): Promise<boolean> {
   if (!token || token.trim() === '') return false
 
   const secret = new TextEncoder().encode(process.env.JWT_SECRET_KEY)
 
   try {
-    const payload: JWTPayload = (await jwtVerify(token, secret)).payload
+    const payload = (await jwtVerify(token, secret)).payload
     return payload.scope === scope && Object.entries(claims).every(([key, value]) => payload[key] === value)
   } catch (err) {
     if (
@@ -74,4 +74,14 @@ export async function verifyScopedToken(token?: string, scope?: string, claims: 
   }
 }
 
-export { getBearerToken }
+export function getTokenPayload(token: string): JWTPayload | null {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    return payload
+  } catch (err) {
+    console.error('Failed to decode token payload:', err)
+    return null
+  }
+}
+
+export { getBearerToken, getBasicAuthCredentials }

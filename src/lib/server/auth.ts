@@ -7,6 +7,19 @@ import { checkPin } from './pin'
 import { Prisma, type User } from '@prisma/client'
 import { IUserStatus } from '$lib/utils/db'
 
+export const userPermissionsCache = new Map<string, { permissions: Set<string>; expiresAt: number }>()
+
+export function invalidateUserPermissions(userId: string) {
+  userPermissionsCache.delete(userId)
+}
+
+export function sweepPermissions() {
+  const now = Date.now()
+  for (const [userId, data] of userPermissionsCache.entries()) {
+    if (data.expiresAt <= now) userPermissionsCache.delete(userId)
+  }
+}
+
 export async function login(username: string, password: string): Promise<User> {
   let user
   try {
@@ -30,14 +43,16 @@ export async function login(username: string, password: string): Promise<User> {
   return user
 }
 
-export async function verify(session: string): Promise<User & { profilePermissions: { profileId: string; name: string; permission: number }[] }> {
+export async function verify(
+  session: string
+): Promise<User & { profilePermissions: { profileId: string; name: string; slug: string; permission: number }[] }> {
   const payload = await checkSession(session)
 
   let existing
   try {
     existing = await db.user.findUnique({
       where: { id: payload.id as string },
-      include: { profilePermissions: { select: { profileId: true, profile: { select: { name: true } }, permission: true } } }
+      include: { profilePermissions: { select: { profileId: true, profile: { select: { name: true, slug: true } }, permission: true } } }
     })
   } catch (err) {
     console.error('Error verifying user:', err)
@@ -52,6 +67,7 @@ export async function verify(session: string): Promise<User & { profilePermissio
   const profilePermissions = existing.profilePermissions.map((perm) => ({
     profileId: perm.profileId,
     name: perm.profile.name,
+    slug: perm.profile.slug,
     permission: perm.permission
   }))
 

@@ -3,10 +3,10 @@
   import { l } from '$lib/stores/language'
   import { addNotification } from '$lib/stores/notifications'
   import type { NotificationCode } from '$lib/utils/notifications'
+  import type { Profile } from '@prisma/client'
   import type { SubmitFunction } from '@sveltejs/kit'
-  import AddEditProfileModal from '../modals/AddEditProfileModal.svelte'
-  import type { Profile, User, UserProfilePermission } from '@prisma/client'
   import type { PageData } from '../../routes/(app)/dashboard/profiles/$types'
+  import AddEditProfileModal from '../modals/AddEditProfileModal.svelte'
 
   interface Props {
     selectedProfileId: string
@@ -30,8 +30,10 @@
     ip: '',
     port: null,
     tcpProtocol: '',
-    hidden: false,
+    hidden: false, // IGNORE
+    visibility: 'PUBLIC',
     allowedPseudos: [],
+    password: '',
     updatedAt: new Date(),
     createdAt: new Date()
   }
@@ -147,20 +149,23 @@
   <div class="container">
     <div>
       <p class="label">Visibility</p>
-      <p>{selectedProfile.hidden ? 'Hidden' : 'Visible'} {selectedProfile.isDefault ? '(default profile)' : ''}</p>
-      {#if selectedProfile.hidden}
-      <div class="note">
-        <p class="note"><i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;Note</p>
-        <p>
-          Hiding a profile is not a security mesure. It only prevents the profile from being displayed in the public list of profiles. <a
-            href="https://emlproject.com/docs/eml-admintool/administration-and-features/profiles"
-            target="_blank">Learn more...</a
-          >
-        </p>
-      </div>
+      <p>
+        {selectedProfile.visibility === 'HIDDEN' ? 'Hidden' : selectedProfile.visibility === 'PROTECTED' ? 'Protected' : 'Public'}
+        {selectedProfile.isDefault ? '(default profile)' : ''}
+      </p>
+      {#if selectedProfile.visibility === 'HIDDEN'}
+        <div class="note">
+          <p class="note"><i class="fa-solid fa-circle-info"></i>&nbsp;&nbsp;Note</p>
+          <p>
+            Hiding a profile is not a security mesure. It only prevents the profile from being displayed in the public list of profiles. <a
+              href="https://emlproject.com/docs/eml-admintool/administration-and-features/profiles"
+              target="_blank">Learn more...</a
+            >
+          </p>
+        </div>
       {/if}
     </div>
-    {#if selectedProfile.hidden}
+    {#if selectedProfile.visibility === 'HIDDEN'}
       <div>
         <p class="label">Allowed pseudos</p>
         {#each selectedProfile.allowedPseudos as pseudo}
@@ -168,6 +173,11 @@
         {:else}
           <p>-</p>
         {/each}
+      </div>
+    {:else if selectedProfile.visibility === 'PROTECTED'}
+      <div>
+        <p class="label">Password</p>
+        <p>••••••••••</p>
       </div>
     {/if}
   </div>
