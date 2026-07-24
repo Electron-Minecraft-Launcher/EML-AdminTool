@@ -44,13 +44,6 @@
     })
   })
 
-  function handleLeave(e: any) {
-    e.preventDefault()
-    if (!e.currentTarget!.contains(e.relatedTarget)) {
-      isDragOver = false
-    }
-  }
-
   async function getData(slug: string | null = null) {
     filesReady = false
     profileSlug = slug
@@ -60,6 +53,13 @@
       noScroll: true
     })
     filesReady = true
+  }
+
+  function handleLeave(e: any) {
+    e.preventDefault()
+    if (!e.currentTarget!.contains(e.relatedTarget)) {
+      isDragOver = false
+    }
   }
 
   async function handleDrop(e: DragEvent) {
@@ -225,7 +225,7 @@
   }}
   ondragleave={handleLeave}
   ondrop={handleDrop}
-  aria-label="Files Updater Explorer"
+  aria-label="Files Updater explorer"
 >
   <h3>
     <button style="margin-right: 5px" onclick={() => getData(selectedProfile.slug)} aria-label="Refresh Files Updater"

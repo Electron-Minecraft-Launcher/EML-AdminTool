@@ -9,6 +9,7 @@
   import { applyAction, enhance } from '$app/forms'
   import { NotificationCode } from '$lib/utils/notifications'
   import { addNotification } from '$lib/stores/notifications'
+  import CustomLoader from '../contents/CustomLoader.svelte'
 
   interface Props {
     show: boolean
@@ -24,11 +25,6 @@
   const latestInfo = 'Choosing this version will always force the Launcher to download the latest release.'
 
   let showLoader = $state(false)
-
-  let jsonLabel = $state('')
-  let jsonFile: File | null = $state(null)
-  let jarLabel = $state('')
-  let jarFile: File | null = $state(null)
 
   let type: LoaderType = $state(loader.type ?? ILoaderType.VANILLA)
   let majorVersion = $state(
@@ -145,47 +141,10 @@
     if (type === ILoaderType.NEOFORGE) {
       return `Minecraft NeoForge ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
     }
+    if (type === ILoaderType.QUILT) {
+      return `Minecraft Quilt ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
+    }
     return `Minecraft Vanilla ${majorVersion === 'Latest' || majorVersion === 'Snapshots' ? majorVersion : `${majorVersion}.x`}`
-  }
-
-  async function uploadFile(fileType: 'json' | 'jar') {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.accept = fileType === 'json' ? '.json' : '.jar'
-    input.multiple = false
-
-    input.onchange = () => {
-      const files = input.files ? [input.files[0]] : []
-      if (files.length === 0) return
-
-      const label = files[0].name
-
-      switch (fileType) {
-        case 'json':
-          jsonFile = files[0]
-          jsonLabel = label
-          break
-        case 'jar':
-          jarFile = files[0]
-          jarLabel = label
-          break
-        default:
-          console.warn('Unknown file:', fileType)
-      }
-    }
-
-    input.click()
-  }
-
-  function reset(fileType: 'json' | 'jar') {
-    if (fileType === 'json') {
-      jsonFile = null
-      jsonLabel = ''
-    }
-    if (fileType === 'jar') {
-      jarFile = null
-      jarLabel = ''
-    }
   }
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
@@ -237,7 +196,7 @@
         </button>
         <button class="list" type="button" class:active={type === ILoaderType.FABRIC} onclick={() => switchType(ILoaderType.FABRIC)}>Fabric</button>
         <button class="list" type="button" class:active={type === ILoaderType.QUILT} onclick={() => switchType(ILoaderType.QUILT)}>Quilt</button>
-        <!-- <button class="list" type="button" class:active={type === ILoaderType.CUSTOM} onclick={() => switchType(ILoaderType.CUSTOM)}>Custom</button> -->
+        <button class="list" type="button" class:active={type === ILoaderType.CUSTOM} onclick={() => switchType(ILoaderType.CUSTOM)}>Custom</button>
       </div>
 
       {#if type !== ILoaderType.CUSTOM}
@@ -290,50 +249,9 @@
         </div>
       {:else}
         <div class="list content-list">
-          <h4>Custom Loader</h4>
-          <p class="desc">You can upload your own version of Minecraft here (modified with MCP, for example).</p>
-          <ol style="margin-top: 5px; color: #505050; margin-bottom: 5px; padding-left: 20px; font-size: 14px; line-height: 1.6;">
-            <li>
-              Upload your custom <code>&lt;version&gt;.json</code> file, with the same format as Vanilla or Forge Minecraft's
-              <code>&lt;version&gt;.json</code>
-              (example
-              <a
-                href="https://piston-meta.mojang.com/v1/packages/30bb79802dcf36de95322ef6a055960c88131d2b/1.21.11.json"
-                target="_blank"
-                rel="noopener noreferrer">here</a
-              >).
-            </li>
-            <li>Upload your modified <code>&lt;version&gt;.jar</code>.</li>
-            <li>
-              If needed, you can also upload other files required by you custom version via the Files Updater interface. Ensure de strictly following
-              the required format of your <code>&lt;version&gt;.json</code> file. You may need to create a <code>libraries/</code>,
-              <code>assets/</code>, or other folders as specified in your JSON file.
-            </li>
-          </ol>
+          <h4>Custom loader</h4>
 
-          <p class="label" style="margin-top: 20px"><i class="fa-solid fa-bars-staggered"></i>&nbsp;&nbsp;version.json</p>
-          {#if !jsonFile}
-            <button type="button" class="secondary upload" onclick={() => uploadFile('json')}>
-              <i class="fa-solid fa-file-arrow-up"></i>&nbsp;&nbsp;Select file...
-            </button>
-          {:else}
-            <p class="no-link">{jsonLabel}</p>
-            <button type="button" class="remove" onclick={() => reset('json')} aria-label="Remove version.json">
-              <i class="fa-solid fa-circle-xmark"></i>
-            </button>
-          {/if}
-
-          <p class="label" style="margin-top: 20px"><i class="fa-brands fa-java"></i>&nbsp;&nbsp;version.jar</p>
-          {#if !jarFile}
-            <button type="button" class="secondary upload" onclick={() => uploadFile('jar')}>
-              <i class="fa-solid fa-file-arrow-up"></i>&nbsp;&nbsp;Select file...
-            </button>
-          {:else}
-            <p class="no-link">{jarLabel}</p>
-            <button type="button" class="remove" onclick={() => reset('jar')} aria-label="Remove version.jar">
-              <i class="fa-solid fa-circle-xmark"></i>
-            </button>
-          {/if}
+          <CustomLoader />
         </div>
       {/if}
     </div>

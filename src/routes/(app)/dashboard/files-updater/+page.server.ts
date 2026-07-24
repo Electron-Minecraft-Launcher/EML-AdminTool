@@ -286,7 +286,32 @@ export const actions: Actions = {
       console.error('Unknown error:', err)
       throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
     }
+  },
+
+  parseCustomVersion: async (event) => {
+    const user = event.locals.user
+
+    if (!user) {
+      throw error(401, { message: NotificationCode.UNAUTHORIZED })
+    }
+
+    const form = await event.request.formData()
+    const version = form.get('version')
+
+    try {
+      if (!(version instanceof File)) {
+        throw new BusinessError('Invalid version file', NotificationCode.INVALID_INPUT, 400)
+      }
+
+      const text = await version.text()
+
+    } catch (err) {
+      if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
+      if (err instanceof ServerError) throw error(err.httpStatus, { message: err.message })
+
+      console.error('Unknown error:', err)
+      throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
+    }
   }
 }
-
 
