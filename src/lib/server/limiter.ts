@@ -1,3 +1,5 @@
+import { building } from '$app/environment'
+
 type RateWindow = {
   expiresAt: number
   count: number
@@ -92,11 +94,14 @@ export const crashReportsLimiter = new FeatureLimiter({
   ]
 })
 
-setInterval(
-  () => {
-    const now = Date.now()
-    statsLimiter.sweep(now)
-    crashReportsLimiter.sweep(now)
-  },
-  60 * 60 * 1000
-)
+if (!building) {
+  setInterval(
+    () => {
+      const now = Date.now()
+      statsLimiter.sweep(now)
+      crashReportsLimiter.sweep(now)
+    },
+    60 * 60 * 1000
+  )
+}
+
