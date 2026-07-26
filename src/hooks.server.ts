@@ -27,7 +27,7 @@ const app: Handle = async ({ event, resolve }) => {
   const securityResponse = await handleSecurityBlocking(event)
   if (securityResponse) return securityResponse
 
-  if (event.url.pathname.startsWith('/files/')) {
+  if (event.url.pathname.startsWith('/files/') && !event.url.pathname.startsWith('/files/.staging/')) {
     return await serveStaticFile(event.url.pathname)
   }
 
@@ -148,7 +148,7 @@ async function handleSecurityBlocking(event: RequestEvent) {
     const parts = pathname.split('/')
     if (parts.length >= 4) {
       const slug = parts[3]
-
+      
       if (protectedProfilesCache.has(slug)) {
         const token = getBearerToken(event.request)
         const session = event.cookies.get('session')
@@ -357,3 +357,4 @@ async function ensureUserPermissionsLoaded(userId: string) {
     expiresAt: Date.now() + 24 * 60 * 60 * 1000
   })
 }
+

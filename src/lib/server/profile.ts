@@ -78,6 +78,8 @@ export async function updateProfile(id: string, profile: Partial<Profile>): Prom
     const res = await db.profile.update({ where: { id: id }, data: profile })
     if (profile.visibility === ProfileVisibility.PROTECTED) {
       protectedProfilesCache.add(res.slug)
+    } else if (profile.visibility === ProfileVisibility.PUBLIC) {
+      protectedProfilesCache.delete(res.slug)
     }
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
