@@ -199,8 +199,6 @@ function injectCorsHeaders(response: Response, event: RequestEvent): Response {
 async function serveStaticFile(pathname: string) {
   let relativePath = pathname.substring('/files/'.length)
 
-  console.log(protectedProfilesCache)
-
   try {
     relativePath = decodeURIComponent(relativePath)
   } catch {
