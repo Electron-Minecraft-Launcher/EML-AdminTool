@@ -149,7 +149,6 @@ async function handleSecurityBlocking(event: RequestEvent) {
     if (parts.length >= 4) {
       const slug = parts[3]
       
-      console.log(protectedProfilesCache)
       if (protectedProfilesCache.has(slug)) {
         const token = getBearerToken(event.request)
         const session = event.cookies.get('session')
