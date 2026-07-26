@@ -12,10 +12,11 @@ export async function up(prisma: PrismaClient) {
     } else {
       await prisma.profile.update({
         where: { id: profile.id },
-        data: { visibility: ProfileVisibility.PROTECTED }
+        data: { visibility: ProfileVisibility.PUBLIC }
       })
     }
   }
 
   console.log(`Migrated profile visibility settings.`)
 }
+
