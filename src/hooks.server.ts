@@ -27,7 +27,7 @@ const app: Handle = async ({ event, resolve }) => {
   const securityResponse = await handleSecurityBlocking(event)
   if (securityResponse) return securityResponse
 
-  if (event.url.pathname.startsWith('/files/')) {
+  if (event.url.pathname.startsWith('/files/') && !event.url.pathname.startsWith('/files/.staging/')) {
     return await serveStaticFile(event.url.pathname)
   }
 
@@ -109,7 +109,6 @@ function getAllowedOrigins() {
 }
 
 async function handleSecurityBlocking(event: RequestEvent) {
-  const user = event.locals.user
   const requestOrigin = event.request.headers.get('origin')
   const method = event.request.method
   const allowedOrigins = getAllowedOrigins()
@@ -149,7 +148,8 @@ async function handleSecurityBlocking(event: RequestEvent) {
     const parts = pathname.split('/')
     if (parts.length >= 4) {
       const slug = parts[3]
-
+      
+      console.log(protectedProfilesCache)
       if (protectedProfilesCache.has(slug)) {
         const token = getBearerToken(event.request)
         const session = event.cookies.get('session')
@@ -199,6 +199,8 @@ function injectCorsHeaders(response: Response, event: RequestEvent): Response {
 
 async function serveStaticFile(pathname: string) {
   let relativePath = pathname.substring('/files/'.length)
+
+  console.log(protectedProfilesCache)
 
   try {
     relativePath = decodeURIComponent(relativePath)
@@ -358,3 +360,4 @@ async function ensureUserPermissionsLoaded(userId: string) {
     expiresAt: Date.now() + 24 * 60 * 60 * 1000
   })
 }
+
