@@ -51,7 +51,7 @@ export async function waitForServerRestart(retrying: number = 10, reload: boolea
 }
 
 /**
- * Returns the domain of the request, taking into account possible reverse proxies that set 
+ * Returns the domain of the request, taking into account possible reverse proxies that set
  * `x-forwarded-proto` and `x-forwarded-host` headers.
  * @param event The request event from which to extract the domain.
  * @returns The domain as a string, including the protocol (e.g., `https://example.com`).
@@ -140,7 +140,39 @@ export function getFileIcon(file: File_): string {
   }
 }
 
+/**
+ * Get the major version of a Minecraft version string.
+ * Eg. `'1.12.2'` returns `'1.12'`; `'26.2'` return `'26'`.
+ * @param version The Minecraft version string.
+ * @param fallback The fallback value if no major version can be extracted.
+ * @returns The major version string or the fallback value.
+ */
+export function getMajorVersion(version: string, fallback = 'Latest'): string {
+  const match = version.match(/^(1\.\d+)|^(\d+\.)/)
+  let majorVersion = ''
+  if (match) majorVersion = match[0].replace(/\.$/, '')
+  if (majorVersion == '0') majorVersion = 'Classic'
+  return majorVersion || fallback
+}
+
+/**
+ * Extracts the version from a YAML content string.
+ * @param content The YAML content string.
+ * @returns The extracted version or null if not found.
+ */
 export function extractVersionFromYaml(content: string): string | null {
   const match = content.match(/^version:\s*(.+)$/m)
   return match ? match[1].trim() : null
+}
+
+/**
+ * Computes the SHA-1 hash of a given file using the SubtleCrypto API.
+ * @param file The file for which to compute the SHA-1 hash.
+ * @returns A promise that resolves to the SHA-1 hash as a hexadecimal string.
+ */
+export async function computeSha1Hash(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer()
+  const hashBuffer = await crypto.subtle.digest('SHA-1', arrayBuffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 }

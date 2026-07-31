@@ -61,10 +61,3 @@ export async function getRemoteFileSha1(url: string, errorMsg: string): Promise<
   }
 }
 
-export function getMajorVersion(version: string, fallback = 'Latest'): string {
-  const match = version.match(/^(1\.\d+)|^(\d+\.)/)
-  let majorVersion = ''
-  if (match) majorVersion = match[0].replace(/\.$/, '')
-  if (majorVersion == '0') majorVersion = 'Classic'
-  return majorVersion || fallback
-}

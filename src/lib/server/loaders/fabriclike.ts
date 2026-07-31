@@ -3,7 +3,8 @@ import { BusinessError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import type { LoaderVersion } from '$lib/utils/types'
 import { getOrSet } from '../cache'
-import { fetchJson, getMajorVersion } from './utils'
+import { fetchJson } from './utils'
+import { getMajorVersion } from '../../utils/utils'
 
 type FabricLikeLoader = typeof ILoaderType.FABRIC | typeof ILoaderType.QUILT
 

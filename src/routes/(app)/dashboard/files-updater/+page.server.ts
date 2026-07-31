@@ -1,19 +1,19 @@
+import type { PageServerLoad } from './$types'
+import type { Loader, LoaderFormat } from '@prisma/client'
+import type { FileDir } from '$lib/utils/types'
 import { error, redirect, type Actions } from '@sveltejs/kit'
 import { fail } from '$lib/server/action'
-import type { PageServerLoad } from './$types'
 import { NotificationCode } from '$lib/utils/notifications'
 import { createFileSchema, editFileSchema, renameFileSchema, loaderSchema, deleteFilesSchema } from '$lib/utils/validations'
 import { cacheFiles, createFile, deleteFile, editFile, getCachedFilesParsed, getFiles, renameFile } from '$lib/server/files'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { db } from '$lib/server/db'
 import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
-import type { Loader, LoaderFormat } from '@prisma/client'
 import { updateLoader } from '$lib/server/loader'
 import { checkVanillaLoader, getVanillaVersions } from '$lib/server/loaders/vanilla'
 import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$lib/server/loaders/forgelike'
 import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
 import { getAccessibleProfiles, resolveProfile } from '$lib/server/profile'
-import type { FileDir } from '$lib/utils/types'
 import { getDomain } from '$lib/utils/utils'
 
 export const load = (async (event) => {
@@ -279,32 +279,6 @@ export const actions: Actions = {
       }
 
       await updateLoader({ type, minecraftVersion, loaderVersion, format, file }, profile.id)
-    } catch (err) {
-      if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
-      if (err instanceof ServerError) throw error(err.httpStatus, { message: err.message })
-
-      console.error('Unknown error:', err)
-      throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
-    }
-  },
-
-  parseCustomVersion: async (event) => {
-    const user = event.locals.user
-
-    if (!user) {
-      throw error(401, { message: NotificationCode.UNAUTHORIZED })
-    }
-
-    const form = await event.request.formData()
-    const version = form.get('version')
-
-    try {
-      if (!(version instanceof File)) {
-        throw new BusinessError('Invalid version file', NotificationCode.INVALID_INPUT, 400)
-      }
-
-      const text = await version.text()
-
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.message })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.message })

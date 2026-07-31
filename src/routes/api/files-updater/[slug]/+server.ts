@@ -27,7 +27,6 @@ export const GET: RequestHandler = async (event) => {
     if (!token) {
       return json({ success: false, message: 'Missing Authorization header' }, { status: 401 })
     }
-    console.log(token, profile.slug)
     const isValid = await verifyScopedToken(token, `profile`, { slug })
     if (!isValid) {
       return json({ success: false, message: 'Invalid or expired token' }, { status: 401 })

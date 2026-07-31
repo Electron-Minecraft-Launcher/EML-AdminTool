@@ -19,7 +19,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   const body = await request.json()
   const { context, files }: { context: Context; files: any[] } = body
-  console.log(context, user, !user.p_bootstraps)
 
   if (!['bootstraps', 'backgrounds', 'images'].includes(context) && !context.startsWith('files-updater/')) {
     console.warn('Forbidden upload initialization attempt: invalid context')

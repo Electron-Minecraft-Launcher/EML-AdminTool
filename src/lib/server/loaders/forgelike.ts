@@ -3,9 +3,10 @@ import { NotificationCode } from '$lib/utils/notifications'
 import type { LoaderVersion } from '$lib/utils/types'
 import { getOrSet } from '../cache'
 import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
-import { fetchJson, fetchXml, getMajorVersion, getRemoteFileSha1, getRemoteFileSize } from './utils'
+import { fetchJson, fetchXml, getRemoteFileSha1, getRemoteFileSize } from './utils'
 import type { LoaderFormat } from '@prisma/client'
 import type { File as File_ } from '../../utils/types'
+import { getMajorVersion } from '$lib/utils/utils'
 
 type ForgeLikeLoader = typeof ILoaderType.FORGE | typeof ILoaderType.NEOFORGE
 
@@ -28,7 +29,6 @@ const V = {
 
 export async function getForgeLikeVersions(loader: ForgeLikeLoader): Promise<LoaderVersion[]> {
   const cacheKey = loader === ILoaderType.FORGE ? 'forge-versions' : 'neoforge-versions'
-
   return getOrSet(cacheKey, async () => {
     const v = V[loader]
     const mavenMetadataUrl = `${v.mavenUrl}/${v.group.replace(/\./g, '/')}/${v.artifact}/maven-metadata.xml`
@@ -139,13 +139,13 @@ export async function getForgeLikeFile(
 
 function parseForgeVersion(v: string, currentMajor: string) {
   const parts = v.split('-')
-  if (parts.length >= 2 && parts[0].startsWith('1.')) {
+  if (parts.length >= 2) {
     const mcVer = parts[0]
 
     return {
       majorVersion: getMajorVersion(mcVer, currentMajor),
       minecraftVersion: mcVer,
-      forgeVersion: parts[1]
+      forgeVersion: parts.slice(1).join('-')
     }
   }
 
@@ -208,3 +208,4 @@ function getTypedFormat(format: string) {
       return ILoaderFormat.UNIVERSAL
   }
 }
+
