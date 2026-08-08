@@ -1,5 +1,8 @@
-import { ServerError } from '$lib/utils/errors'
+import { addNotification } from '$lib/stores/notifications'
+import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
+import type en from '$lib/locales/en'
+import type { File as File_ } from '$lib/utils/types'
 
 export interface MissingSpecialFiles {
   assetIndexJson: string | null
@@ -43,7 +46,7 @@ function mavenToPath(name: string): string {
   return `${pkg}/${artifact}/${version}/${fileName}`
 }
 
-export function getMissingLibrariesFromVersion(jsonString: string): [Map<string, MissingLibrary>, MissingSpecialFiles] {
+export function getMissingLibrariesFromVersion(jsonString: string, $l?: typeof en): [Map<string, MissingLibrary>, MissingSpecialFiles] {
   let manifest: any
   try {
     manifest = JSON.parse(jsonString)
@@ -60,25 +63,25 @@ export function getMissingLibrariesFromVersion(jsonString: string): [Map<string,
     loggingXml: null
   }
 
-  if (manifest.assetIndex?.url === '') {
+  if (manifest.assetIndex?.url === 'eml://upload') {
     const file = manifest.assetIndex
     missingFiles.set(file.sha1, { sha1: file.sha1, size: file.size, path: '*assetIndex.json' })
     missingSpecialFiles.assetIndexJson = file.sha1
   }
 
-  if (manifest.downloads?.client?.url === '') {
+  if (manifest.downloads?.client?.url === 'eml://upload') {
     const file = manifest.downloads.client
     missingFiles.set(file.sha1, { sha1: file.sha1, size: file.size, path: '*client.jar' })
     missingSpecialFiles.clientJar = file.sha1
   }
 
-  if (manifest.downloads?.client_mappings?.url === '') {
+  if (manifest.downloads?.client_mappings?.url === 'eml://upload') {
     const file = manifest.downloads.client_mappings
     missingFiles.set(file.sha1, { sha1: file.sha1, size: file.size, path: '*client.txt' })
     missingSpecialFiles.clientTxt = file.sha1
   }
 
-  if (manifest.logging?.client?.file?.url === '') {
+  if (manifest.logging?.client?.file?.url === 'eml://upload') {
     const file = manifest.logging.client.file
     missingFiles.set(file.sha1, { sha1: file.sha1, size: file.size, path: '*logging.xml' })
     missingSpecialFiles.loggingXml = file.sha1
@@ -88,7 +91,7 @@ export function getMissingLibrariesFromVersion(jsonString: string): [Map<string,
     for (const lib of manifest.libraries) {
       let isMissing = false
 
-      if (lib.downloads?.artifact?.url === '') {
+      if (lib.downloads?.artifact?.url === 'eml://upload') {
         missingFiles.set(lib.downloads.artifact.sha1, {
           sha1: lib.downloads.artifact.sha1,
           size: lib.downloads.artifact.size,
@@ -100,7 +103,7 @@ export function getMissingLibrariesFromVersion(jsonString: string): [Map<string,
       if (lib.downloads?.classifiers) {
         for (const key in lib.downloads.classifiers) {
           const classifier = lib.downloads.classifiers[key]
-          if (classifier.url === '') {
+          if (classifier.url === 'eml://upload') {
             missingFiles.set(classifier.sha1, {
               sha1: classifier.sha1,
               size: classifier.size,
@@ -111,11 +114,20 @@ export function getMissingLibrariesFromVersion(jsonString: string): [Map<string,
         }
       }
 
-      if (!isMissing && lib.url === '') {
+      if (!isMissing && lib.url === 'eml://upload') {
         const computedPath = lib.path || (lib.name ? mavenToPath(lib.name) : 'unknown.jar')
 
-        missingFiles.set(lib.sha1 || (Array.isArray(lib.checksums) ? lib.checksums[0] : undefined), {
-          sha1: lib.sha1 || (Array.isArray(lib.checksums) ? lib.checksums[0] : undefined),
+        if (!lib.sha1) {
+          if ($l) {
+            addNotification('ERROR', $l.notifications.INVALID_INPUT)
+            return [new Map(), missingSpecialFiles]
+          } else {
+            throw new BusinessError('Missing SHA1 for library with eml://upload URL', NotificationCode.INVALID_INPUT)
+          }
+        }
+
+        missingFiles.set(lib.sha1, {
+          sha1: lib.sha1,
           size: lib.size,
           path: computedPath
         })
@@ -134,7 +146,7 @@ export function getMissingAssetsFromIndex(jsonString: string): Map<string, Missi
     console.error('Failed to parse assetIndex JSON:', err)
     throw new ServerError('Failed to parse assetIndex JSON', err, NotificationCode.INVALID_INPUT, 400)
   }
-  
+
   const missingFiles: Map<string, MissingAsset> = new Map()
 
   if (manifest.objects && typeof manifest.objects === 'object') {
@@ -142,7 +154,7 @@ export function getMissingAssetsFromIndex(jsonString: string): Map<string, Missi
       if (Object.prototype.hasOwnProperty.call(manifest.objects, path)) {
         const node = manifest.objects[path]
 
-        if (typeof node.hash === 'string' && typeof node.size === 'number' && node.url === '') {
+        if (typeof node.hash === 'string' && typeof node.size === 'number' && node.url === 'eml://upload') {
           missingFiles.set(node.hash, {
             hash: node.hash,
             size: node.size,
@@ -156,63 +168,117 @@ export function getMissingAssetsFromIndex(jsonString: string): Map<string, Missi
   return missingFiles
 }
 
-export function rewriteManifestUrls(manifest: any, baseUrl: string): any {
-  if (manifest.assetIndex?.url === '') {
-    manifest.assetIndex.url = `${baseUrl}/assets/indexes/${manifest.assetIndex.id}.json`
+/**
+ * @param manifest Parsed version manifest.
+ * @param baseUrl Eg. `'{{url}}/files/loaders/${profile.slug}'`
+ * @param uploadedFiles Get the uploaded files from `getCachedFilesParsed` and convert it to a Map with SHA1 as key.
+ */
+export function rewriteManifestUrls(
+  manifest: any,
+  baseUrl: string,
+  uploadedFiles: Map<string, File_>
+): { manifest: any; pathsToMove: Map<string, string> } {
+  const pathsToMove = new Map<string, string>()
+
+  if (manifest.assetIndex?.url === 'eml://upload' && manifest.assetIndex.sha1 && uploadedFiles.has(manifest.assetIndex.sha1)) {
+    const destPath = `assets/indexes/${manifest.assetIndex.id}.json`
+    manifest.assetIndex.url = `${baseUrl}/${destPath}`
+    pathsToMove.set(manifest.assetIndex.sha1, destPath)
   }
 
-  if (manifest.downloads?.client?.url === '') {
-    manifest.downloads.client.url = `${baseUrl}/versions/${manifest.id}/client.jar`
+  if (manifest.downloads?.client?.url === 'eml://upload' && manifest.downloads.client.sha1 && uploadedFiles.has(manifest.downloads.client.sha1)) {
+    const destPath = `versions/${manifest.id}/client.jar`
+    manifest.downloads.client.url = `${baseUrl}/${destPath}`
+    pathsToMove.set(manifest.downloads.client.sha1, destPath)
   }
 
-  if (manifest.downloads?.client_mappings?.url === '') {
-    manifest.downloads.client_mappings.url = `${baseUrl}/versions/${manifest.id}/client_mappings.txt`
+  if (
+    manifest.downloads?.client_mappings?.url === 'eml://upload' &&
+    manifest.downloads.client_mappings.sha1 &&
+    uploadedFiles.has(manifest.downloads.client_mappings.sha1)
+  ) {
+    const destPath = `versions/${manifest.id}/client_mappings.txt`
+    manifest.downloads.client_mappings.url = `${baseUrl}/${destPath}`
+    pathsToMove.set(manifest.downloads.client_mappings.sha1, destPath)
   }
 
-  if (manifest.logging?.client?.file?.url === '') {
-    manifest.logging.client.file.url = `${baseUrl}/assets/log_configs/${manifest.logging.client.file.id}`
+  if (
+    manifest.logging?.client?.file?.url === 'eml://upload' &&
+    manifest.logging.client.file.sha1 &&
+    uploadedFiles.has(manifest.logging.client.file.sha1)
+  ) {
+    const destPath = `assets/log_configs/${manifest.logging.client.file.id}`
+    manifest.logging.client.file.url = `${baseUrl}/${destPath}`
+    pathsToMove.set(manifest.logging.client.file.sha1, destPath)
   }
 
   if (Array.isArray(manifest.libraries)) {
     for (const lib of manifest.libraries) {
-      if (lib.downloads?.artifact?.url === '') {
-        lib.downloads.artifact.url = `${baseUrl}/libraries/${lib.downloads.artifact.path}`
+      if (lib.downloads?.artifact?.url === 'eml://upload' && lib.downloads.artifact.sha1 && uploadedFiles.has(lib.downloads.artifact.sha1)) {
+        const computedPath = lib.downloads.artifact.path || mavenToPath(lib.name)
+        const destPath = `libraries/${computedPath}`
+        lib.downloads.artifact.url = `${baseUrl}/${destPath}`
+        pathsToMove.set(lib.downloads.artifact.sha1, destPath)
       }
 
       if (lib.downloads?.classifiers) {
         for (const key in lib.downloads.classifiers) {
           const classifier = lib.downloads.classifiers[key]
-          if (classifier.url === '') {
-            classifier.url = `${baseUrl}/libraries/${classifier.path}`
+          if (classifier.url === 'eml://upload' && classifier.sha1 && uploadedFiles.has(classifier.sha1)) {
+            const computedPath = classifier.path || mavenToPath(lib.name).replace('.jar', `-${key}.jar`)
+            const destPath = `libraries/${computedPath}`
+            classifier.url = `${baseUrl}/${destPath}`
+            pathsToMove.set(classifier.sha1, destPath)
           }
         }
       }
 
-      if (lib.url === '' && !lib.downloads?.artifact) {
-        const computedPath = lib.path || mavenToPath(lib.name)
-        lib.url = `${baseUrl}/libraries/${computedPath}`
+      if (lib.url === 'eml://upload' && !lib.downloads?.artifact) {
+        // Gestion des librairies n'ayant que des checksums (ex: certaines versions de Forge)
+        const sha1 = lib.sha1 || (Array.isArray(lib.checksums) ? lib.checksums[0] : undefined)
+
+        if (sha1 && uploadedFiles.has(sha1)) {
+          const computedPath = lib.path || mavenToPath(lib.name)
+          const destPath = `libraries/${computedPath}`
+          lib.url = `${baseUrl}/${destPath}`
+          pathsToMove.set(sha1, destPath)
+        }
       }
     }
   }
 
-  return manifest
+  return { manifest, pathsToMove }
 }
 
-export function rewriteAssetIndexUrls(assetIndex: any, baseUrl: string): any {
+/**
+ * @param assetIndex Parsed asset index.
+ * @param baseUrl Eg. `'{{url}}/files/loaders/${profile.slug}'`
+ * @param uploadedFiles Get the uploaded files from `getCachedFilesParsed` and convert it to a Map with SHA1 as key.
+ */
+export function rewriteAssetIndexUrls(
+  assetIndex: any,
+  baseUrl: string,
+  uploadedFiles: Map<string, File_>
+): { assetIndex: any; pathsToMove: Map<string, string> } {
+  const pathsToMove = new Map<string, string>()
+
   if (assetIndex.objects && typeof assetIndex.objects === 'object') {
     for (const path in assetIndex.objects) {
       if (Object.prototype.hasOwnProperty.call(assetIndex.objects, path)) {
         const node = assetIndex.objects[path]
 
-        if (node.url === '') {
+        if (node.url === 'eml://upload' && node.hash && uploadedFiles.has(node.hash)) {
           const hash = node.hash
           const subfolder = hash.substring(0, 2)
-          node.url = `${baseUrl}/assets/objects/${subfolder}/${hash}`
+          const destPath = `assets/objects/${subfolder}/${hash}`
+
+          node.url = `${baseUrl}/${destPath}`
+          pathsToMove.set(hash, destPath)
         }
       }
     }
   }
 
-  return assetIndex
+  return { assetIndex, pathsToMove }
 }
 

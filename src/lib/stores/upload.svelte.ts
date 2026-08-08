@@ -1,7 +1,7 @@
 import { smartUpload } from '$lib/utils/uploader'
 import { invalidateAll } from '$app/navigation'
 import { addNotification } from '$lib/stores/notifications'
-import type { File as File_ } from '$lib/utils/types'
+import type { Context, File as File_, FileDir } from '$lib/utils/types'
 
 class UploadStore {
   isUploading = $state(false)
@@ -14,6 +14,23 @@ class UploadStore {
 
   private fileSizes = new Map<string, number>()
   private fileProgress = new Map<string, number>()
+
+  private home: 'files-updater' | '.staging-loader'
+  private mode: 'BEST_EFFORT' | 'ALL_OR_NOTHING'
+  private currentPath: string
+  private promptOverwrite: (fileName: string) => Promise<boolean>
+
+  constructor(
+    home: 'files-updater' | '.staging-loader',
+    mode: 'BEST_EFFORT' | 'ALL_OR_NOTHING',
+    currentPath: string,
+    promptOverwrite: (fileName: string) => Promise<boolean>
+  ) {
+    this.home = home
+    this.mode = mode
+    this.currentPath = currentPath
+    this.promptOverwrite = promptOverwrite
+  }
 
   async startUpload(files: File[], currentPath: string, slug: string, onFileUploaded?: (newFile: File_) => void) {
     if (files.length === 0) return
@@ -30,10 +47,10 @@ class UploadStore {
     })
 
     const success = await smartUpload(files, {
-      context: `files-updater/${slug}`,
-      mode: 'BEST_EFFORT',
+      context: `${this.home}/${slug}`,
+      mode: this.mode,
       currentPath,
-      promptOverwrite: async (fileName) => confirm(`File "${fileName}" already exists. Do you want to overwrite it?`),
+      promptOverwrite: this.promptOverwrite,
       onProgress: (fileName, percentage) => {
         this.currentFile = fileName
 
@@ -69,5 +86,11 @@ class UploadStore {
   }
 }
 
-export const uploader = new UploadStore()
+export const filesUpdaterUploader = new UploadStore('files-updater', 'BEST_EFFORT', '', async (fileName) =>
+  confirm(`File "${fileName}" already exists. Do you want to overwrite it?`)
+)
+
+export type { UploadStore }
+
+export const customLoaderUploader = new UploadStore('.staging-loader', 'ALL_OR_NOTHING', '', async () => true)
 

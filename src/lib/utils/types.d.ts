@@ -66,9 +66,9 @@ export interface HashFile {
   sha1: string
 }
 
-export type FileDir = 'files-updater' | 'loader' | 'bootstraps' | 'backgrounds' | 'images' | 'cache' | `files-updater/${string}`
+export type FileDir = 'files-updater' | 'loader' | 'bootstraps' | 'backgrounds' | 'images' | 'cache' | `files-updater/${string}` | `.staging-loader/${string}`
 export type DataDir = 'cache' | 'crash-reports'
-export type Context = `files-updater/${string}` | 'bootstraps' | 'backgrounds' | 'images'
+export type Context = `files-updater/${string}` | `.staging-loader/${string}` | 'bootstraps' | 'backgrounds' | 'images'
 
 export interface LoaderVersion {
   majorVersion: string

@@ -32,7 +32,6 @@ enum LoaderType {
   NEOFORGE
   FABRIC
   QUILT
-  CUSTOM
 }
 
 enum LoaderFormat {
@@ -99,6 +98,7 @@ model Loader {
   minecraftVersion String
   loaderVersion    String
   format           LoaderFormat
+  isCustom         Boolean      @default(false)
   file             Json?
   updatedAt        DateTime     @updatedAt
   profileId        String       @unique @default("1")

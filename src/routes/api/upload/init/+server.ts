@@ -20,12 +20,16 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const body = await request.json()
   const { context, files }: { context: Context; files: any[] } = body
 
-  if (!['bootstraps', 'backgrounds', 'images'].includes(context) && !context.startsWith('files-updater/')) {
+  if (
+    !['bootstraps', 'backgrounds', 'images'].includes(context) &&
+    !context.startsWith('files-updater/') &&
+    !context.startsWith('.staging-loader/')
+  ) {
     console.warn('Forbidden upload initialization attempt: invalid context')
     return json({ message: NotificationCode.FORBIDDEN }, { status: 401 })
   }
 
-  if (context.match(/^files-updater\/[a-z0-9-]+$/)) {
+  if (context.match(/^files-updater\/[a-z0-9-]+$/) || context.match(/^\.staging-loader\/[a-z0-9-]+$/)) {
     const slug = context.split('/')[1]
     const profile = await getProfileBySlug(slug)
     if (!profile) {
@@ -57,7 +61,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   for (const file of files) {
     try {
       /**
-       * If the context is `'file-updater/...'`, `targetPath` contains the profile slug.
+       * If the context is `'file-updater/...'` or `.staging-loader/...`, `targetPath` contains the profile slug.
        */
       const targetPath = sanitizePath('files', context, file.path)
 

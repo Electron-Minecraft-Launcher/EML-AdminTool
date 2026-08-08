@@ -193,7 +193,15 @@ export const loaderSchema = z.object({
   profileId: z.string(),
   type: z.enum(ILoaderType),
   minecraftVersion: z.string(),
-  loaderVersion: z.string()
+  loaderVersion: z.string(),
+  customLoaderVersionSha1: z.string().nullable().optional(),
+})
+
+export const customLoaderSchema = z.object({
+  profileId: z.string(),
+  type: z.enum(ILoaderType),
+  patchLog4Shell: z.boolean(),
+  customLoaderVersionSha1: z.string().min(64, NotificationCode.INVALID_INPUT)
 })
 
 const platformMetadataSchema = z.object({

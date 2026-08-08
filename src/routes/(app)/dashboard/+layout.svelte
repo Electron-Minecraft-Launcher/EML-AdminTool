@@ -5,6 +5,7 @@
   import Footer from '../../../components/layouts/Footer.svelte'
   import getEnv from '$lib/utils/env'
   import UploadWidget from '../../../components/layouts/UploadWidget.svelte'
+  import { customLoaderUploader, filesUpdaterUploader } from '$lib/stores/upload.svelte'
 
   interface Props {
     data: LayoutData
@@ -20,7 +21,8 @@
   let leftPanelOpen = $state(true)
 </script>
 
-<UploadWidget />
+<UploadWidget uploader={filesUpdaterUploader} />
+<UploadWidget uploader={customLoaderUploader} />
 
 <div class="container">
   <div class="nav" class:closed={!leftPanelOpen}>

@@ -8,9 +8,10 @@
   import getUser from '$lib/utils/user'
   import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
   import type { Loader } from '@prisma/client'
-  import { goto, invalidateAll, pushState } from '$app/navigation'
-  import { uploader } from '$lib/stores/upload.svelte'
+  import { goto } from '$app/navigation'
+  import { filesUpdaterUploader } from '$lib/stores/upload.svelte'
   import { page } from '$app/state'
+  import { getAllItemEntries } from '$lib/utils/utils'
 
   let { data }: PageProps = $props()
 
@@ -68,7 +69,7 @@
 
     if (!e.dataTransfer || e.dataTransfer.items.length === 0) return
 
-    const items = await getAllEntries(e.dataTransfer.items)
+    const items = await getAllItemEntries(e.dataTransfer.items)
     let entries: File[] = []
 
     for (const item of items) {
@@ -112,53 +113,9 @@
         files = [...files, ...optimisticFolders]
       }
 
-      uploader.startUpload(entries, currentPath, selectedProfile.slug, (newFile: File_) => {
+      filesUpdaterUploader.startUpload(entries, currentPath, selectedProfile.slug, (newFile: File_) => {
         files = [...files.filter((f) => f.name !== newFile.name || f.path !== newFile.path), newFile]
       })
-    }
-  }
-
-  async function getAllEntries(items: DataTransferItemList) {
-    let entries: FileSystemFileEntry[] = []
-    let queue: FileSystemEntry[] = []
-
-    for (let i = 0; i < items.length; i++) {
-      if (items[i]) queue.push(items[i].webkitGetAsEntry()!)
-    }
-
-    while (queue.length > 0) {
-      const entry = queue.shift()
-      if (entry) {
-        if (entry.isFile) {
-          entries.push(entry as FileSystemFileEntry)
-        } else if (entry.isDirectory) {
-          const reader = (entry as FileSystemDirectoryEntry).createReader()
-          queue.push(...(await readAllDirectoryEntries(reader)))
-        }
-      }
-    }
-
-    return entries
-  }
-
-  async function readAllDirectoryEntries(reader: FileSystemDirectoryReader) {
-    let entries = []
-    let readEntries = await readDirectoryEntries(reader)
-
-    while (readEntries.length > 0) {
-      entries.push(...readEntries)
-      readEntries = await readDirectoryEntries(reader)
-    }
-
-    return entries
-  }
-
-  async function readDirectoryEntries(reader: FileSystemDirectoryReader): Promise<FileSystemEntry[]> {
-    try {
-      return await new Promise((resolve, reject) => reader.readEntries(resolve, reject))
-    } catch (error) {
-      console.error(error)
-      return []
     }
   }
 

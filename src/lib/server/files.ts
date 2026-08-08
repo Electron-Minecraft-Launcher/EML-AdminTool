@@ -27,8 +27,9 @@ export async function getFiles(domain: string, dir: FileDir | DataDir): Promise<
  * @param dir Directory to get cached files from (including the profile slug if applicable).
  */
 export async function getCachedFiles(domain: string, dir: FileDir): Promise<string> {
-  const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
-  const cacheKey = slug ? `files-updater-${slug}` : dir
+  const base = dir.startsWith('files-updater/') || dir.startsWith('.staging') ? dir.split('/')[0] : null
+  const slug = dir.startsWith('files-updater/') || dir.startsWith('.staging') ? dir.split('/')[1] : undefined
+  const cacheKey = base && slug ? `${base}-${slug}` : dir
   const target = sanitizePath('data', 'cache', `${cacheKey}.json`)
   let cache
   try {
@@ -65,7 +66,7 @@ export async function getCachedFilesParsed(domain: string, dir: FileDir): Promis
  */
 export async function uploadFile(dir: FileDir | DataDir, path: string, file: File): Promise<void> {
   if (!file) return
-  
+
   const base = getBaseFolder(dir)
   let target, name, buffer
   try {
@@ -245,12 +246,13 @@ export function sanitizePath(...path: string[]): string {
 
 /**
  * Generate a cache file for a directory by browsing the directory and saving the file metadata in a JSON file.
- * The cache file will be saved in `files/cache/{dir}.json`.
+ * The cache file will be saved in `data/cache/{dir}.json`.
  * @param dir Directory to generate the cache for (including the profile slug if applicable). This should be the same directory used in `getCachedFiles` and `getCachedFilesParsed`.
  */
 export async function cacheFiles(dir: FileDir): Promise<void> {
-  const slug = dir.startsWith('files-updater/') ? dir.split('/')[1] : undefined
-  const cacheKey = slug ? `files-updater-${slug}` : dir
+  const base = dir.startsWith('files-updater/') || dir.startsWith('.staging') ? dir.split('/')[0] : null
+  const slug = dir.startsWith('files-updater/') || dir.startsWith('.staging') ? dir.split('/')[1] : undefined
+  const cacheKey = base && slug ? `${base}-${slug}` : dir
   const files = await getFiles('{{url}}', dir as FileDir)
   await fs.mkdir(path_.join(root, 'data', 'cache'), { recursive: true })
   await fs.writeFile(path_.join(root, 'data', 'cache', `${cacheKey}.json`), JSON.stringify(files, null, 2))

@@ -176,3 +176,52 @@ export async function computeSha1Hash(file: File): Promise<string> {
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
 }
+
+/**
+ * Gets all file entries from a `DataTransferItemList`, including files in directories.
+ * @param items The `DataTransferItemList` from which to extract file entries.
+ * @returns A promise that resolves to an array of `FileSystemFileEntry` objects.
+ */
+export async function getAllItemEntries(items: DataTransferItemList): Promise<FileSystemFileEntry[]> {
+  let entries: FileSystemFileEntry[] = []
+  let queue: FileSystemEntry[] = []
+
+  for (let i = 0; i < items.length; i++) {
+    if (items[i]) queue.push(items[i].webkitGetAsEntry()!)
+  }
+
+  while (queue.length > 0) {
+    const entry = queue.shift()
+    if (entry) {
+      if (entry.isFile) {
+        entries.push(entry as FileSystemFileEntry)
+      } else if (entry.isDirectory) {
+        const reader = (entry as FileSystemDirectoryEntry).createReader()
+        queue.push(...(await readAllDirectoryEntries(reader)))
+      }
+    }
+  }
+
+  return entries
+}
+
+async function readAllDirectoryEntries(reader: FileSystemDirectoryReader) {
+  let entries = []
+  let readEntries = await readDirectoryEntries(reader)
+
+  while (readEntries.length > 0) {
+    entries.push(...readEntries)
+    readEntries = await readDirectoryEntries(reader)
+  }
+
+  return entries
+}
+
+async function readDirectoryEntries(reader: FileSystemDirectoryReader): Promise<FileSystemEntry[]> {
+  try {
+    return await new Promise((resolve, reject) => reader.readEntries(resolve, reject))
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}

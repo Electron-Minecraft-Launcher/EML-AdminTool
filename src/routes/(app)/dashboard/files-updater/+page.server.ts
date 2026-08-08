@@ -1,11 +1,11 @@
 import type { PageServerLoad } from './$types'
 import type { Loader, LoaderFormat } from '@prisma/client'
-import type { FileDir } from '$lib/utils/types'
+import type { FileDir, File as File_ } from '$lib/utils/types'
 import { error, redirect, type Actions } from '@sveltejs/kit'
 import { fail } from '$lib/server/action'
 import { NotificationCode } from '$lib/utils/notifications'
-import { createFileSchema, editFileSchema, renameFileSchema, loaderSchema, deleteFilesSchema } from '$lib/utils/validations'
-import { cacheFiles, createFile, deleteFile, editFile, getCachedFilesParsed, getFiles, renameFile } from '$lib/server/files'
+import { createFileSchema, editFileSchema, renameFileSchema, loaderSchema, deleteFilesSchema, customLoaderSchema } from '$lib/utils/validations'
+import { cacheFiles, createFile, deleteFile, editFile, getCachedFilesParsed, getFiles, renameFile, sanitizePath } from '$lib/server/files'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { db } from '$lib/server/db'
 import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
@@ -15,6 +15,8 @@ import { checkForgeLikeLoader, getForgeLikeFile, getForgeLikeVersions } from '$l
 import { checkFabricLikeLoader, getFabricLikeGameVersions, getFabricLikeLoaderVersions } from '$lib/server/loaders/fabriclike'
 import { getAccessibleProfiles, resolveProfile } from '$lib/server/profile'
 import { getDomain } from '$lib/utils/utils'
+import fs from 'node:fs/promises'
+import { getMissingLibrariesFromVersion, rewriteAssetIndexUrls, rewriteManifestUrls } from '$lib/utils/parser'
 
 export const load = (async (event) => {
   const domain = getDomain(event)
@@ -241,6 +243,7 @@ export const actions: Actions = {
 
   changeLoader: async (event) => {
     const user = event.locals.user
+    const domain = getDomain(event)
 
     if (!user) {
       throw error(401, { message: NotificationCode.UNAUTHORIZED })
@@ -251,7 +254,8 @@ export const actions: Actions = {
       profileId: form.get('profile-id'),
       type: form.get('type'),
       minecraftVersion: form.get('minecraft-version'),
-      loaderVersion: form.get('loader-version')
+      loaderVersion: form.get('loader-version'),
+      customLoaderVersionSha1: form.get('custom-loader-version-sha1')
     }
 
     const result = loaderSchema.safeParse(raw)
@@ -259,7 +263,7 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { profileId, type, minecraftVersion, loaderVersion } = result.data
+    const { profileId, type, minecraftVersion, loaderVersion, customLoaderVersionSha1 } = result.data
 
     try {
       const profile = await resolveProfile(profileId, user.id, user.isAdmin, 2)
@@ -276,6 +280,33 @@ export const actions: Actions = {
         format = res.format
       } else if (type === ILoaderType.FABRIC || type === ILoaderType.QUILT) {
         checkFabricLikeLoader(type, minecraftVersion, loaderVersion)
+      }
+
+      if (customLoaderVersionSha1?.length === 40) {
+        const baseUrl = `${domain}/files/loaders/${profile.slug}`
+        const basePath = sanitizePath('files', '.staging-loader', profile.slug)
+        const cachedFiles = await getCachedFilesParsed(domain, `.staging-loader/${profile.slug}/${customLoaderVersionSha1}`)
+        const files: Map<string, File_> = new Map(cachedFiles.map((f) => [f.sha1!, f]))
+
+        const versionFile = files.get(customLoaderVersionSha1)
+        if (!versionFile) {
+          throw new BusinessError('Custom loader version file not found', NotificationCode.FILESUPDATER_LOADER_VERSION_NOT_FOUND, 400)
+        }
+        const version = (await fs.readFile(sanitizePath(basePath, versionFile.path, versionFile.name))).toString('utf-8')
+        const missingSpecialFiles = getMissingLibrariesFromVersion(version)[1]
+        const librariesRes = rewriteManifestUrls(JSON.parse(version), baseUrl, files)
+
+        let assetsRes: { assetIndex: any; pathsToMove: Map<string, string> } | null = null
+        if (missingSpecialFiles.assetIndexJson) {
+          const assetIndexFile = files.get(missingSpecialFiles.assetIndexJson)
+          if (!assetIndexFile) {
+            throw new BusinessError('Custom loader asset index file not found', NotificationCode.FILESUPDATER_GAME_VERSION_NOT_FOUND, 400)
+          }
+          const assetIndex = JSON.parse((await fs.readFile(sanitizePath(basePath, assetIndexFile.path, assetIndexFile.name))).toString('utf-8'))
+          assetsRes = rewriteAssetIndexUrls(assetIndex, baseUrl, files)
+        }
+
+        // TODO
       }
 
       await updateLoader({ type, minecraftVersion, loaderVersion, format, file }, profile.id)

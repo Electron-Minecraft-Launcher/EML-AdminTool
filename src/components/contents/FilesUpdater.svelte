@@ -11,7 +11,7 @@
   import EditFileModal from '../modals/EditFileModal.svelte'
   import { callAction } from '$lib/utils/call'
   import { addNotification } from '$lib/stores/notifications'
-  import { uploader } from '$lib/stores/upload.svelte'
+  import { filesUpdaterUploader } from '$lib/stores/upload.svelte'
   import type { Profile } from '@prisma/client'
 
   interface Props {
@@ -85,7 +85,7 @@
       files = [...files, ...optimisticFolders]
     }
 
-    uploader.startUpload(filesArray, currentPath, selectedProfile.slug, (newFile: File_) => {
+    filesUpdaterUploader.startUpload(filesArray, currentPath, selectedProfile.slug, (newFile: File_) => {
       files = [...files.filter((f) => f.name !== newFile.name || f.path !== newFile.path), newFile]
     })
 

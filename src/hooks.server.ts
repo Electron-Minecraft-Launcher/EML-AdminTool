@@ -27,7 +27,7 @@ const app: Handle = async ({ event, resolve }) => {
   const securityResponse = await handleSecurityBlocking(event)
   if (securityResponse) return securityResponse
 
-  if (event.url.pathname.startsWith('/files/') && !event.url.pathname.startsWith('/files/.staging/')) {
+  if (event.url.pathname.startsWith('/files/') && !event.url.pathname.startsWith('/files/.staging')) {
     return await serveStaticFile(event.url.pathname)
   }
 

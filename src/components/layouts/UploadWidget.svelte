@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { uploader } from '$lib/stores/upload.svelte'
+  import type { UploadStore } from "$lib/stores/upload.svelte"
+
+  interface Props {
+    uploader: UploadStore
+  }
+
+  let { uploader }: Props = $props()
 
   function handleBeforeUnload(e: BeforeUnloadEvent) {
     if (uploader.isUploading) {
@@ -24,7 +30,7 @@
     <div class="icon">
       <i class="fa-solid fa-cloud-arrow-up"></i>
     </div>
-    
+
     <div class="info">
       <p class="filename" title={uploader.currentFile}>
         {uploader.currentFile ? truncatePath(uploader.currentFile) : 'Preparing...'}
@@ -55,7 +61,7 @@
     z-index: 9999;
     gap: 20px;
     font-family: 'Poppins', sans-serif;
-    width: 450px; 
+    width: 450px;
     flex-shrink: 0;
 
     .icon {

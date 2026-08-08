@@ -12,7 +12,7 @@
   <div style="display: inline">
     <input type="checkbox" bind:checked={status} {disabled} />
     <span class="slider round"></span>
-    <span style="padding-left: 35px">{status ? text[0] : text[1]}</span>
+    <span style="padding-left: 35px">{@html status ? text[0] : text[1]}</span>
   </div>
 </label>
 

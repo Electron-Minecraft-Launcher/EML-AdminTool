@@ -12,6 +12,10 @@
   import CustomLoader from '../contents/CustomLoader.svelte'
   import { getMajorVersion } from '$lib/utils/utils'
   import type { MissingAsset, MissingLibrary, MissingSpecialFiles } from '$lib/utils/parser'
+  import { customLoaderUploader } from '$lib/stores/upload.svelte'
+  import { callAction } from '$lib/utils/call'
+  import { invalidateAll } from '$app/navigation'
+  import Toggle from '../layouts/Toggle.svelte'
 
   interface Props {
     show: boolean
@@ -28,17 +32,14 @@
 
   let showLoader = $state(false)
 
+  let customize = $state(false)
   let customLoaderStep = $state(1)
   let customLoaderFiles: {
     version: HashFile | null
-    client: HashFile | null
-    mappings: HashFile | null
     assetIndex: HashFile | null
     libs: Map<string, File>
   } = $state({
     version: null,
-    client: null,
-    mappings: null,
     assetIndex: null,
     libs: new Map<string, File>()
   })
@@ -46,10 +47,16 @@
   let missingSpecialFiles: MissingSpecialFiles = $state({ assetIndexJson: null, clientJar: null, clientTxt: null, loggingXml: null })
   let missingAssets: Map<string, MissingAsset> = $state(new Map())
   let customLoaderDisabledNext = $derived.by(() => {
-    if (customLoaderStep === 1) return customLoaderFiles.version === null
-    if (customLoaderStep === 2) {
+    if (customLoaderStep === 1) return !isFormValid
+    if (customLoaderStep === 2) return customLoaderFiles.version === null
+    if (customLoaderStep === 3) {
       if (missingSpecialFiles.assetIndexJson) return !customLoaderFiles.assetIndex
     }
+  })
+  let patchLog4Shell = $state(false)
+  let missingFilesCount = $derived.by(() => {
+    const hasAssetIndexJson = missingSpecialFiles.assetIndexJson ? 1 : 0
+    return missingLibraries.size + missingAssets.size - customLoaderFiles.libs.size - hasAssetIndexJson
   })
 
   let type: LoaderType = $state(loader.type ?? ILoaderType.VANILLA)
@@ -173,26 +180,71 @@
 
   function customLoaderNextStep() {
     if (customLoaderStep === 1) {
-      if (missingSpecialFiles.assetIndexJson) {
-        customLoaderStep = 2
-      } else {
-        customLoaderStep = 3
-      }
+      customLoaderStep = 2
     } else if (customLoaderStep === 2) {
-      customLoaderStep = 3
+      if (missingSpecialFiles.assetIndexJson) {
+        customLoaderStep = 3
+      } else {
+        customLoaderStep = 4
+      }
+    } else if (customLoaderStep === 3) {
+      customLoaderStep = 4
     }
   }
 
   function customLoaderBackStep() {
-    if (customLoaderStep === 3) {
+    if (customLoaderStep === 4) {
       if (missingSpecialFiles.assetIndexJson) {
-        customLoaderStep = 2
+        customLoaderStep = 3
       } else {
-        customLoaderStep = 1
+        customLoaderStep = 2
       }
+    } else if (customLoaderStep === 3) {
+      customLoaderStep = 2
     } else if (customLoaderStep === 2) {
       customLoaderStep = 1
     }
+  }
+
+  async function deployCustomLoader() {
+    showLoader = true
+    if (missingFilesCount > 0) {
+      if (!confirm(`There are ${missingFilesCount} missing file(s). Are you sure you want to continue?`)) {
+        showLoader = false
+        return
+      }
+    }
+    if (!customLoaderFiles.version) {
+      showLoader = false
+      return
+    }
+    const filesArray: File[] = []
+    const version = customLoaderFiles.version
+    const versionFile = new File([version.file], version.sha1, { type: version.file.type })
+    filesArray.push(versionFile)
+    if (customLoaderFiles.assetIndex) {
+      const assetIndex = customLoaderFiles.assetIndex
+      const assetIndexFile = new File([assetIndex.file], assetIndex.sha1, { type: assetIndex.file.type })
+      filesArray.push(assetIndexFile)
+    }
+    for (const [sha1, file] of customLoaderFiles.libs) {
+      const libFile = new File([file], sha1, { type: file.type })
+      filesArray.push(libFile)
+    }
+
+    await customLoaderUploader.startUpload(filesArray, version.sha1, selectedProfile.slug)
+
+    const formData = new FormData()
+    formData.set('profile-id', selectedProfile.id)
+    formData.set('type', type)
+    formData.set('minecraft-version', minecraftVersion)
+    formData.set('loader-version', loaderVersion)
+    formData.set('custom-loader-version-sha1', version.sha1)
+
+    await callAction({ url: '/dashboard/files-updater', action: 'changeLoader', formData }, $l)
+    invalidateAll()
+
+    showLoader = false
   }
 
   const enhanceForm: SubmitFunction = ({ formData }) => {
@@ -222,6 +274,17 @@
       majorVersion = minecraftVersions[0]
     }
   })
+
+  $effect(() => {
+    if (!customize) {
+      customLoaderStep = 1
+      customLoaderFiles = { version: null, assetIndex: null, libs: new Map<string, File>() }
+      missingLibraries = new Map()
+      missingSpecialFiles = { assetIndexJson: null, clientJar: null, clientTxt: null, loggingXml: null }
+      missingAssets = new Map()
+      patchLog4Shell = false
+    }
+  })
 </script>
 
 <ModalTemplate size={'ml'} bind:show>
@@ -232,21 +295,20 @@
   <h2>Change loader</h2>
 
   <div class="list-container">
-    <div class="list loader-list">
-      <p class="label sticky-header">Loaders</p>
-      <button class="list" type="button" class:active={type === ILoaderType.VANILLA} onclick={() => switchType(ILoaderType.VANILLA)}>
-        Vanilla
-      </button>
-      <button class="list" type="button" class:active={type === ILoaderType.FORGE} onclick={() => switchType(ILoaderType.FORGE)}>Forge</button>
-      <button class="list" type="button" class:active={type === ILoaderType.NEOFORGE} onclick={() => switchType(ILoaderType.NEOFORGE)}>
-        NeoForge
-      </button>
-      <button class="list" type="button" class:active={type === ILoaderType.FABRIC} onclick={() => switchType(ILoaderType.FABRIC)}>Fabric</button>
-      <button class="list" type="button" class:active={type === ILoaderType.QUILT} onclick={() => switchType(ILoaderType.QUILT)}>Quilt</button>
-      <button class="list" type="button" class:active={type === ILoaderType.CUSTOM} onclick={() => switchType(ILoaderType.CUSTOM)}>Custom...</button>
-    </div>
+    {#if !customize || customLoaderStep === 1}
+      <div class="list loader-list">
+        <p class="label sticky-header">Loaders</p>
+        <button class="list" type="button" class:active={type === ILoaderType.VANILLA} onclick={() => switchType(ILoaderType.VANILLA)}>
+          Vanilla
+        </button>
+        <button class="list" type="button" class:active={type === ILoaderType.FORGE} onclick={() => switchType(ILoaderType.FORGE)}>Forge</button>
+        <button class="list" type="button" class:active={type === ILoaderType.NEOFORGE} onclick={() => switchType(ILoaderType.NEOFORGE)}>
+          NeoForge
+        </button>
+        <button class="list" type="button" class:active={type === ILoaderType.FABRIC} onclick={() => switchType(ILoaderType.FABRIC)}>Fabric</button>
+        <button class="list" type="button" class:active={type === ILoaderType.QUILT} onclick={() => switchType(ILoaderType.QUILT)}>Quilt</button>
+      </div>
 
-    {#if type !== ILoaderType.CUSTOM}
       <div class="list version-list">
         {#if type === ILoaderType.FABRIC}
           <label for="loader-version" class="sticky-header" style="z-index: 100">Loader version</label>
@@ -294,34 +356,60 @@
           <p class="no-link">-</p>
         {/each}
       </div>
-    {:else}
+    {:else if customLoaderStep > 1}
       <div class="list content-list">
-        <h4>Custom loader</h4>
-
-        <CustomLoader bind:customLoaderStep bind:customLoaderFiles bind:missingLibraries bind:missingSpecialFiles bind:missingAssets />
+      <p class="label" style="margin-top: 0;">Selected base version</p>
+      <p style="margin: 0;">{formatVersionName({ minecraftVersion, loaderVersion, majorVersion, type: ['default'] })}</p>
+        <CustomLoader
+          bind:customLoaderStep
+          bind:customLoaderFiles
+          bind:missingLibraries
+          bind:missingSpecialFiles
+          bind:missingAssets
+          bind:patchLog4Shell
+          {missingFilesCount}
+        />
       </div>
     {/if}
   </div>
 
-  {#if type == ILoaderType.CUSTOM}
-    <div class="actions">
+  <div class="actions">
+    <div class="customize">
+      <Toggle bind:status={customize} text={['Customize the selected version', 'Customize the selected version']} />
+    </div>
+    {#if customize}
       <button type="button" class="secondary" onclick={() => (show = false)}>{$l.common.cancel}</button>
       <button type="button" class="secondary" disabled={customLoaderStep === 1} onclick={customLoaderBackStep}>{$l.common.back}</button>
-      <button type="button" class="primary" disabled={customLoaderDisabledNext} onclick={customLoaderNextStep}>{$l.common.next}</button>
-    </div>
-  {:else}
-    <form method="POST" action="?/changeLoader" use:enhance={enhanceForm}>
-      <div class="actions">
+      {#if customLoaderStep !== 4}
+        <button type="button" class="primary" disabled={customLoaderDisabledNext} onclick={customLoaderNextStep}>{$l.common.next}</button>
+      {:else}
+        <button type="submit" class="primary" onclick={deployCustomLoader}>{$l.common.save}</button>
+      {/if}
+    {:else}
+      <form method="POST" action="?/changeLoader" use:enhance={enhanceForm}>
         <button type="button" class="secondary" onclick={() => (show = false)}>{$l.common.cancel}</button>
         <button type="submit" class="primary" disabled={!isFormValid}>{$l.common.save}</button>
-      </div>
-    </form>
-  {/if}
+      </form>
+    {/if}
+  </div>
 </ModalTemplate>
 
 <style lang="scss">
   @use '../../../static/scss/modals.scss';
   @use '../../../static/scss/list.scss';
+
+  div.customize {
+    margin-top: 35px;
+    margin-right: auto;
+    float: left;
+
+    p {
+      margin: 0;
+      font-size: 14px;
+      opacity: 0.8;
+      display: inline-block;
+    }
+  }
 
   p.sticky-header,
   label.sticky-header {
