@@ -34,12 +34,6 @@ enum LoaderType {
   QUILT
 }
 
-enum LoaderFormat {
-  INSTALLER
-  UNIVERSAL
-  CLIENT
-}
-
 enum BackgroundStatus {
   ACTIVE
   INACTIVE
@@ -93,16 +87,15 @@ model Log {
 }
 
 model Loader {
-  id               String       @id @default(cuid(2))
+  id               String     @id @default(cuid(2))
   type             LoaderType
   minecraftVersion String
   loaderVersion    String
-  format           LoaderFormat
-  isCustom         Boolean      @default(false)
+  customVersion    String?
   file             Json?
-  updatedAt        DateTime     @updatedAt
-  profileId        String       @unique @default("1")
-  profile          Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  updatedAt        DateTime   @updatedAt
+  profileId        String     @unique @default("1")
+  profile          Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 model Profile {

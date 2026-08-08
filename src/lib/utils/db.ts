@@ -25,7 +25,6 @@ export const ILoaderType = {
   NEOFORGE: 'NEOFORGE',
   FABRIC: 'FABRIC',
   QUILT: 'QUILT',
-  CUSTOM: 'CUSTOM'
 } as const
 
 export const ILoaderFormat = {

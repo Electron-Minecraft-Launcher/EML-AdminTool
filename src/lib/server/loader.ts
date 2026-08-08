@@ -1,7 +1,7 @@
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import { db } from './db'
-import { ILoaderFormat, ILoaderType } from '$lib/utils/db'
+import { ILoaderType } from '$lib/utils/db'
 import type { Loader } from '@prisma/client'
 
 export const defaultLoader = {
@@ -9,7 +9,7 @@ export const defaultLoader = {
   type: ILoaderType.VANILLA,
   minecraftVersion: 'latest_release',
   loaderVersion: 'latest_release',
-  format: ILoaderFormat.CLIENT,
+  customVersion: null,
   file: null,
   updatedAt: new Date()
 }
@@ -38,7 +38,7 @@ export async function updateLoader(loader: Partial<Loader>, profileId: string = 
     type: loader.type ?? ILoaderType.VANILLA,
     minecraftVersion: loader.minecraftVersion ?? 'latest_release',
     loaderVersion: loader.loaderVersion ?? 'latest_release',
-    format: loader.format ?? ILoaderFormat.UNIVERSAL,
+    customVersion: loader.customVersion ?? null,
     file: (loader.file ?? null) as any,
     profileId
   }

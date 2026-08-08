@@ -122,7 +122,7 @@ export function getMissingLibrariesFromVersion(jsonString: string, $l?: typeof e
             addNotification('ERROR', $l.notifications.INVALID_INPUT)
             return [new Map(), missingSpecialFiles]
           } else {
-            throw new BusinessError('Missing SHA1 for library with eml://upload URL', NotificationCode.INVALID_INPUT)
+            throw new BusinessError('Missing SHA-1 for library with eml://upload URL', NotificationCode.INVALID_INPUT)
           }
         }
 
@@ -171,7 +171,8 @@ export function getMissingAssetsFromIndex(jsonString: string): Map<string, Missi
 /**
  * @param manifest Parsed version manifest.
  * @param baseUrl Eg. `'{{url}}/files/loaders/${profile.slug}'`
- * @param uploadedFiles Get the uploaded files from `getCachedFilesParsed` and convert it to a Map with SHA1 as key.
+ * @param uploadedFiles Get the uploaded files from `getCachedFilesParsed` and convert it to a Map 
+ * with SHA-1 as key.
  */
 export function rewriteManifestUrls(
   manifest: any,
@@ -187,7 +188,7 @@ export function rewriteManifestUrls(
   }
 
   if (manifest.downloads?.client?.url === 'eml://upload' && manifest.downloads.client.sha1 && uploadedFiles.has(manifest.downloads.client.sha1)) {
-    const destPath = `versions/${manifest.id}/client.jar`
+    const destPath = `versions/${manifest.id}/${manifest.id}.jar`
     manifest.downloads.client.url = `${baseUrl}/${destPath}`
     pathsToMove.set(manifest.downloads.client.sha1, destPath)
   }
@@ -197,7 +198,7 @@ export function rewriteManifestUrls(
     manifest.downloads.client_mappings.sha1 &&
     uploadedFiles.has(manifest.downloads.client_mappings.sha1)
   ) {
-    const destPath = `versions/${manifest.id}/client_mappings.txt`
+    const destPath = `versions/${manifest.id}/${manifest.id}.txt`
     manifest.downloads.client_mappings.url = `${baseUrl}/${destPath}`
     pathsToMove.set(manifest.downloads.client_mappings.sha1, destPath)
   }
@@ -253,7 +254,8 @@ export function rewriteManifestUrls(
 /**
  * @param assetIndex Parsed asset index.
  * @param baseUrl Eg. `'{{url}}/files/loaders/${profile.slug}'`
- * @param uploadedFiles Get the uploaded files from `getCachedFilesParsed` and convert it to a Map with SHA1 as key.
+ * @param uploadedFiles Get the uploaded files from `getCachedFilesParsed` and convert it to a Map 
+ * with SHA-1 as key.
  */
 export function rewriteAssetIndexUrls(
   assetIndex: any,

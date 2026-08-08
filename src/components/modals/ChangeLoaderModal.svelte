@@ -241,8 +241,11 @@
     formData.set('loader-version', loaderVersion)
     formData.set('custom-loader-version-sha1', version.sha1)
 
-    await callAction({ url: '/dashboard/files-updater', action: 'changeLoader', formData }, $l)
-    invalidateAll()
+    const result = await callAction({ url: '/dashboard/files-updater', action: 'changeLoader', formData }, $l)
+    if (result.type === 'success') {
+      show = false
+      invalidateAll()
+    }
 
     showLoader = false
   }
@@ -358,8 +361,8 @@
       </div>
     {:else if customLoaderStep > 1}
       <div class="list content-list">
-      <p class="label" style="margin-top: 0;">Selected base version</p>
-      <p style="margin: 0;">{formatVersionName({ minecraftVersion, loaderVersion, majorVersion, type: ['default'] })}</p>
+        <p class="label" style="margin-top: 0;">Selected base version</p>
+        <p style="margin: 0;">{formatVersionName({ minecraftVersion, loaderVersion, majorVersion, type: ['default'] })}</p>
         <CustomLoader
           bind:customLoaderStep
           bind:customLoaderFiles

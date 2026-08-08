@@ -155,6 +155,7 @@ export async function editFile(dir: FileDir | DataDir, path: string, name: strin
 }
 
 /**
+ * Rename a file or folder within a directory.
  * @param dir Directory where the file to rename is.
  * @param path Path to the file, relative to the directory, without the file name.
  * @param name Current name of the file.
@@ -197,6 +198,47 @@ export async function renameFile(dir: FileDir | DataDir, path: string, name: str
   } catch (err) {
     console.error('Error renaming file:', err)
     throw new ServerError('Failed to rename file', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+  }
+}
+
+/**
+ * Move a file or folder to a new location.
+ * @param oldDir Directory where the file to move is.
+ * @param oldPath Path to the file, relative to the old directory, **including** the file name.
+ * @param newDir Directory where the file should be moved to.
+ * @param newPath Path to the file, relative to the new directory, **including** the file name.
+ */
+export async function moveFile(oldDir: FileDir | DataDir, oldPath: string, newDir: FileDir | DataDir, newPath: string): Promise<void> {
+  const oldBase = getBaseFolder(oldDir)
+  const newBase = getBaseFolder(newDir)
+  let oldFullPath: string, newFullPath: string
+  try {
+    oldFullPath = sanitizePath(oldBase, oldDir, oldPath)
+    newFullPath = sanitizePath(newBase, newDir, newPath)
+  } catch (err) {
+    console.warn('Invalid path:', oldPath, newPath, err)
+    throw new BusinessError('Invalid path', NotificationCode.INVALID_REQUEST, 400)
+  }
+
+  try {
+    await fs.access(oldFullPath)
+  } catch {
+    console.warn('File does not exist:', oldFullPath)
+    throw new BusinessError('File does not exist', NotificationCode.NOT_FOUND, 404)
+  }
+
+  try {
+    await fs.mkdir(path_.dirname(newFullPath), { recursive: true })
+  } catch (err) {
+    console.error('Error creating parent directory:', err)
+    throw new ServerError('Failed to create parent directory', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
+  }
+
+  try {
+    await fs.rename(oldFullPath, newFullPath)
+  } catch (err) {
+    console.error('Error moving file:', err)
+    throw new ServerError('Failed to move file', err, NotificationCode.INTERNAL_SERVER_ERROR, 500)
   }
 }
 

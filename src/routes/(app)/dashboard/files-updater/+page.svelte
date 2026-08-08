@@ -246,15 +246,9 @@
       </div>
 
       <div>
-        <p class="label">
-          Format (auto)&nbsp;&nbsp;<i
-            class="fa-solid fa-circle-question"
-            title="This field is automatically deduced from the loader version."
-            style="cursor: help"
-          ></i>
-        </p>
+        <p class="label">Custom version</p>
         <p>
-          {data.loader.format === ILoaderFormat.INSTALLER ? 'Installer' : data.loader.format === ILoaderFormat.UNIVERSAL ? 'Universal' : 'Client'}
+          {data.loader.customVersion ?? '-'}
         </p>
       </div>
     </div>

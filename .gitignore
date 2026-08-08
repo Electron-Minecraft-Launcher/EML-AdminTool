@@ -9,6 +9,7 @@
 /dist-*
 
 /files/files-updater/*
+/files/loaders/*
 /files/bootstraps/*
 /files/backgrounds/*
 /files/cache/*

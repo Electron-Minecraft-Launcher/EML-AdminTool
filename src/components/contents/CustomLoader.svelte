@@ -203,12 +203,12 @@
     >.
   </p>
   <p>
-    If you need to upload any extra files (new or modified), you <b>need</b> to compute their SHA1 hashes, sizes, and add an URL property with the value
+    If you need to upload any extra files (new or modified), you <b>need</b> to compute their SHA-1 hashes, sizes, and add an URL property with the value
     "eml://upload":
   </p>
   <pre>
 &#123;
-  "sha1": "d98675ecc24364e90b18dbea80390b1345c3f71f", // computed SHA1 hash
+  "sha1": "d98675ecc24364e90b18dbea80390b1345c3f71f", // computed SHA-1 hash
   "size": 123456, // computed size in bytes
   "url": "eml://upload" // added this URL
 &#125;</pre>
@@ -256,12 +256,12 @@
     >.
   </p>
   <p>
-    If you need to upload any extra files (new or modified), you need to compute their SHA1 hashes, sizes, and add an URL property with the value
+    If you need to upload any extra files (new or modified), you need to compute their SHA-1 hashes, sizes, and add an URL property with the value
     "eml://upload":
   </p>
   <pre>
 "icons/icon_128x128.png": &#123;
-  "hash": "b62ca8ec10d07e6bf5ac8dae0c8c1d2e6a1e3356", // computed SHA1 hash
+  "hash": "b62ca8ec10d07e6bf5ac8dae0c8c1d2e6a1e3356", // computed SHA-1 hash
   "size": 9101, // computed size in bytes
   "url": "eml://upload" // added this URL
 &#125;</pre>

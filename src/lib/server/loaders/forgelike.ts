@@ -109,34 +109,6 @@ export async function checkForgeLikeLoader(loader: ForgeLikeLoader, minecraftVer
   }
 }
 
-export async function getForgeLikeFile(
-  loader: typeof ILoaderType.FORGE | typeof ILoaderType.NEOFORGE,
-  loaderVersion: string
-): Promise<{ format: LoaderFormat; file: File_ }> {
-  const v = V[loader]
-  let format = 'installer'
-  let ext = 'jar'
-
-  if (loader === ILoaderType.FORGE) {
-    const metaUrl = `https://files.minecraftforge.net/net/minecraftforge/forge/${loaderVersion}/meta.json`
-    const meta = (await fetchJson(metaUrl, 'Failed to fetch Forge meta')).classifiers
-    format = getFormat(meta)
-    ext = Object.keys(meta[format])[0]
-  }
-
-  const url = `${v.mavenUrl}/${v.group.replace(/\./g, '/')}/${v.artifact}/${loaderVersion}/${v.artifact}-${loaderVersion}-${format.toLowerCase()}.${ext}`
-  const name = `${v.artifact}-${loaderVersion}.${ext}`
-  const path = `versions/${v.artifact}-${loaderVersion}/`
-  const size = await getRemoteFileSize(url, 'Failed to fetch Forge artifact size')
-  const sha1 = await getRemoteFileSha1(`${url}.sha1`, 'Failed to fetch Forge artifact SHA1')
-  const type = 'OTHER' as const
-
-  return {
-    format: getTypedFormat(format),
-    file: { name, path, url, size, sha1, type }
-  }
-}
-
 function parseForgeVersion(v: string, currentMajor: string) {
   const parts = v.split('-')
   if (parts.length >= 2) {

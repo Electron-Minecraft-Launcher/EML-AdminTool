@@ -4,10 +4,12 @@ import { json } from '@sveltejs/kit'
 import type { RequestHandler } from './$types'
 import { ProfileVisibility } from '@prisma/client'
 import { getBearerToken, verifyScopedToken } from '$lib/server/jwt'
+import { getDomain } from '$lib/utils/utils'
 
-export const GET: RequestHandler = async ({ params, request }) => {
-  const slug = params.slug
-  const token = getBearerToken(request)
+export const GET: RequestHandler = async (event) => {
+  const slug = event.params.slug
+  const token = getBearerToken(event.request)
+  const domain = getDomain(event)
 
   let profile
   try {
@@ -41,15 +43,20 @@ export const GET: RequestHandler = async ({ params, request }) => {
     return json(defaultLoader)
   }
 
+  if ((loader.file as { url: string })?.url) {
+    ;(loader.file as { url: string }).url = (loader.file as { url: string }).url.replace('{{url}}', domain)
+  }
+
   const res = {
     success: true,
     type: loader.type,
     minecraftVersion: loader.minecraftVersion,
     loaderVersion: loader.loaderVersion,
-    format: loader.format,
+    customVersion: loader.customVersion,
     file: loader.file,
     updatedAt: loader.updatedAt
   }
 
   return json(res)
 }
+
