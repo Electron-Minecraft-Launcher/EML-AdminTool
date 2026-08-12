@@ -134,7 +134,6 @@ Ainsi, si vous souhaitez nous aider à traduire l'EML AdminTool, vous pourrez tr
     pin: `Code de sécurité`
   },
   leftPanel: {
-    globalSettings: `Paramètres généraux`,
     settings: `Paramètres`,
     profiles: `Profils`,
     features: `Fonctionnalités`,
