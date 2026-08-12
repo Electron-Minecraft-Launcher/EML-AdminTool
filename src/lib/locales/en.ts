@@ -140,6 +140,7 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
     pin: `PIN`
   },
   leftPanel: {
+    globalSettings: `Global settings`,
     settings: `Settings`,
     profiles: `Profiles`,
     features: `Features`,

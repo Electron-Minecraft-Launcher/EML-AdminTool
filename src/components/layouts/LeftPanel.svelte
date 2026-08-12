@@ -51,89 +51,95 @@
   </button>
 
   <div class="toggle-left-panel"></div>
-
   <div class="hoverable"></div>
+  <div class="flex-column">
+    <div class="top">
+      {#if leftPanelOpen}
+        <h1>EML AdminTool</h1>
+      {:else}
+        <h1><span>EML</span>AT</h1>
+      {/if}
 
-  {#if leftPanelOpen}
-    <h1>EML AdminTool</h1>
-  {:else}
-    <h1><span>EML</span>AT</h1>
-  {/if}
+      <a href="/dashboard" class:active={page.url.pathname == '/dashboard'}><i class="fa-solid fa-house"></i>{$l.common.home}</a>
+      {#if user.isAdmin}
+        <a href="/dashboard/profiles" class:active={page.url.pathname == '/dashboard/profiles'}>
+          <i class="fa-solid fa-window-restore"></i>{$l.leftPanel.profiles}
+        </a>
+      {/if}
 
-  <a href="/dashboard" class:active={page.url.pathname == '/dashboard'}><i class="fa-solid fa-house"></i>{$l.common.home}</a>
-  {#if user.isAdmin}
-    <a href="/dashboard/emlat-settings" class:active={page.url.pathname == '/dashboard/emlat-settings'}>
-      <i class="fa-solid fa-gear"></i>{$l.leftPanel.settings}
-    </a>
-    <a href="/dashboard/profiles" class:active={page.url.pathname == '/dashboard/profiles'}>
-      <i class="fa-solid fa-window-restore"></i>{$l.leftPanel.profiles}
-    </a>
-  {/if}
+      {#if leftPanelOpen}
+        <h4>{$l.leftPanel.features}</h4>
+      {:else}
+        <div class="h4"><hr style="border-color: #505050; border-top: 0; position: relative; top: 5px;" /></div>
+      {/if}
 
-  {#if leftPanelOpen}
-    <h4>{$l.leftPanel.features}</h4>
-  {:else}
-    <div class="h4"><hr style="border-color: #505050; border-top: 0; position: relative; top: 5px;" /></div>
-  {/if}
+      {#if user.profilePermissions.length > 0 || user.isAdmin}
+        <a href="/dashboard/files-updater" class:active={page.url.pathname == '/dashboard/files-updater'}>
+          <i class="fa-solid fa-folder-open"></i>Files Updater
+        </a>
+      {/if}
 
-  {#if user.profilePermissions.length > 0 || user.isAdmin}
-    <a href="/dashboard/files-updater" class:active={page.url.pathname == '/dashboard/files-updater'}>
-      <i class="fa-solid fa-folder-open"></i>Files Updater
-    </a>
-  {/if}
+      {#if user.p_bootstraps}
+        <a href="/dashboard/bootstraps" class:active={page.url.pathname == '/dashboard/bootstraps'}>
+          <i class="fa-solid fa-arrows-rotate"></i>Bootstraps
+        </a>
+      {/if}
 
-  {#if user.p_bootstraps}
-    <a href="/dashboard/bootstraps" class:active={page.url.pathname == '/dashboard/bootstraps'}>
-      <i class="fa-solid fa-arrows-rotate"></i>Bootstraps
-    </a>
-  {/if}
+      {#if user.p_maintenance}
+        <a href="/dashboard/maintenance" class:active={page.url.pathname == '/dashboard/maintenance'}>
+          <i class="fa-solid fa-screwdriver-wrench"></i>Maintenance
+        </a>
+      {/if}
 
-  {#if user.p_maintenance}
-    <a href="/dashboard/maintenance" class:active={page.url.pathname == '/dashboard/maintenance'}>
-      <i class="fa-solid fa-screwdriver-wrench"></i>Maintenance
-    </a>
-  {/if}
+      {#if user.p_news}
+        <a href="/dashboard/news" class:active={page.url.pathname == '/dashboard/news'}>
+          <i class="fa-solid fa-newspaper"></i>News
+        </a>
+      {/if}
 
-  {#if user.p_news}
-    <a href="/dashboard/news" class:active={page.url.pathname == '/dashboard/news'}>
-      <i class="fa-solid fa-newspaper"></i>News
-    </a>
-  {/if}
+      {#if user.p_backgrounds}
+        <a href="/dashboard/backgrounds" class:active={page.url.pathname == '/dashboard/backgrounds'}>
+          <i class="fa-solid fa-image"></i>Backgrounds
+        </a>
+      {/if}
 
-  {#if user.p_backgrounds}
-    <a href="/dashboard/backgrounds" class:active={page.url.pathname == '/dashboard/backgrounds'}>
-      <i class="fa-solid fa-image"></i>Backgrounds
-    </a>
-  {/if}
+      {#if user.p_stats}
+        <a href="/dashboard/stats" class:active={page.url.pathname == '/dashboard/stats'}>
+          <i class="fa-solid fa-chart-simple"></i>Stats
+        </a>
+      {/if}
 
-  {#if user.p_stats}
-    <a href="/dashboard/stats" class:active={page.url.pathname == '/dashboard/stats'}>
-      <i class="fa-solid fa-chart-simple"></i>Stats
-    </a>
-  {/if}
-
-  {#if user.p_crashReports}
-    <a href="/dashboard/crash-reports" class:active={page.url.pathname == '/dashboard/crash-reports'}>
-      <i class="fa-solid fa-bug"></i>Crash Reports
-    </a>
-  {/if}
-
-  {#if leftPanelOpen}
-    <button class="account" onclick={accountClick}>
-      <i class="fa-solid fa-circle-user"></i>{user.username}<i class="fa-solid fa-caret-up"></i>
-    </button>
-  {/if}
-
-  {#if accountDropdownOpen}
-    <div class="account-dropdown" id="account-dropdown" transition:slide={{ duration: 200 }}>
-      <a href="/dashboard/account" class="account-settings" class:active={page.url.pathname == '/dashboard/account'}>
-        <i class="fa-solid fa-gear"></i>{$l.leftPanel.settings}
-      </a>
-      <form method="POST" action="/dashboard?/logout" use:enhance={enhanceForm}>
-        <button type="submit" class="account-logout"><i class="fa-solid fa-right-from-bracket"></i>{$l.leftPanel.logout}</button>
-      </form>
+      {#if user.p_crashReports}
+        <a href="/dashboard/crash-reports" class:active={page.url.pathname == '/dashboard/crash-reports'}>
+          <i class="fa-solid fa-bug"></i>Crash Reports
+        </a>
+      {/if}
     </div>
-  {/if}
+
+    <div class="bottom">
+      {#if user.isAdmin}
+        <a href="/dashboard/emlat-settings" class:active={page.url.pathname == '/dashboard/emlat-settings'}>
+          <i class="fa-solid fa-gear"></i>{$l.leftPanel.globalSettings}
+        </a>
+      {/if}
+      <!-- {#if leftPanelOpen} -->
+        <button class="account" onclick={accountClick}>
+          <i class="fa-solid fa-circle-user"></i>{user.username}<i class="fa-solid fa-caret-up"></i>
+        </button>
+      <!-- {/if} -->
+
+      {#if accountDropdownOpen}
+        <div class="account-dropdown" id="account-dropdown" transition:slide={{ duration: 200 }}>
+          <a href="/dashboard/account" class="account-settings" class:active={page.url.pathname == '/dashboard/account'}>
+            <i class="fa-solid fa-gear"></i>{$l.leftPanel.settings}
+          </a>
+          <form method="POST" action="/dashboard?/logout" use:enhance={enhanceForm}>
+            <button type="submit" class="account-logout"><i class="fa-solid fa-right-from-bracket"></i>{$l.leftPanel.logout}</button>
+          </form>
+        </div>
+      {/if}
+    </div>
+  </div>
 </nav>
 
 <style lang="scss">
@@ -147,6 +153,13 @@
     width: 200px;
     height: 100%;
     transition: all 0.3s;
+
+    div.flex-column {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: calc(100% - 60px);
+    }
 
     &.closed {
       width: 46px;
@@ -162,8 +175,8 @@
         }
       }
 
-      a.account {
-        width: 16px;
+      button.account {
+        width: 46px;
 
         i.fa-caret-up {
           display: none;
@@ -301,10 +314,9 @@
     border-radius: 5px;
     padding: 10px 15px;
     font-size: 14px;
+    position: relative;
     overflow: hidden;
     white-space: nowrap;
-    position: absolute;
-    bottom: 90px;
     width: 200px;
     text-align: left;
     height: 41px;
