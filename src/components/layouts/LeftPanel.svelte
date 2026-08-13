@@ -61,6 +61,24 @@
         <h1><span>EML</span>AT</h1>
       {/if}
 
+      {#if leftPanelOpen}
+        <h4>Instance</h4>
+
+        <div class="instance-selector">
+          <div class="selected-instance">
+            <span>GoldFrite</span>
+            <i class="fa-solid fa-angle-down"></i>
+          </div>
+        </div>
+      {:else}
+        <div class="instance-selector">
+          <div class="selected-instance">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+        </div>
+        <div class="h4"><hr style="border-color: #505050; border-top: 0; position: relative; top: 5px;" /></div>
+      {/if}
+
       <a href="/dashboard" class:active={page.url.pathname == '/dashboard'}><i class="fa-solid fa-house"></i>{$l.common.home}</a>
       {#if user.isAdmin}
         <a href="/dashboard/profiles" class:active={page.url.pathname == '/dashboard/profiles'}>
@@ -119,11 +137,11 @@
 
     <div class="bottom">
       {#if user.isAdmin}
-        <a href="/dashboard/emlat-settings" class:active={page.url.pathname == '/dashboard/emlat-settings'}>
+        <a class="ellipsis" href="/dashboard/emlat-settings" class:active={page.url.pathname == '/dashboard/emlat-settings'}>
           <i class="fa-solid fa-gear"></i>{$l.leftPanel.globalSettings}
         </a>
       {/if}
-      <button class="account" onclick={accountClick}>
+      <button class="account ellipsis" onclick={accountClick}>
         <i class="fa-solid fa-circle-user"></i>{user.username}<i class="fa-solid fa-caret-up"></i>
       </button>
 
@@ -225,6 +243,36 @@
     }
   }
 
+  div.instance-selector {
+    position: relative;
+    margin-bottom: 30px;
+
+    div.selected-instance {
+      border: 1px solid var(--border-color);
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+      height: 21px;
+
+      &:hover {
+        background: var(--secondary-color-hover);
+
+        &:active {
+        }
+      }
+
+      i {
+        font-size: 12px;
+        transition: transform 0.3s;
+      }
+    }
+  }
+
   h1 {
     margin: 5px 0 40px 0;
     font-size: 20px;
@@ -242,6 +290,7 @@
   h4 {
     color: #505050;
     margin-top: 30px;
+    margin-bottom: 10px;
     font-size: 14px;
   }
 
@@ -318,10 +367,10 @@
     white-space: nowrap;
     width: 200px;
     text-align: left;
-    height: 41px;
+    height: 37px;
 
     i.fa-solid.fa-caret-up {
-      padding: 14px 15px 13px 15px;
+      padding: 12px 15px;
       margin-right: 0;
       position: absolute;
       right: 0;
@@ -329,7 +378,7 @@
       border-radius: 5px !important;
       transition: all 0.2s ease;
       width: auto;
-      height: 14px;
+      height: 13px;
     }
 
     &.account:hover {
@@ -353,6 +402,13 @@
     }
   }
 
+  a.ellipsis,
+  button.ellipsis {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
   div.account-dropdown {
     overflow-y: hidden;
     border-radius: 5px;
@@ -366,7 +422,7 @@
     z-index: 100;
     position: absolute;
     width: 178px;
-    bottom: 142px;
+    bottom: 135px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 
     > a:nth-of-type(1) {
