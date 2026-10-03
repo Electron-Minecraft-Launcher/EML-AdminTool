@@ -122,6 +122,11 @@
     <button class="account" onclick={accountClick}>
       <i class="fa-solid fa-circle-user"></i>{user.username}<i class="fa-solid fa-caret-up"></i>
     </button>
+  {:else}
+    <!-- svelte-ignore a11y_consider_explicit_label -->
+    <button class="account closed" onclick={accountClick}>
+      <i class="fa-solid fa-circle-user"></i>
+    </button>
   {/if}
 
   {#if accountDropdownOpen}
@@ -308,6 +313,20 @@
     width: 200px;
     text-align: left;
     height: 41px;
+
+    &.closed {
+      width: 46px;
+      padding: 10px 15px 10px 15px;
+
+      i.fa-caret-up {
+        display: none;
+      }
+
+      &:hover {
+        color: var(--primary-color-hover);
+        background: #eeeeee;
+      }
+    }
 
     i.fa-solid.fa-caret-up {
       padding: 14px 15px 13px 15px;
