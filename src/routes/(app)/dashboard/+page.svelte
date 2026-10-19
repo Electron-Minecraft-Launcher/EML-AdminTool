@@ -172,7 +172,7 @@
             {/if}
 
             <div class="doc-content">
-              <Markdown source={post.content} />
+              <Markdown source={post.content} domain="https://emlproject.com"/>
             </div>
           </article>
         </section>
