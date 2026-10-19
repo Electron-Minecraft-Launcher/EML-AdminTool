@@ -52,7 +52,7 @@
 
   <div class="toggle-left-panel"></div>
   <div class="hoverable"></div>
-
+  
   <div class="flex-column">
     <div class="top">
       {#if leftPanelOpen}
@@ -368,6 +368,20 @@
     width: 200px;
     text-align: left;
     height: 37px;
+
+    &.closed {
+      width: 46px;
+      padding: 10px 15px 10px 15px;
+
+      i.fa-caret-up {
+        display: none;
+      }
+
+      &:hover {
+        color: var(--primary-color-hover);
+        background: #eeeeee;
+      }
+    }
 
     i.fa-solid.fa-caret-up {
       padding: 12px 15px;
