@@ -17,13 +17,17 @@
 
   const user = getUser()
 
+  let instanceSelectorOpen = $state(false)
   let accountDropdownOpen = $state(false)
 
-  async function accountClick() {
-    if (!accountDropdownOpen) {
-      await sleep(200)
-      accountDropdownOpen = true
-    }
+  function instanceClick(e: MouseEvent) {
+    e.stopImmediatePropagation()
+    instanceSelectorOpen = !instanceSelectorOpen
+  }
+
+  function accountClick(e: MouseEvent) {
+    e.stopImmediatePropagation()
+    accountDropdownOpen = !accountDropdownOpen
   }
 
   const enhanceForm: SubmitFunction = () => {
@@ -37,9 +41,16 @@
       await applyAction(result)
     }
   }
+
+  $inspect(instanceSelectorOpen)
 </script>
 
-<svelte:body onclick={() => (accountDropdownOpen = false)} />
+<svelte:body
+  onclick={() => {
+    instanceSelectorOpen = false
+    accountDropdownOpen = false
+  }}
+/>
 
 <nav class:closed={!leftPanelOpen}>
   <button class="toggle-left-panel" onclick={() => (leftPanelOpen = !leftPanelOpen)} aria-label="Toggle left panel">
@@ -52,7 +63,24 @@
 
   <div class="toggle-left-panel"></div>
   <div class="hoverable"></div>
-  
+
+  {#if instanceSelectorOpen}
+    <div class="instance-selector">
+      <p class="label">Select an instance</p>
+      <div class="list">
+        <button class="instance selected">Instance 1</button>
+        <button class="instance">Instance 2</button>
+        <button class="instance">Instance 3</button>
+      </div>
+      {#if user.isAdmin}
+        <hr />
+        <button class="add-instance">
+          <i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Add instance
+        </button>
+      {/if}
+    </div>
+  {/if}
+
   <div class="flex-column">
     <div class="top">
       {#if leftPanelOpen}
@@ -64,19 +92,19 @@
       {#if leftPanelOpen}
         <h4>Instance</h4>
 
-        <div class="instance-selector">
-          <div class="selected-instance">
-            <span>GoldFrite</span>
-            <i class="fa-solid fa-angle-down"></i>
-          </div>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class="selected-instance" onclick={instanceClick} aria-label="Select an instance">
+          <span>GoldFrite</span>
+          <i class="fa-solid fa-angle-down"></i>
         </div>
       {:else}
-        <div class="instance-selector">
-          <div class="selected-instance">
-            <i class="fa-solid fa-layer-group"></i>
-          </div>
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
+        <div class="selected-instance" onclick={instanceClick} aria-label="Select an instance">
+          <i class="fa-solid fa-layer-group"></i>
         </div>
-        <div class="h4"><hr style="border-color: #505050; border-top: 0; position: relative; top: 5px;" /></div>
+        <div class="h4"><hr /></div>
       {/if}
 
       <a href="/dashboard" class:active={page.url.pathname == '/dashboard'}><i class="fa-solid fa-house"></i>{$l.common.home}</a>
@@ -89,7 +117,7 @@
       {#if leftPanelOpen}
         <h4>{$l.leftPanel.features}</h4>
       {:else}
-        <div class="h4"><hr style="border-color: #505050; border-top: 0; position: relative; top: 5px;" /></div>
+        <div class="h4"><hr /></div>
       {/if}
 
       {#if user.profilePermissions.length > 0 || user.isAdmin}
@@ -192,6 +220,10 @@
         }
       }
 
+      div.selected-instance {
+        margin-bottom: 0;
+      }
+
       button.account {
         width: 46px;
 
@@ -244,32 +276,78 @@
   }
 
   div.instance-selector {
-    position: relative;
-    margin-bottom: 30px;
+    position: absolute;
+    border: 1px solid var(--border-color2);
+    border-radius: 8px;
+    background: white;
+    z-index: 1000;
+    width: 270px;
+    overflow: hidden;
+    top: 100px;
+    left: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 
-    div.selected-instance {
-      border: 1px solid var(--border-color);
+    p.label {
+      margin: 10px 15px;
+    }
+
+    button.instance,
+    button.add-instance {
+      display: block;
+      width: 100%;
+      text-align: left;
       padding: 10px 15px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
+      border: none;
+      background: transparent;
       font-size: 14px;
-      transition: background 0.2s;
-      height: 21px;
+      line-height: 1.2;
+      border-radius: 0;
 
       &:hover {
-        background: var(--secondary-color-hover);
-
-        &:active {
-        }
+        background: #eeeeee;
       }
 
-      i {
-        font-size: 12px;
-        transition: transform 0.3s;
+      &.selected::after {
+        content: '\f00c';
+        font-family: 'Font Awesome 7 Free';
+        font-weight: 900;
+        position: absolute;
+        right: 15px;
+        font-size: 14px;
       }
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border-color);
+      margin: 0;
+    }
+  }
+
+  div.selected-instance {
+    position: relative;
+    margin-bottom: 30px;
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+    height: 21px;
+
+    &:hover {
+      background: var(--secondary-color-hover);
+
+      &:active {
+      }
+    }
+
+    i {
+      font-size: 12px;
+      transition: transform 0.3s;
     }
   }
 
@@ -295,11 +373,18 @@
   }
 
   div.h4 {
-    height: 21px;
+    height: 41px;
     color: #505050;
-    margin-top: 30px;
-    margin-bottom: 18.6px;
+    margin: 10px 0;
     font-size: 14px;
+    line-height: 41px;
+
+    hr {
+      border-color: #505050;
+      border-top: 0;
+      position: relative;
+      top: 20px;
+    }
   }
 
   a {

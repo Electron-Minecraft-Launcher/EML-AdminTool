@@ -9,6 +9,7 @@ import bcrypt from 'bcrypt'
 import { NotificationCode } from '$lib/utils/notifications'
 import { dev } from '$app/environment'
 import { generateRandomPin } from './pin'
+import { createId } from '@paralleldrive/cuid2'
 import path from 'path'
 
 const execAsync = promisify(exec)
@@ -49,12 +50,11 @@ export async function changeDatabasePassword(newPassword: string): Promise<void>
   try {
     await client.query(`ALTER USER eml WITH PASSWORD ${escapeLiteral(newPassword)}`)
   } catch (err) {
-    await client.end()
     console.error('Error changing database password:', err)
     throw new ServerError('Failed to change database password', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await client.end()
   }
-
-  await client.end()
 
   updateEnv(newPassword)
   console.log('Database password changed successfully.')
@@ -96,12 +96,11 @@ export async function initDatabase(): Promise<void> {
       await client.query(`UPDATE "Environment" SET "updatedAt" = NOW() WHERE "id" = $1`, [1])
     }
   } catch (err) {
-    await client.end()
     console.error('Error initializing Environment table:', err)
     throw new ServerError('Failed to initialize Environment table', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await client.end()
   }
-
-  await client.end()
 
   console.log('Database initialized successfully.')
 }
@@ -124,12 +123,11 @@ export async function setAdminUser(username: string, password: string): Promise<
     )
     await client.query('UPDATE "Environment" SET "name" = $1, "updatedAt" = NOW() WHERE "id" = $2', [username, 1])
   } catch (err) {
-    await client.end()
     console.error('Error initializing admin user:', err)
     throw new ServerError('Failed to initialize admin user', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await client.end()
   }
-
-  await client.end()
 
   console.log('Admin user created successfully.')
 }
@@ -146,12 +144,11 @@ export async function setPin(): Promise<void> {
   try {
     await client.query(`UPDATE "Environment" SET "pin" = $1 WHERE "id" = $2`, [pin, 1])
   } catch (err) {
-    await client.end()
     console.error('Error setting PIN:', err)
     throw new ServerError('Failed to set PIN', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await client.end()
   }
-
-  await client.end()
 
   console.log('PIN set successfully.')
 }
@@ -166,17 +163,43 @@ export async function setLanguage(language: string): Promise<void> {
   try {
     await client.query(`UPDATE "Environment" SET "language" = $1 WHERE "id" = $2`, [language, 1])
   } catch (err) {
-    await client.end()
     console.error('Error setting language:', err)
     throw new ServerError('Failed to set language', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await client.end()
   }
-
-  await client.end()
 
   console.log('Language set successfully to:', language)
 }
 
-export async function setDefaultProfile(name: string): Promise<void> {
+export async function setDefaultInstance(instanceId: string, name: string): Promise<void> {
+  console.log('\n----------- SETTING DEFAULT INSTANCE -----------\n')
+  resetProcessEnv()
+
+  const client = new Client({ connectionString: process.env.DATABASE_URL })
+  await client.connect()
+
+  const slug = name
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-]/g, '')
+
+  try {
+    await client.query(
+      `INSERT INTO "Instance" ("id", "name", "slug", "createdAt", "updatedAt") VALUES ($1, $2, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
+      [instanceId, name, slug]
+    )
+  } catch (err) {
+    console.error('Error setting default profile:', err)
+    throw new ServerError('Failed to set default profile', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await client.end()
+  }
+
+  console.log('Default instance set successfully.')
+}
+
+export async function setDefaultProfile(instanceId: string, name: string): Promise<void> {
   console.log('\n------------ SETTING DEFAULT PROFILE -----------\n')
   resetProcessEnv()
 
@@ -190,16 +213,23 @@ export async function setDefaultProfile(name: string): Promise<void> {
 
   try {
     await client.query(
-      `INSERT INTO "Profile" ("id", "name", "isDefault", "slug", "createdAt", "updatedAt") VALUES ($1, $2, true, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
-      ['1', name, slug]
+      `INSERT INTO "Profile" (
+        "id", 
+        "name", 
+        "instanceId",
+        "isDefault", 
+        "slug", 
+        "createdAt", 
+        "updatedAt"
+      ) VALUES ($1, $2, $3, true, $4, NOW(), NOW()) ON CONFLICT DO NOTHING`,
+      ['1', name, instanceId, slug]
     )
   } catch (err) {
-    await client.end()
     console.error('Error setting default profile:', err)
     throw new ServerError('Failed to set default profile', err, NotificationCode.DATABASE_ERROR, 500)
+  } finally {
+    await client.end()
   }
-
-  await client.end()
 
   console.log('Default profile set successfully.')
 }
@@ -326,3 +356,4 @@ BODY_SIZE_LIMIT=16M
 
   resetProcessEnv()
 }
+

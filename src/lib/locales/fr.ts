@@ -95,7 +95,7 @@ export default {
   setup: {
     setup: `Configuration`,
     step1: {
-      title: `D'abord, choisissez la langue de votre EML&nbsp;AdminTool&nbsp;:`,
+      title: `D'abord, choisissez la langue de votre EML&nbsp;AdminTool`,
       subtitle: `Cette langue sera appliquée pour tous les utilisateurs.`,
       other: `Je parle une autre langue.`,
       modal: {
@@ -108,7 +108,7 @@ Ainsi, si vous souhaitez nous aider à traduire l'EML AdminTool, vous pourrez tr
       }
     },
     step2: {
-      title: `Maintenant, choisissez un mot de passe pour la base de données :`,
+      title: `Maintenant, choisissez un mot de passe pour la base de données`,
       subtitle: `Vous n'aurez pas besoin de le retenir.`,
       placeholder: `Mot de passe de la base de données`,
       generate: `Générer`,
@@ -119,11 +119,17 @@ Ainsi, si vous souhaitez nous aider à traduire l'EML AdminTool, vous pourrez tr
       veryStrong: `Très fort`
     },
     step3: {
-      title: `Ensuite, choisissez le nom de votre serveur et un mot de passe :`,
-      subtitle: `Ce nom de serveur et ce mot de passe seront vos identifiants administrateur.`,
+      title: `Ensuite, choisissez le nom de votre compte administrateur et un mot de passe`,
+      subtitle: `Ce nom de compte sera utilisé pour gérer l'EML&nbsp;AdminTool.`,
       confirmPassword: `Confirmer le mot de passe`
     },
-    finally: `Vous pouvez maintenant utiliser l'EML&nbsp;AdminTool !`
+    step4: {
+      title: `Enfin, choisissez le nom de votre première instance`,
+      subtitle: `Une instance correspond à un launcher Minecraft.`,
+      placeholder: `Nom de l'instance`,
+      slugPlaceholder: `ID de l'instance (slug)`
+    },
+    finally: `Vous pouvez maintenant utiliser l'EML&nbsp;AdminTool&nbsp;!`
   },
   auth: {
     login: `Connexion`,

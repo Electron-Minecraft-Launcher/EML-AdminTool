@@ -4,7 +4,7 @@
 
   interface Props {
     step: number
-    setupData: { language: LanguageCode | ''; dbPassword: string; adminUsername: string; adminPassword: string }
+    setupData: { language: LanguageCode | ''; dbPassword: string; adminUsername: string; adminPassword: string, instanceName: string }
   }
 
   let { step = $bindable(), setupData = $bindable() }: Props = $props()

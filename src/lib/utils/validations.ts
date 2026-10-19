@@ -11,7 +11,12 @@ export const setupSchema = z.object({
     .transform((val) => val.trim())
     .refine((val) => val.length >= 2, { message: NotificationCode.SETUP_ADMIN_USERNAME_TOO_SHORT })
     .refine((val) => val.length <= 64, { message: NotificationCode.SETUP_ADMIN_USERNAME_TOO_LONG }),
-  adminPassword: z.string().min(8, NotificationCode.SETUP_ADMIN_PASSWORD_TOO_SHORT)
+  adminPassword: z.string().min(8, NotificationCode.SETUP_ADMIN_PASSWORD_TOO_SHORT),
+  instanceName: z
+    .string()
+    .transform((val) => val.trim())
+    .refine((val) => val.length >= 2, { message: NotificationCode.EMLAT_NAME_TOO_SHORT })
+    .refine((val) => val.length <= 64, { message: NotificationCode.EMLAT_NAME_TOO_LONG })
 })
 
 export const editEMLATSchema = z.object({

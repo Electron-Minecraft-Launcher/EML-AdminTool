@@ -9,8 +9,10 @@
 
   interface Props {
     step: number
-    setupData: { language: LanguageCode | ''; dbPassword: string; adminUsername: string; adminPassword: string }
+    setupData: { language: LanguageCode | ''; dbPassword: string; adminUsername: string; adminPassword: string; instanceName: string }
   }
+
+  let { step = $bindable(), setupData = $bindable() }: Props = $props()
 
   let showLoader: boolean = $state(false)
   let passwordCfr = $state('')
@@ -28,32 +30,14 @@
     return [strength.id, strength.value as 'veryWeak' | 'weak' | 'medium' | 'strong' | 'veryStrong']
   })
 
-  let { step = $bindable(), setupData = $bindable() }: Props = $props()
-
-  const enhanceForm: SubmitFunction = ({ formData }) => {
-    showLoader = true
-    formData.append('language', setupData.language)
-    formData.append('db-password', setupData.dbPassword)
-    formData.append('admin-username', setupData.adminUsername)
-    formData.append('admin-password', setupData.adminPassword)
-
-    return async ({ result, update }) => {
-      await update({ reset: false })
-      showLoader = false
-
-      if (result.type === 'failure') {
-        const message = $l.notifications[result.data?.failure as NotificationCode] ?? $l.notifications.INTERNAL_SERVER_ERROR
-        addNotification('ERROR', message)
-      } else if (result.type === 'success') {
-        step++
-      }
-
-      await applyAction(result)
-    }
+  function submit(e: SubmitEvent) {
+    e.preventDefault()
+    if (pwdStrength[0] < 2 || !setupData.adminUsername || passwordCfr !== setupData.adminPassword) return
+    step++
   }
 </script>
 
-<form method="POST" action="?/setup" use:enhance={enhanceForm}>
+<form onsubmit={submit}>
   {#if showLoader}
     <LoadingSplash transparent />
   {/if}
@@ -86,7 +70,7 @@
 
   <div class="actions">
     <button type="submit" class="primary" disabled={pwdStrength[0] < 2 || !setupData.adminUsername || passwordCfr !== setupData.adminPassword}>
-      {$l.common.finish}&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
+      {$l.common.next}&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i>
     </button>
     <button type="button" class="secondary" onclick={() => step--}><i class="fa-solid fa-arrow-left"></i>&nbsp;&nbsp;{$l.common.back}</button>
   </div>

@@ -100,7 +100,7 @@ export default {
   setup: {
     setup: `Setup`,
     step1: {
-      title: `Firstly, choose the language of your EML&nbsp;AdminTool:`,
+      title: `Firstly, choose the language of your EML&nbsp;AdminTool`,
       subtitle: `This language will be applied for all users.`,
       other: `I speak another language.`,
       modal: {
@@ -113,7 +113,7 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
       }
     },
     step2: {
-      title: `Now, choose a password for your Database:`,
+      title: `Now, choose a password for your database`,
       subtitle: `You will not need to remember it.`,
       placeholder: `Database password`,
       generate: `Generate`,
@@ -125,9 +125,15 @@ Therefore, if you would like to help us translate EML AdminTool, you can find th
       unwantedChars: `Unwanted characters detected. Please avoid using " / \\ + & # % ? = : @ in your password.`
     },
     step3: {
-      title: `Then, choose your server name and a password:`,
-      subtitle: `This server name and password will be your admin account login.`,
+      title: `Then, choose your admin account name and a password`,
+      subtitle: `This account will be used to manage EML&nbsp;AdminTool.`,
       confirmPassword: `Confirm password`
+    },
+    step4: {
+      title: `Finally, choose the name of your first instance`,
+      subtitle: `An instance corresponds to a Minecraft launcher.`,
+      placeholder: `Instance name`,
+      slugPlaceholder: `Instance ID (slug)`,
     },
     finally: 'You can now use EML&nbsp;AdminTool!'
   },
@@ -240,7 +246,7 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
   <li>Remove the EML AdminTool containers with <code>docker compose -f docker-compose.prod.yml down --rmi all -v</code>.</li>
   <li>Delete the EML AdminTool configuration directory with <code>rm -rf ~/.eml</code>.</li>
 </ol>
-<p>After that, EML AdminTool will be completely removed from your system. You can then reinstall it by following the <a href="https://emlproject.com/docs/install-eml-admintool" target="_blank">installation guide</a>.</p>`
+<p>After that, EML AdminTool will be completely removed from your system. You can then reinstall it by following the <a href="https://emlproject.com/docs/eml-admintool/production-setup/install-eml-admintool" target="_blank">installation guide</a>.</p>`
         }
       }
     },
@@ -297,4 +303,5 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
     }
   }
 }
+
 

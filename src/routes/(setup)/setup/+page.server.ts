@@ -6,15 +6,17 @@ import {
   initDatabase,
   changeDatabasePassword,
   setAdminUser,
+  setDefaultProfile,
+  setDefaultInstance,
   setLanguage,
   setPin,
   markAsConfigured,
   restartServer,
   restartUpdater,
-  setDefaultProfile
 } from '$lib/server/setup'
 import { ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
+import { createId } from '@paralleldrive/cuid2'
 
 export const load = (async () => {
   return {}
@@ -32,7 +34,8 @@ export const actions: Actions = {
       language: form.get('language'),
       dbPassword: form.get('db-password'),
       adminUsername: form.get('admin-username'),
-      adminPassword: form.get('admin-password')
+      adminPassword: form.get('admin-password'),
+      instanceName: form.get('instance-name'),
     }
 
     const result = setupSchema.safeParse(raw)
@@ -41,13 +44,16 @@ export const actions: Actions = {
       return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
     }
 
-    const { language, dbPassword, adminUsername, adminPassword } = result.data
+    const { language, dbPassword, adminUsername, adminPassword, instanceName } = result.data
+
+    const instanceId = createId()
 
     try {
       await changeDatabasePassword(dbPassword)
       await initDatabase()
       await setAdminUser(adminUsername, adminPassword)
-      await setDefaultProfile(adminUsername)
+      await setDefaultInstance(instanceId, instanceName)
+      await setDefaultProfile(instanceId, adminUsername)
       await setPin()
       await setLanguage(language)
     } catch (err) {
@@ -76,3 +82,5 @@ export const actions: Actions = {
     }
   }
 }
+
+

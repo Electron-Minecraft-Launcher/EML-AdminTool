@@ -2,6 +2,7 @@
   import ConfigurationAdmin from '../../../components/setup/AdminSetup.svelte'
   import ConfigurationDatabase from '../../../components/setup/DatabaseSetup.svelte'
   import ConfigurationLanguage from '../../../components/setup/LanguageSetup.svelte'
+  import ConfigurationInstance from '../../../components/setup/InstanceSetup.svelte'
   import { l, type LanguageCode } from '$lib/stores/language'
   import type { PageProps } from './$types'
   import { waitForServerRestart, sleep } from '$lib/utils/utils'
@@ -19,7 +20,8 @@
     language: '' as LanguageCode | '',
     dbPassword: '',
     adminUsername: '',
-    adminPassword: ''
+    adminPassword: '',
+    instanceName: ''
   })
 
   let showLoader = $state(false)
@@ -66,7 +68,7 @@
   })
 
   $effect(() => {
-    if (step >= 4) finish()
+    if (step >= 5) finish()
   })
 </script>
 
@@ -83,7 +85,7 @@
   </div>
 {/if}
 <div class="progress">
-  <span class:step-0={step == 0} class:step-1={step == 1} class:step-2={step == 2} class:step-3={step == 3} class:step-4={step == 4}></span>
+  <span class:step-0={step == 0} class:step-1={step == 1} class:step-2={step == 2} class:step-3={step == 3} class:step-4={step == 4} class:step-5={step == 5}></span>
 </div>
 
 {#if showH1}
@@ -98,6 +100,7 @@
     class:step-2={step === 2}
     class:step-3={step === 3}
     class:step-4={step === 4}
+    class:step-5={step === 5}
     id="config-slider"
     transition:fade
   >
@@ -109,6 +112,9 @@
     </div>
     <div class="config-3">
       <ConfigurationAdmin bind:step bind:setupData />
+    </div>
+    <div class="config-4">
+      <ConfigurationInstance bind:step bind:setupData />
     </div>
   </div>
 {/if}
@@ -155,7 +161,7 @@
   }
 
   div.config-slider {
-    width: 400vw;
+    width: 500vw;
     overflow-x: hidden;
     transition: transform 0.5s ease;
     display: flex;
@@ -177,9 +183,14 @@
       transform: translateX(-300vw);
     }
 
+    &.step-5 {
+      transform: translateX(-400vw);
+    }
+
     div.config-1,
     div.config-2,
-    div.config-3 {
+    div.config-3,
+    div.config-4 {
       width: 100vw;
       vertical-align: top;
       height: calc(100vh - 5px);
@@ -208,18 +219,22 @@
       }
 
       &.step-1 {
-        width: 17%;
+        width: calc(25% / 2);
       }
 
       &.step-2 {
-        width: 50%;
+        width: calc(25% + 25% / 2);
       }
 
       &.step-3 {
-        width: 84%;
+        width: calc(50% + 25% / 2);
       }
 
       &.step-4 {
+        width: calc(75% + 25% / 2);
+      }
+
+      &.step-5 {
         width: 100%;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;

@@ -86,21 +86,28 @@ model Log {
   timestamp DateTime @default(now())
 }
 
-model Loader {
-  id               String     @id @default(cuid(2))
-  type             LoaderType
-  minecraftVersion String
-  loaderVersion    String
-  customVersion    String?
-  file             Json?
-  updatedAt        DateTime   @updatedAt
-  profileId        String     @unique @default("1")
-  profile          Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+model Instance {
+  id        String    @id @default(cuid(2))
+  name      String
+  slug      String    @unique
+  profiles  Profile[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
+
+
+/**
+ * TODO
+ * - Ensure that it is possible to create multiples profiles with the same name but different instanceId.
+ * - Find a way to give users specific permissions on a Instance.
+ * - Update the code to implement Instances (URL slug, backend, etc.).
+ */
 
 model Profile {
   id              String                  @id @default(cuid(2))
   name            String
+  instanceId      String
+  instance        Instance                @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   isDefault       Boolean                 @default(false)
   slug            String                  @unique
   ip              String?
@@ -114,6 +121,18 @@ model Profile {
   allowedPseudos  String[]                @default([])
   password        String?
   userPermissions UserProfilePermission[]
+}
+
+model Loader {
+  id               String     @id @default(cuid(2))
+  type             LoaderType
+  minecraftVersion String
+  loaderVersion    String
+  customVersion    String?
+  file             Json?
+  updatedAt        DateTime   @updatedAt
+  profileId        String     @unique @default("1")
+  profile          Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 model Bootstrap {
