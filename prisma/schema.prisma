@@ -55,28 +55,6 @@ model Environment {
   updatedAt DateTime @updatedAt
 }
 
-model User {
-  id                 String                  @id @default(cuid(2))
-  username           String                  @unique
-  password           String
-  status             UserStatus              @default(PENDING)
-  isAdmin            Boolean                 @default(false)
-  p_filesUpdater     Int                     @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
-  p_bootstraps       Int                     @default(0) // 0 = no access, 1 = read and write
-  p_maintenance      Int                     @default(0) // 0 = no access, 1 = read and write, 2 = admin (can change allowed pseudos)
-  p_news             Int                     @default(0) // 0 = no access, 1 = read and write, 2 = admin (can delete news they did not create)
-  p_newsCategories   Int                     @default(0) // 0 = no access, 1 = read and write
-  p_newsTags         Int                     @default(0) // 0 = no access, 1 = read and write
-  p_backgrounds      Int                     @default(0) // 0 = no access, 1 = read and write
-  p_stats            Int                     @default(0) // 0 = no access, 1 = read, 2 = read and reset
-  p_crashReports     Int                     @default(0) // 0 = no access, 1 = read, 2 = read and delete
-  profilePermissions UserProfilePermission[]
-  createdAt          DateTime                @default(now())
-  updatedAt          DateTime                @updatedAt
-  logs               Log[]
-  news               News[]
-}
-
 model Log {
   id        String   @id @default(cuid(2))
   userId    String?
@@ -87,65 +65,93 @@ model Log {
 }
 
 model Instance {
-  id        String    @id @default(cuid(2))
-  name      String
-  slug      String    @unique
-  profiles  Profile[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id              String                   @id @default(cuid(2))
+  name            String
+  slug            String                   @unique
+  profiles        Profile[]
+  userPermissions UserInstancePermission[]
+  bootstrap       Bootstrap?
+  maintenance     Maintenance?
+  news            News[]
+  newsCategories  NewsCategory[]
+  newsTags        NewsTag[]
+  backgrounds     Background[]
+  stats           Stat[]
+  crashReports    CrashReport[]
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
 }
-
 
 /**
  * TODO
- * - Ensure that it is possible to create multiples profiles with the same name but different instanceId.
- * - Find a way to give users specific permissions on a Instance.
+ * - Ensure that it is possible to create multiples profiles with the same name but different instanceId. OK
+ * - Find a way to give users specific permissions on a Instance. OK
  * - Update the code to implement Instances (URL slug, backend, etc.).
  */
 
 model Profile {
-  id              String                  @id @default(cuid(2))
-  name            String
-  instanceId      String
-  instance        Instance                @relation(fields: [instanceId], references: [id], onDelete: Cascade)
-  isDefault       Boolean                 @default(false)
-  slug            String                  @unique
-  ip              String?
-  port            Int?
-  tcpProtocol     String?
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
-  loader          Loader?
-  hidden          Boolean?                @default(false)
-  visibility      ProfileVisibility?      @default(PUBLIC)
-  allowedPseudos  String[]                @default([])
-  password        String?
-  userPermissions UserProfilePermission[]
+  id                                  String                                      @id @default(cuid(2))
+  name                                String
+  instanceId                          String
+  instance                            Instance                                    @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  isDefault                           Boolean                                     @default(false) // Only one profile can be default per instance
+  slug                                String
+  ip                                  String?
+  port                                Int?
+  tcpProtocol                         String?
+  loader                              Loader?
+  hidden                              Boolean?                                    @default(false)
+  visibility                          ProfileVisibility?                          @default(PUBLIC)
+  allowedPseudos                      String[]                                    @default([])
+  password                            String?
+  userInstanceFilesUpdaterPermissions UserInstanceProfileFilesUpdaterPermission[]
+  createdAt                           DateTime                                    @default(now())
+  updatedAt                           DateTime                                    @updatedAt
+
+  @@unique([slug, instanceId])
+}
+
+model User {
+  id                  String                   @id @default(cuid(2))
+  username            String                   @unique
+  password            String
+  status              UserStatus               @default(PENDING)
+  isAdmin             Boolean                  @default(false)
+  instancePermissions UserInstancePermission[]
+  logs                Log[]
+  news                News[]
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
 }
 
 model Loader {
   id               String     @id @default(cuid(2))
+  profile          Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId        String     @unique @default("1")
   type             LoaderType
   minecraftVersion String
   loaderVersion    String
   customVersion    String?
   file             Json?
+  createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
-  profileId        String     @unique @default("1")
-  profile          Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
 }
 
 model Bootstrap {
-  id        String   @id @default(cuid(2))
-  winFile   Json?
-  macFile   Json?
-  linFile   Json?
-  version   String
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid(2))
+  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId String   @unique
+  winFile    Json?
+  macFile    Json?
+  linFile    Json?
+  version    String
+  updatedAt  DateTime @updatedAt
 }
 
 model Maintenance {
   id             String    @id @default(cuid(2))
+  instance       Instance  @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId     String    @unique
   startTime      DateTime?
   endTime        DateTime?
   message        String    @default("")
@@ -154,10 +160,12 @@ model Maintenance {
 
 model News {
   id         String         @id @default(cuid(2))
+  instance   Instance       @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId String
   title      String
   content    String
   authorId   String
-  author     User           @relation(fields: [authorId], references: [id])
+  author     User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
   categories NewsCategory[]
   tags       NewsTag[]
   createdAt  DateTime       @default(now())
@@ -165,37 +173,47 @@ model News {
 }
 
 model NewsCategory {
-  id        String   @id @default(cuid(2))
-  name      String   @unique
-  news      News[]
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid(2))
+  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId String
+  name       String   @unique
+  news       News[]
+  createdAt  DateTime @default(now())
 }
 
 model NewsTag {
-  id    String @id @default(cuid(2))
-  name  String @unique
-  color String
-  news  News[]
+  id         String   @id @default(cuid(2))
+  instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId String
+  name       String   @unique
+  color      String
+  news       News[]
 }
 
 model Background {
-  id        String           @id @default(cuid(2))
-  name      String           @unique
-  file      Json
-  status    BackgroundStatus @default(ACTIVE)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
+  id         String           @id @default(cuid(2))
+  instance   Instance         @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId String
+  name       String           @unique
+  file       Json
+  status     BackgroundStatus @default(ACTIVE)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 }
 
 model Stat {
-  id        String     @id @default(cuid(2))
-  action    StatAction
-  value     String?
-  createdAt DateTime   @default(now())
+  id         String     @id @default(cuid(2))
+  instance   Instance   @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId String
+  action     StatAction
+  value      String?
+  createdAt  DateTime   @default(now())
 }
 
 model CrashReport {
   id            String    @id @default(cuid(2))
+  instance      Instance  @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId    String
   date          String
   os            String
   arch          String
@@ -226,15 +244,35 @@ model SystemMigration {
   appliedAt DateTime @default(now())
 }
 
-model UserProfilePermission {
-  id         String   @id @default(cuid(2))
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId  String
-  permission Int      @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+model UserInstancePermission {
+  id                      String                                      @id @default(cuid(2))
+  user                    User                                        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                  String
+  instance                Instance                                    @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  instanceId              String
+  isAdmin                 Boolean                                     @default(false) // Admin can manage users and permissions for THIS instance
+  bootstrap               Int                                         @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
+  maintenance             Int                                         @default(0) // 0 = no access, 1 = read and write, 2 = admin (can change allowed pseudos)
+  news                    Int                                         @default(0) // 0 = no access, 1 = read and write, 2 = admin (can delete news they did not create)
+  newsCategories          Int                                         @default(0) // 0 = no access, 1 = read and write
+  newsTags                Int                                         @default(0) // 0 = no access, 1 = read and write
+  backgrounds             Int                                         @default(0) // 0 = no access, 1 = read and write
+  stats                   Int                                         @default(0) // 0 = no access, 1 = read, 2 = read and reset
+  crashReports            Int                                         @default(0) // 0 = no access, 1 = read, 2 = read and delete
+  filesUpdaterPermissions UserInstanceProfileFilesUpdaterPermission[]
+  createdAt               DateTime                                    @default(now())
+  updatedAt               DateTime                                    @updatedAt
+}
 
-  @@unique([userId, profileId])
+model UserInstanceProfileFilesUpdaterPermission {
+  id                       String                 @id @default(cuid(2))
+  userInstance             UserInstancePermission @relation(fields: [UserInstancePermissionId], references: [id], onDelete: Cascade)
+  UserInstancePermissionId String
+  profile                  Profile                @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId                String
+  permission               Int                    @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+
+  @@unique([UserInstancePermissionId, profileId])
 }
