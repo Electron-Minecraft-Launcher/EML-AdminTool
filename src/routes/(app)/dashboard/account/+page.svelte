@@ -19,35 +19,28 @@
   let savedTheme = $state<ThemePreference>(user.theme)
   let savingTheme = $state(false)
 
-  const applyTheme = (preference: ThemePreference) => applyThemePreference(preference, { animate: true })
+  const enhanceTheme: SubmitFunction = ({ formData, cancel }) => {
+    const nextTheme = formData.get('theme')
+    if (!isThemePreference(nextTheme)) return cancel()
 
-  async function saveTheme(event: Event) {
-    const select = event.currentTarget
-    if (!(select instanceof HTMLSelectElement) || !isThemePreference(select.value)) return
-
-    const nextTheme = select.value
     savingTheme = true
-    applyTheme(nextTheme)
+    applyThemePreference(nextTheme, { animate: true })
 
-    try {
-      const response = await fetch('/api/user/theme', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme: nextTheme })
-      })
+    return async ({ result, update }) => {
+      if (result.type === 'success') {
+        savedTheme = nextTheme
+        // Keep the shared user object in sync so revisiting this page shows the saved value
+        user.theme = nextTheme
+      } else {
+        theme = savedTheme
+        applyThemePreference(savedTheme, { animate: true })
 
-      if (!response.ok) throw new Error(`Theme preference request failed with status ${response.status}`)
+        const code = result.type === 'failure' ? (result.data?.failure as NotificationCode) : undefined
+        addNotification('ERROR', (code && $l.notifications[code]) || $l.notifications.INTERNAL_SERVER_ERROR)
+      }
 
-      savedTheme = nextTheme
-      // Keep the shared user object in sync so revisiting this page shows the saved value
-      user.theme = nextTheme
-    } catch (error) {
-      console.error('Failed to save theme preference:', error)
-      theme = savedTheme
-      applyTheme(savedTheme)
-      addNotification('ERROR', $l.notifications.INTERNAL_SERVER_ERROR)
-    } finally {
       savingTheme = false
+      await update({ reset: false })
     }
   }
 
@@ -107,14 +100,14 @@
   <h3>{$l.dashboard.account.appearance.title}</h3>
 
   <div class="container">
-    <div>
+    <form method="POST" action="?/theme" use:enhance={enhanceTheme}>
       <label for="theme">{$l.dashboard.account.appearance.theme}</label>
-      <select id="theme" bind:value={theme} onchange={saveTheme} disabled={savingTheme}>
+      <select id="theme" name="theme" bind:value={theme} onchange={(e) => e.currentTarget.form?.requestSubmit()} disabled={savingTheme}>
         <option value="system">{$l.dashboard.account.appearance.system}</option>
         <option value="light">{$l.dashboard.account.appearance.light}</option>
         <option value="dark">{$l.dashboard.account.appearance.dark}</option>
       </select>
-    </div>
+    </form>
   </div>
 </section>
 

@@ -2,6 +2,7 @@ import { z } from 'zod/v4'
 import { NotificationCode } from './notifications'
 import { DateTime } from 'luxon'
 import { ILoaderType } from '$lib/utils/db'
+import { THEME_PREFERENCES } from '$lib/utils/theme'
 
 export const setupSchema = z.object({
   language: z.string().length(2, NotificationCode.SETUP_INVALID_LANGUAGE),
@@ -132,6 +133,10 @@ export const editAccountSchema = z
     error: NotificationCode.EDIT_ACCOUNT_PASSWORD_TOO_SHORT,
     path: ['password']
   })
+
+export const editThemeSchema = z.object({
+  theme: z.enum(THEME_PREFERENCES, NotificationCode.INVALID_INPUT)
+})
 
 export const loginSchema = z.object({
   username: z
