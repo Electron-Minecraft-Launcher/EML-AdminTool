@@ -7,6 +7,8 @@ import { sweepPermissions, userPermissionsCache, verify } from '$lib/server/auth
 import { deleteSession, getBearerToken, verifyScopedToken } from '$lib/server/jwt'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
+import type { ThemePreference } from '$lib/utils/db'
+import { THEME_COOKIE, themeCookieOptions, toThemePreference } from '$lib/utils/theme'
 import { ProfileVisibility, type User } from '@prisma/client'
 import { defaultPgURL } from '$lib/server/setup'
 import path from 'node:path'
@@ -35,7 +37,10 @@ const app: Handle = async ({ event, resolve }) => {
     await loadApplicationContext(event)
   }
 
-  const response = await resolve(event)
+  const themePreference: ThemePreference = event.locals.user?.theme ?? 'system'
+  const response = await resolve(event, {
+    transformPageChunk: ({ html }) => html.replace('%emlat.theme%', themePreference)
+  })
 
   return injectCorsHeaders(response, event)
 }
@@ -256,6 +261,7 @@ async function loadApplicationContext(event: RequestEvent) {
 
   if (!event.locals.isConfigured) {
     event.locals.env = getDefaultEnv()
+    event.cookies.delete(THEME_COOKIE, { path: '/' })
     return
   }
 
@@ -264,7 +270,6 @@ async function loadApplicationContext(event: RequestEvent) {
     event.locals.env = {
       language: (envData?.language as LanguageCode) ?? 'en',
       name: envData?.name ?? 'EML',
-      theme: envData?.theme ?? 'default',
       version: pkg.version
     }
   } catch (err) {
@@ -275,13 +280,17 @@ async function loadApplicationContext(event: RequestEvent) {
   const session = event.cookies.get('session')
   if (session) {
     await handleUserSession(event, session)
+  } else {
+    event.cookies.delete(THEME_COOKIE, { path: '/' })
   }
 }
 
 async function handleUserSession(event: RequestEvent, session: string) {
   try {
     const user = await verify(session)
-    event.locals.user = getUserInfo(user, user.profilePermissions)
+    const userInfo = getUserInfo(user, user.profilePermissions)
+    event.locals.user = userInfo
+    event.cookies.set(THEME_COOKIE, userInfo.theme, themeCookieOptions(event.url))
 
     sweepPermissions()
   } catch (err) {
@@ -303,7 +312,6 @@ function getDefaultEnv() {
   return {
     language: 'en' as LanguageCode,
     name: 'EML',
-    theme: 'default',
     version: pkg.version
   }
 }
@@ -312,6 +320,7 @@ function getUserInfo(user: User, profilePermissions: { profileId: string; name: 
   return {
     id: user.id,
     username: user.username,
+    theme: toThemePreference(user.theme),
     p_filesUpdater: user.p_filesUpdater as 0 | 1 | 2,
     p_bootstraps: user.p_bootstraps as 0 | 1,
     p_maintenance: user.p_maintenance as 0 | 1 | 2,

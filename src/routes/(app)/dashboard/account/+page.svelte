@@ -7,12 +7,49 @@
   import getUser from '$lib/utils/user'
   import type { SubmitFunction } from '@sveltejs/kit'
   import type { NotificationCode } from '$lib/utils/notifications'
+  import type { ThemePreference } from '$lib/utils/db'
+  import { applyThemePreference, isThemePreference } from '$lib/utils/theme'
   import EditAccountModal from '../../../../components/modals/EditAccountModal.svelte'
 
   const env = getEnv()
   const user = getUser()
 
   let showEditAccountModal = $state(false)
+  let theme = $state<ThemePreference>(user.theme)
+  let savedTheme = $state<ThemePreference>(user.theme)
+  let savingTheme = $state(false)
+
+  const applyTheme = (preference: ThemePreference) => applyThemePreference(preference, { animate: true })
+
+  async function saveTheme(event: Event) {
+    const select = event.currentTarget
+    if (!(select instanceof HTMLSelectElement) || !isThemePreference(select.value)) return
+
+    const nextTheme = select.value
+    savingTheme = true
+    applyTheme(nextTheme)
+
+    try {
+      const response = await fetch('/api/user/theme', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme: nextTheme })
+      })
+
+      if (!response.ok) throw new Error(`Theme preference request failed with status ${response.status}`)
+
+      savedTheme = nextTheme
+      // Keep the shared user object in sync so revisiting this page shows the saved value
+      user.theme = nextTheme
+    } catch (error) {
+      console.error('Failed to save theme preference:', error)
+      theme = savedTheme
+      applyTheme(savedTheme)
+      addNotification('ERROR', $l.notifications.INTERNAL_SERVER_ERROR)
+    } finally {
+      savingTheme = false
+    }
+  }
 
   const enhanceForm: SubmitFunction = ({ formData, cancel }) => {
     if (!confirm($l.dashboard.account.dangerZone.deleteAccountWarning)) {
@@ -62,6 +99,21 @@
     <div>
       <p class="label">{$l.dashboard.account.info.accountType}</p>
       <p>{user.isAdmin ? 'Administrator' : 'Standard'}</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h3>{$l.dashboard.account.appearance.title}</h3>
+
+  <div class="container">
+    <div>
+      <label for="theme">{$l.dashboard.account.appearance.theme}</label>
+      <select id="theme" bind:value={theme} onchange={saveTheme} disabled={savingTheme}>
+        <option value="system">{$l.dashboard.account.appearance.system}</option>
+        <option value="light">{$l.dashboard.account.appearance.light}</option>
+        <option value="dark">{$l.dashboard.account.appearance.dark}</option>
+      </select>
     </div>
   </div>
 </section>

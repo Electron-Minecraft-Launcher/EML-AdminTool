@@ -45,9 +45,12 @@ export const IStatAction = {
   BOOTSTRAP: 'BOOTSTRAP'
 } as const
 
+export type ThemePreference = 'system' | 'light' | 'dark'
+
 export type UserInfo = {
   id: string
   username: string
+  theme: ThemePreference
   isAdmin: boolean
   /**
    * @deprecated
