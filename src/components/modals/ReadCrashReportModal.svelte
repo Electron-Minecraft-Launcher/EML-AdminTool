@@ -232,7 +232,7 @@
       background: none;
       padding: 15px 20px;
       font-weight: bold;
-      color: #565656 !important;
+      color: var(--text-secondary) !important;
       font-size: 1em;
 
       &.active {

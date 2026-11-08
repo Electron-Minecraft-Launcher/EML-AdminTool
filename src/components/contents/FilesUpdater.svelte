@@ -360,7 +360,7 @@
       opacity 0.2s,
       height 0.2s ease,
       display 0s;
-    background: white;
+    background: var(--surface-color);
     padding: 10px;
     border: 1px solid var(--border-color);
     z-index: 100;
@@ -388,7 +388,7 @@
       }
 
       &:hover {
-        background: #eeeeee;
+        background: var(--surface-hover-color);
       }
     }
   }
@@ -402,7 +402,7 @@
     p.nothing {
       text-align: center;
       margin-top: 20px;
-      color: #606060;
+      color: var(--text-muted-color);
     }
 
     div.info {
@@ -458,14 +458,14 @@
       cursor: pointer;
 
       &:hover {
-        background-color: #eeeeee;
+        background-color: var(--surface-hover-color);
       }
 
       &.focused {
-        background-color: #f5f5f5;
+        background-color: var(--secondary-color-hover);
 
         &:hover {
-          background-color: #eeeeee;
+          background-color: var(--surface-hover-color);
         }
       }
     }
@@ -491,7 +491,7 @@
 
       &.size {
         text-align: right;
-        color: #606060;
+        color: var(--text-muted-color);
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
         min-width: 90px;

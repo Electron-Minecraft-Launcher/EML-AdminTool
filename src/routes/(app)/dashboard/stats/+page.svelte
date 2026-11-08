@@ -299,10 +299,10 @@
 
   h2 span {
     font-size: 15px;
-    color: #574010;
+    color: var(--warning-text-color);
     display: inline-block;
     margin-left: 10px;
-    background-color: #fae791;
+    background-color: var(--warning-surface-color);
     padding: 2px 12px;
     border-radius: 50rem;
     vertical-align: middle;

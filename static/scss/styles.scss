@@ -2,6 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root {
+  color-scheme: light;
+
   --primary-color: rgb(194, 81, 5);
   --primary-color-hover: rgb(224, 96, 10);
   --primary-tr-color-hover: rgb(194, 81, 5, 0.2);
@@ -11,6 +13,8 @@
 
   --red-color: rgb(170, 24, 24);
   --green-color: rgb(24, 170, 24);
+  --info-color: #0869da;
+  --warning-text-color: #574010;
 
   --secondary-color: rgb(240, 240, 240);
   --secondary-color-hover: rgb(245, 245, 245);
@@ -29,19 +33,162 @@
 
   --text-light-color: #fafafa;
   --text-dark-color: #303030;
+  --text-muted-color: #808080;
+  --text-main: var(--text-dark-color);
+  --text-secondary: #646464;
+  --surface-color: #ffffff;
+  --surface-hover-color: #eeeeee;
+  --loading-overlay-color: rgba(255, 255, 255, 0.7);
+  --danger-surface-color: #faeeee;
+  --success-surface-color: #e3ffe3;
+  --warning-surface-color: #fae791;
+  --image-overlay-color: rgba(223, 223, 223, 0.63);
+  --code-background-color: #f4f4f4;
+  --scrollbar-track-color: #f0f0f0;
+  --scrollbar-thumb-color: #c8c8c8;
+  --scrollbar-thumb-hover-color: #a8a8a8;
+  --skeleton-color: #e5e5e5;
+  --skeleton-highlight-color: #eaeaea;
+
+  --alert-tip-color: #1b7f38;
+  --alert-important-color: #8251de;
+  --alert-warning-color: #9a6700;
+  --alert-caution-color: #cf232e;
+
+  --notification-info-background: #6aaae2a0;
+  --notification-info-border: #91aec6;
+  --notification-warning-background: #e9d876a0;
+  --notification-warning-border: #c0b785;
+  --notification-success-background: #86c786a0;
+  --notification-success-border: #94c194;
+  --notification-error-background: #eb7575a0;
+  --notification-error-border: #dda5a5;
 
   --gray-gradient: linear-gradient(#fefefe, #fcfcfc);
+}
+
+:root.dark-theme {
+  color-scheme: dark;
+
+  --primary-color: rgb(245, 139, 67);
+  --primary-color-hover: rgb(255, 164, 99);
+  --primary-tr-color-hover: rgb(245, 139, 67, 0.2);
+  --primary-dark-color: rgb(173, 74, 13);
+  --primary-light-color: rgb(73, 48, 31);
+  --primary-light-color-hover: rgb(89, 57, 34);
+
+  --secondary-color: rgb(49, 52, 58);
+  --secondary-color-hover: rgb(60, 64, 71);
+
+  --border-color: rgb(56, 60, 67);
+  --border-color2: rgb(77, 82, 91);
+
+  --primary-shadow-dark-color: rgb(120, 49, 8);
+  --primary-shadow-dark-color-hover: rgb(140, 57, 9);
+  --secondary-shadow-dark-color: rgb(35, 38, 43);
+  --secondary-shadow-dark-color-hover: rgb(42, 46, 52);
+
+  --background-light-color: rgb(34, 37, 42);
+  --background-color: rgb(25, 27, 31);
+  --background-medium-color: rgb(42, 45, 51);
+
+  --red-color: #f07878;
+  --green-color: #6bcf82;
+  --info-color: #78adf8;
+  --warning-text-color: #ffe08a;
+  --text-light-color: #fafafa;
+  --text-dark-color: #e4e6eb;
+  --text-muted-color: #a0a5ae;
+  --text-main: var(--text-dark-color);
+  --text-secondary: #a0a5ae;
+  --surface-color: #22252a;
+  --surface-hover-color: #30343b;
+  --loading-overlay-color: rgba(0, 0, 0, 0.65);
+  --danger-surface-color: #422b2d;
+  --success-surface-color: #253e2d;
+  --warning-surface-color: #4b3b17;
+  --image-overlay-color: rgba(20, 22, 26, 0.78);
+  --code-background-color: #30343b;
+  --scrollbar-track-color: #191b1f;
+  --scrollbar-thumb-color: #484d56;
+  --scrollbar-thumb-hover-color: #626975;
+  --skeleton-color: #30343b;
+  --skeleton-highlight-color: #3a3f47;
+
+  --alert-tip-color: #3fb950;
+  --alert-important-color: #a371f7;
+  --alert-warning-color: #d29922;
+  --alert-caution-color: #f85149;
+
+  --notification-info-background: #2f5b8cc0;
+  --notification-info-border: #3f6a94;
+  --notification-warning-background: #7a6420c0;
+  --notification-warning-border: #8d7a3a;
+  --notification-success-background: #2f6b3cc0;
+  --notification-success-border: #3f7a4a;
+  --notification-error-background: #8a3030c0;
+  --notification-error-border: #a05050;
+
+  --gray-gradient: linear-gradient(#292c32, #22252a);
+}
+
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    fill 220ms ease,
+    stroke 220ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transitioning,
+  .theme-transitioning *,
+  .theme-transitioning *::before,
+  .theme-transitioning *::after {
+    transition: none !important;
+  }
 }
 
 * {
   font-family: 'Poppins', 'Arial', 'Helvetica', sans-serif;
 }
 
+html,
 body {
   margin: 0;
   padding: 0;
   background-color: var(--background-color);
+  color: var(--text-dark-color);
   overflow-x: hidden;
+}
+
+:root {
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color);
+  border: 2px solid var(--scrollbar-track-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-color);
 }
 
 p {
@@ -56,7 +203,7 @@ p {
 label,
 p.label {
   margin: 20px 0 5px 0;
-  color: #808080;
+  color: var(--text-muted-color);
   font-size: 14px;
   display: block;
 
@@ -69,7 +216,7 @@ label.p {
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: black;
+  color: var(--text-dark-color);
 }
 
 a:not(.not-a),
@@ -120,6 +267,7 @@ input:not([type=checkbox]):not([type=radio]) {
   border: 1px solid var(--border-color2);
   border-radius: 5px;
   background-color: var(--background-light-color);
+  color: var(--text-dark-color);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   outline: 0px solid var(--primary-tr-color-hover);
   transition: all 0.3s ease, shadow 0.1s ease, margin 0.1s, outline 0.1s ease;
@@ -153,6 +301,7 @@ select {
   border: 1px solid var(--border-color2);
   border-radius: 5px;
   background-color: var(--background-light-color);
+  color: var(--text-dark-color);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   outline: 0px solid var(--primary-tr-color-hover);
   transition: all 0.3s ease, shadow 0.1s ease, margin 0.1s, outline 0.1s ease;
@@ -268,7 +417,7 @@ button:not(.a) {
 section.section {
   margin-top: 50px;
   position: relative;
-  background-color: white;
+  background-color: var(--surface-color);
   padding: 50px;
   border: 1px solid var(--border-color);
   border-radius: 10px;
@@ -315,7 +464,7 @@ section.section {
   label,
   p.label {
     margin: 20px 0 5px 0;
-    color: #808080;
+    color: var(--text-muted-color);
     font-size: 14px;
 
     &:nth-of-type(1) {

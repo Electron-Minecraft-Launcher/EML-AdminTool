@@ -246,7 +246,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
-        color: #646464;
+        color: var(--text-secondary);
         font-size: 0.95rem;
         margin-bottom: 10px;
 
@@ -293,7 +293,7 @@
 
   div.widget {
     position: relative;
-    background-color: white;
+    background-color: var(--surface-color);
     padding: 30px;
     border: 1px solid var(--border-color);
     border-radius: 10px;
@@ -347,7 +347,7 @@
           line-height: 1;
           padding: 9px 10px;
           border-radius: 5px;
-          background-color: #f0f0f0;
+          background-color: var(--secondary-color);
           border: 1px solid var(--border-color);
           margin-left: 10px;
           position: relative;

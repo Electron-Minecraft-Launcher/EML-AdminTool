@@ -37,19 +37,19 @@
 
   @keyframes skeleton {
     0% {
-      background: #e5e5e5;
+      background: var(--skeleton-color);
     }
 
     40% {
-      background: #eaeaea;
+      background: var(--skeleton-highlight-color);
     }
 
     60% {
-      background: #e5e5e5;
+      background: var(--skeleton-color);
     }
 
     100% {
-      background: #e5e5e5;
+      background: var(--skeleton-color);
     }
   }
 </style>

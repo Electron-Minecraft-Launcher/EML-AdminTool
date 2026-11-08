@@ -98,7 +98,7 @@
   div.rel-progress {
     width: 130px;
     border-radius: 50rem;
-    background-color: #f3f3f3;
+    background-color: var(--secondary-color);
     display: inline-block;
     height: 7px;
     margin-top: 13px;

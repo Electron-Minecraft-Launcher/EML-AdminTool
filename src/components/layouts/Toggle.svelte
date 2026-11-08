@@ -74,7 +74,7 @@
     width: 13px;
     left: 2px;
     bottom: 2px;
-    background-color: white;
+    background-color: var(--surface-color);
     transition: 0.2s;
   }
 

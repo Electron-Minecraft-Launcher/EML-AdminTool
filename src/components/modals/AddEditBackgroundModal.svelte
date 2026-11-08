@@ -136,7 +136,7 @@
     vertical-align: middle;
 
     &:hover {
-      background: #faeeee;
+      background: var(--danger-surface-color);
     }
   }
 </style>

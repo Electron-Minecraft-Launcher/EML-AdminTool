@@ -145,12 +145,12 @@ You will need to disable maintenance manually.`
 
     p {
       font-size: 14px;
-      color: #505050;
+      color: var(--text-secondary);
       margin: 0;
     }
 
     p.note {
-      color: #0869da;
+      color: var(--info-color);
       font-weight: 600;
       margin-bottom: 5px;
       margin-top: 30px;

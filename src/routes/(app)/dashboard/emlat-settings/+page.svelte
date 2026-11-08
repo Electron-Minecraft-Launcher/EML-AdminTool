@@ -284,7 +284,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    background-color: white;
+    background-color: var(--surface-color);
 
     div {
       position: fixed;
@@ -296,7 +296,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      background-color: white;
+      background-color: var(--surface-color);
     }
 
     p {
@@ -333,7 +333,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
   i.fa-solid.fa-star {
     cursor: help;
     font-size: 10px;
-    color: #5f5f5f;
+    color: var(--text-muted-color);
   }
 
   div.updater {
@@ -385,8 +385,8 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     margin-top: 20px;
     padding: 20px;
     border-radius: 5px;
-    background: rgb(253, 253, 253);
-    border: 1px solid rgb(240, 240, 240);
+    background: var(--background-light-color);
+    border: 1px solid var(--border-color);
     height: 400px;
     overflow-y: auto;
 

@@ -321,7 +321,7 @@
       opacity 0.3s,
       transform 0.3s;
 
-    background-color: white;
+    background-color: var(--surface-color);
     padding: 40px;
     border: 1px solid var(--border-color);
     border-radius: 10px;
@@ -345,7 +345,7 @@
     p.nothing {
       text-align: center;
       margin-top: 20px;
-      color: #606060;
+      color: var(--text-muted-color);
       width: 100%;
     }
 
@@ -366,7 +366,7 @@
         align-items: center;
         vertical-align: middle;
         justify-content: center;
-        background: #dfdfdfa1;
+        background: var(--image-overlay-color);
         border-radius: 5px;
         transition: opacity 0.3s;
         opacity: 0;
@@ -381,7 +381,7 @@
       display: inline-block;
       margin-top: 0;
       border-bottom: none;
-      color: #1e1e1e;
+      color: var(--text-dark-color);
       position: relative;
       overflow: hidden;
       white-space: nowrap;
@@ -393,7 +393,7 @@
       line-height: 15px;
 
       &:hover {
-        background: #eeeeeeb7;
+        background: var(--surface-hover-color);
       }
 
       &.remove {
@@ -406,7 +406,7 @@
         vertical-align: middle;
 
         &:hover {
-          background: #faeeeeb7;
+          background: var(--danger-surface-color);
         }
       }
     }
@@ -435,7 +435,7 @@
     padding-left: 15px;
     border-radius: 5px;
     font-size: 12px;
-    background-color: #f0f0f0;
+    background-color: var(--secondary-color);
     line-height: 15px;
 
     i {
@@ -443,11 +443,16 @@
     }
   }
 
+  span.category {
+    color: var(--text-dark-color);
+    background-color: var(--secondary-color);
+  }
+
   button.remove {
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-dark-color);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -459,7 +464,7 @@
     color: var(--red-color);
 
     &:hover {
-      background: #faeeee;
+      background: var(--danger-surface-color);
     }
 
     i {
@@ -492,7 +497,7 @@
       opacity 0.2s,
       height 0.2s ease,
       display 0s;
-    background: white;
+    background: var(--surface-color);
     padding: 10px;
     border: 1px solid var(--border-color);
     z-index: 100;
@@ -517,7 +522,7 @@
       }
 
       &:hover {
-        background: #eeeeee;
+        background: var(--surface-hover-color);
       }
     }
   }

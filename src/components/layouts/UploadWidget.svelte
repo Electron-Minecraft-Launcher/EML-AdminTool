@@ -51,7 +51,7 @@
     position: fixed;
     top: 20px;
     right: 25px;
-    background: white;
+    background: var(--surface-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -85,7 +85,7 @@
       .progress-bar {
         width: 100%;
         height: 6px;
-        background: #eee;
+        background: var(--secondary-color);
         border-radius: 3px;
         overflow: hidden;
 
@@ -99,7 +99,7 @@
 
     .count {
       font-size: 12px;
-      color: #666;
+      color: var(--text-muted-color);
       white-space: nowrap;
       text-align: right;
       width: 170px;
