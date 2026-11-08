@@ -5,31 +5,9 @@
 
   interface Props {
     source: string
-    domain?: string
   }
 
-  let { source, domain }: Props = $props()
-
-  // $effect(() => {
-  //   if (domain) {
-      DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-        if (!domain) return
-        if (!node.tagName) return
-        if (node.tagName === 'A') {
-          const href = node.getAttribute('href')
-          if (href?.startsWith('/')) {
-            node.setAttribute('target', '_blank')
-            node.setAttribute('rel', 'noopener noreferrer')
-          }
-        } else if (node.tagName === 'IMG') {
-          const src = node.getAttribute('src')
-          if (src?.startsWith('/')) {
-            node.setAttribute('src', `${domain}${src}`)
-          }
-        }
-      })
-  //   }
-  // })
+  let { source }: Props = $props()
 
   const parser = getMarked()
   const purifyConfig = {
@@ -97,10 +75,6 @@
     h5 {
       font-size: 0.88rem;
       padding-bottom: 0;
-    }
-
-    p {
-      margin: 15px 0;
     }
 
     p,
