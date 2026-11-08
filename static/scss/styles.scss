@@ -158,7 +158,13 @@
   font-family: 'Poppins', 'Arial', 'Helvetica', sans-serif;
 }
 
-html,
+// Only the background goes on <html> (no flash of white around the page in dark mode).
+// overflow-x must stay on <body> alone: on both html and body, body becomes its own
+// scroll container and a second scrollbar appears.
+html {
+  background-color: var(--background-color);
+}
+
 body {
   margin: 0;
   padding: 0;
