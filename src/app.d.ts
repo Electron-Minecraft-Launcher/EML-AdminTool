@@ -14,8 +14,6 @@ declare global {
       isConfigured: boolean
       env: {
         language: LanguageCode
-        name: string
-        theme: string
         version: string
         serverIp?: string | null
       }

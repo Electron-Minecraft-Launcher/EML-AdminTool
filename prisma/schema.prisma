@@ -49,8 +49,6 @@ enum StatAction {
 model Environment {
   id        String   @id @default(cuid(2))
   language  String   @default("en")
-  name      String   @default("EML")
-  theme     String   @default("default")
   pin       String   @default("000")
   updatedAt DateTime @updatedAt
 }
@@ -99,7 +97,8 @@ model Profile {
   ip                                  String?
   port                                Int?
   tcpProtocol                         String?
-  loader                              Loader?
+  loaderId                            String?                                     @unique
+  loader                              Loader?                                     @relation(fields: [loaderId], references: [id], onDelete: Cascade)
   hidden                              Boolean?                                    @default(false)
   visibility                          ProfileVisibility?                          @default(PUBLIC)
   allowedPseudos                      String[]                                    @default([])
@@ -126,8 +125,7 @@ model User {
 
 model Loader {
   id               String     @id @default(cuid(2))
-  profile          Profile    @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  profileId        String     @unique @default("1")
+  profile          Profile?
   type             LoaderType
   minecraftVersion String
   loaderVersion    String
@@ -176,29 +174,35 @@ model NewsCategory {
   id         String   @id @default(cuid(2))
   instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   instanceId String
-  name       String   @unique
+  name       String
   news       News[]
   createdAt  DateTime @default(now())
+
+  @@unique([name, instanceId])
 }
 
 model NewsTag {
   id         String   @id @default(cuid(2))
   instance   Instance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   instanceId String
-  name       String   @unique
+  name       String
   color      String
   news       News[]
+
+  @@unique([name, instanceId])
 }
 
 model Background {
   id         String           @id @default(cuid(2))
   instance   Instance         @relation(fields: [instanceId], references: [id], onDelete: Cascade)
   instanceId String
-  name       String           @unique
+  name       String
   file       Json
   status     BackgroundStatus @default(ACTIVE)
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
+
+  @@unique([name, instanceId])
 }
 
 model Stat {
@@ -266,13 +270,13 @@ model UserInstancePermission {
 
 model UserInstanceProfileFilesUpdaterPermission {
   id                       String                 @id @default(cuid(2))
-  userInstance             UserInstancePermission @relation(fields: [UserInstancePermissionId], references: [id], onDelete: Cascade)
-  UserInstancePermissionId String
+  userInstance             UserInstancePermission @relation(fields: [userInstancePermissionId], references: [id], onDelete: Cascade)
+  userInstancePermissionId String
   profile                  Profile                @relation(fields: [profileId], references: [id], onDelete: Cascade)
   profileId                String
   permission               Int                    @default(0) // 0 = no access, 1 = read and write, 2 = read, write and change loader
   createdAt                DateTime               @default(now())
   updatedAt                DateTime               @updatedAt
 
-  @@unique([UserInstancePermissionId, profileId])
+  @@unique([userInstancePermissionId, profileId])
 }

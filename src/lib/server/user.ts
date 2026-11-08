@@ -18,6 +18,8 @@ export async function getUserById(userId: string): Promise<User | null> {
   return user
 }
 
+export async function getUserPermissionsById(userId: string): Promise<Set<string>> {
+
 /**
  * @param user.password Must already be **encrypted** if provided.
  */

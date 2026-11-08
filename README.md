@@ -24,19 +24,19 @@
 
 General settings allow you to manage the identity of your panel, monitor your server's health, manage updates, and most importantly, control who has access to your launcher configuration.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/general-settings)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/general-settings)._
 
 ### Profile management
 
 _Profiles_ allow you to manage different configurations for your launcher. Each profile has its own files, loader configuration, Minecraft version, and server address — completely isolated from the others.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/profiles)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/profiles)._
 
 ### Files Updater and Loader
 
 The _Files Updater_ is the heart of your launcher's content management. This is where you decide exactly what your players will download and run. It handles both game content (mods, configs, resource packs) and the game engine (loader) for each profile.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/files-updater)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/files-updater)._
 
 ### Bootstraps
 
@@ -44,7 +44,7 @@ The _Bootstraps_ section allows you to manage the updates of the launcher softwa
 
 When you fix a bug in your Electron code or change the design of the launcher interface, you generate a new executable. _Bootstraps_ allows you to distribute that new version to all your players automatically.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/bootstraps)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/bootstraps)._
 
 ### Maintenance
 
@@ -52,31 +52,31 @@ The _Maintenance_ feature allows you to temporarily block access to the launcher
 
 When maintenance is active, players will see a specific screen on their launcher preventing them from launching the game, displaying the reason and the estimated duration of the downtime.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/maintenance)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/maintenance)._
 
 ### News
 
 The _News_ feature allows you to communicate directly with your players. Articles published will appear on the launcher's home page, allowing you to share changelogs, server events, or maintenance announcements.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/news)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/news)._
 
 ### Background
 
 The _Backgrounds_ feature allows you to customize the visual appearance of your launcher. You can upload multiple images and choose which one is currently displayed to your players.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/backgrounds)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/backgrounds)._
 
 ### Stats
 
 The _Stats_ feature allows you to monitor the usage of your launcher. You can see how many players are using it, which profiles are the most popular, and understand the overall engagement of your community.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/stats)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/stats)._
 
 ### Crash Reports
 
 The _Crash Reports_ feature allows you to collect and analyze crash reports from your players. This is crucial for identifying bugs and improving the stability of your modpack.
 
-_Read the [docs](https://emlproject.pages.dev/docs/eml-admintool/administration-and-features/crash-reports)._
+_Read the [docs](https://emlproject.com/docs/eml-admintool/administration-and-features/crash-reports)._
 
 ## Comparison with other approaches
 

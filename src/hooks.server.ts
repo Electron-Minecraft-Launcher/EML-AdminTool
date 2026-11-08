@@ -263,8 +263,6 @@ async function loadApplicationContext(event: RequestEvent) {
     const envData = await db.environment.findFirst()
     event.locals.env = {
       language: (envData?.language as LanguageCode) ?? 'en',
-      name: envData?.name ?? 'EML',
-      theme: envData?.theme ?? 'default',
       version: pkg.version
     }
   } catch (err) {
