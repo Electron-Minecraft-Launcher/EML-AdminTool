@@ -7,7 +7,7 @@ import { BusinessError, ServerError } from '$lib/utils/errors'
 import { logout } from '$lib/server/auth'
 import { deleteSession } from '$lib/server/jwt'
 import { editAccountSchema, editThemeSchema } from '$lib/utils/validations'
-import { THEME_COOKIE, themeCookieOptions } from '$lib/utils/theme'
+import { themeCookieOptions } from '$lib/utils/theme'
 import { editEMLATName } from '$lib/server/emlat'
 import bcrypt from 'bcrypt'
 
@@ -69,7 +69,7 @@ export const actions: Actions = {
 
     try {
       await updateUser(user.id, { theme })
-      event.cookies.set(THEME_COOKIE, theme, themeCookieOptions(event.url))
+      event.cookies.set('theme', theme, themeCookieOptions(event.url))
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })

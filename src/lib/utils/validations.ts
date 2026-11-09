@@ -1,8 +1,7 @@
 import { z } from 'zod/v4'
 import { NotificationCode } from './notifications'
 import { DateTime } from 'luxon'
-import { ILoaderType } from '$lib/utils/db'
-import { THEME_PREFERENCES } from '$lib/utils/theme'
+import { ILoaderType, IThemePreference } from '$lib/utils/db'
 
 export const setupSchema = z.object({
   language: z.string().length(2, NotificationCode.SETUP_INVALID_LANGUAGE),
@@ -135,7 +134,7 @@ export const editAccountSchema = z
   })
 
 export const editThemeSchema = z.object({
-  theme: z.enum(THEME_PREFERENCES, NotificationCode.INVALID_INPUT)
+  theme: z.enum(IThemePreference, NotificationCode.INVALID_INPUT)
 })
 
 export const loginSchema = z.object({

@@ -8,7 +8,7 @@ import { deleteSession, getBearerToken, verifyScopedToken } from '$lib/server/jw
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { NotificationCode } from '$lib/utils/notifications'
 import type { ThemePreference } from '$lib/utils/db'
-import { THEME_COOKIE, themeCookieOptions, toThemePreference } from '$lib/utils/theme'
+import { themeCookieOptions, toThemePreference } from '$lib/utils/theme'
 import { ProfileVisibility, type User } from '@prisma/client'
 import { defaultPgURL } from '$lib/server/setup'
 import path from 'node:path'
@@ -261,7 +261,7 @@ async function loadApplicationContext(event: RequestEvent) {
 
   if (!event.locals.isConfigured) {
     event.locals.env = getDefaultEnv()
-    event.cookies.delete(THEME_COOKIE, { path: '/' })
+    event.cookies.delete('theme', { path: '/' })
     return
   }
 
@@ -281,7 +281,7 @@ async function loadApplicationContext(event: RequestEvent) {
   if (session) {
     await handleUserSession(event, session)
   } else {
-    event.cookies.delete(THEME_COOKIE, { path: '/' })
+    event.cookies.delete('theme', { path: '/' })
   }
 }
 
@@ -290,7 +290,7 @@ async function handleUserSession(event: RequestEvent, session: string) {
     const user = await verify(session)
     const userInfo = getUserInfo(user, user.profilePermissions)
     event.locals.user = userInfo
-    event.cookies.set(THEME_COOKIE, userInfo.theme, themeCookieOptions(event.url))
+    event.cookies.set('theme', userInfo.theme, themeCookieOptions(event.url))
 
     sweepPermissions()
   } catch (err) {

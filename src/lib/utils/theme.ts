@@ -1,12 +1,8 @@
-import type { ThemePreference } from './db'
+import { IThemePreference, type ThemePreference } from './db'
 
 /**
- * Single source of truth for the theme preference logic.
  * Note: the inline script in `src/app.html` (runs before hydration, cannot import modules) mirrors `shouldUseDarkTheme`.
  */
-
-export const THEME_COOKIE = 'emlat-theme'
-export const THEME_PREFERENCES = ['system', 'light', 'dark'] as const satisfies readonly ThemePreference[]
 
 /** Cookie must stay readable by the inline script in app.html (SvelteKit defaults to httpOnly). */
 export function themeCookieOptions(url: URL) {
@@ -22,7 +18,7 @@ export function themeCookieOptions(url: URL) {
 const TRANSITION_DURATION = 240
 
 export function isThemePreference(value: unknown): value is ThemePreference {
-  return typeof value === 'string' && (THEME_PREFERENCES as readonly string[]).includes(value)
+  return typeof value === 'string' && Object.values(IThemePreference).includes(value as ThemePreference)
 }
 
 /** Normalizes any stored value (legacy, empty, unknown) to a valid preference. */
