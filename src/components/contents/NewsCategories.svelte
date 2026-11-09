@@ -65,14 +65,14 @@
   p.nothing {
     text-align: center;
     margin-top: 15px;
-    color: #606060;
+    color: var(--text-secondary);
   }
 
   button {
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-primary);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -84,7 +84,7 @@
     line-height: 15px;
 
     &:hover {
-      background: #eeeeee;
+      background: var(--surface-control-hover);
     }
 
     &.remove {
@@ -92,16 +92,16 @@
       border-bottom: none;
       position: relative;
       background: none;
-      color: var(--red-color);
+      color: var(--status-error-color);
       vertical-align: middle;
 
       &:hover {
-        background: #faeeee;
+        background: var(--surface-danger-soft);
       }
     }
   }
 
   span.date {
-    color: #909090;
+    color: var(--text-muted);
   }
 </style>

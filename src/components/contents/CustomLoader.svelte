@@ -368,7 +368,7 @@
 <style lang="scss">
   p {
     font-size: 14px;
-    color: #505050;
+    color: var(--text-secondary);
 
     &.title {
       margin-top: 0;
@@ -381,11 +381,11 @@
   pre {
     font-size: 13px;
     text-align: left;
-    background: #f4f4f4;
+    background: var(--surface-code-background);
     padding: 10px;
     border-radius: 4px;
     font-family: 'Fira Code', monospace;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     margin: 0;
   }
 
@@ -400,9 +400,9 @@
   }
 
   div.list {
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     border-radius: 7px;
-    color: #555;
+    color: var(--text-secondary);
     position: relative;
     height: calc(100% - 246px);
     overflow: hidden;
@@ -419,24 +419,24 @@
       left: 0;
       width: 100%;
       padding: 7px 35px;
-      background: white;
-      border-top: 1px solid var(--border-color);
+      background: var(--surface-white);
+      border-top: 1px solid var(--border-subtle);
     }
 
     div.item {
-      background: #ffe3e3;
-      color: #444;
+      background: var(--surface-danger-soft);
+      color: var(--text-primary);
       padding: 10px 35px;
       margin: 0;
       display: flex;
       position: relative;
 
       &:not(:last-child) {
-        border-bottom: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-subtle);
       }
 
       &.uploaded {
-        background: #e3ffe3;
+        background: var(--surface-success-soft);
       }
 
       span {
@@ -449,14 +449,14 @@
         &.size {
           display: inline-block;
           font-size: 12px;
-          color: #777;
+          color: var(--text-muted);
           margin-right: 15px;
         }
 
         &.hash {
           display: inline-block;
           font-size: 12px;
-          color: #777;
+          color: var(--text-muted);
           font-family: 'Fira Code', monospace;
         }
       }
@@ -468,7 +468,7 @@
   }
 
   div.upload {
-    border: 3px dashed var(--border-color);
+    border: 3px dashed var(--border-subtle);
     border-radius: 7px;
     padding: 0;
     position: relative;
@@ -479,7 +479,7 @@
     justify-content: center;
 
     &.drag {
-      border: 3px dashed rgba(194, 81, 5, 0.75);
+      border: 3px dashed var(--accent-overlay-border);
       z-index: 1000;
 
       button.upload {
@@ -489,12 +489,12 @@
       &::after {
         font-size: 50px;
         content: '\e09a';
-        background: rgba(194, 81, 5, 0.25);
+        background: var(--accent-overlay-background);
         font-family: 'FontAwesome';
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgb(194, 81, 5);
+        color: var(--accent-color);
         position: absolute;
         top: 0;
         left: 0;
@@ -515,7 +515,7 @@
     padding: 8px 0 7px 0;
 
     :global(.file-separator) {
-      color: #777777;
+      color: var(--text-muted);
     }
   }
 
@@ -523,8 +523,8 @@
     margin: 0;
     width: 100%;
     height: 100%;
-    background: white;
-    color: #555;
+    background: var(--surface-white);
+    color: var(--text-secondary);
     transition: none;
 
     i.fa-solid {
@@ -547,17 +547,17 @@
     overflow: hidden;
     white-space: nowrap;
     background: none;
-    color: var(--red-color);
+    color: var(--status-error-color);
     vertical-align: middle;
 
     &:hover {
-      background: #faeeee;
+      background: var(--surface-danger-soft);
     }
   }
 
   p.nothing {
     text-align: center;
     margin-top: 20px;
-    color: #606060;
+    color: var(--text-secondary);
   }
 </style>

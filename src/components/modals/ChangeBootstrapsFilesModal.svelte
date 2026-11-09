@@ -178,7 +178,7 @@
     <h2>Change bootstraps</h2>
 
     <p class="desc">You <b>must</b> upload 3 files files for each platform for which you want to update the bootstrap:</p>
-    <ul style="margin-top: 5px; color: #505050; margin-bottom: 5px; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+    <ul style="margin-top: 5px; color: var(--text-secondary); margin-bottom: 5px; padding-left: 20px; font-size: 14px; line-height: 1.6;">
       <li>The installer file (.exe, .dmg, .AppImage)</li>
       <li>The YAML file (latest.yml, latest-mac.yml, latest-linux.yml)</li>
       <li>The blockmap file (.blockmap)</li>
@@ -246,7 +246,7 @@
     padding: 8px 0 7px 0;
 
     :global(.file-separator) {
-      color: #777777;
+      color: var(--text-muted);
     }
   }
 
@@ -258,11 +258,11 @@
     overflow: hidden;
     white-space: nowrap;
     background: none;
-    color: var(--red-color);
+    color: var(--status-error-color);
     vertical-align: middle;
 
     &:hover {
-      background: #faeeee;
+      background: var(--surface-danger-soft);
     }
   }
 </style>

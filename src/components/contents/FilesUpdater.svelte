@@ -360,19 +360,19 @@
       opacity 0.2s,
       height 0.2s ease,
       display 0s;
-    background: white;
+    background: var(--surface-white);
     padding: 10px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     z-index: 100;
     position: absolute;
     width: 178px;
     top: 60px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 20px var(--shadow-raised-surface);
 
     hr {
       margin: 10px 0;
       border: 0;
-      border-top: 1px solid var(--border-color);
+      border-top: 1px solid var(--border-subtle);
     }
 
     button {
@@ -388,7 +388,7 @@
       }
 
       &:hover {
-        background: #eeeeee;
+        background: var(--surface-control-hover);
       }
     }
   }
@@ -402,7 +402,7 @@
     p.nothing {
       text-align: center;
       margin-top: 20px;
-      color: #606060;
+      color: var(--text-secondary);
     }
 
     div.info {
@@ -412,7 +412,7 @@
       p {
         margin: 0 30px 0 0;
         font-size: 14px;
-        color: var(--text-dark-color);
+        color: var(--text-primary);
         display: inline-block;
       }
     }
@@ -458,14 +458,14 @@
       cursor: pointer;
 
       &:hover {
-        background-color: #eeeeee;
+        background-color: var(--surface-control-hover);
       }
 
       &.focused {
-        background-color: #f5f5f5;
+        background-color: var(--surface-control-active);
 
         &:hover {
-          background-color: #eeeeee;
+          background-color: var(--surface-control-hover);
         }
       }
     }
@@ -491,7 +491,7 @@
 
       &.size {
         text-align: right;
-        color: #606060;
+        color: var(--text-secondary);
         border-top-right-radius: 5px;
         border-bottom-right-radius: 5px;
         min-width: 90px;

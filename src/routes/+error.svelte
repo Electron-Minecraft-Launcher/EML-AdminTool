@@ -77,7 +77,7 @@
 
     p.msg {
       font-size: 20px;
-      color: #333;
+      color: var(--text-primary);
     }
 
     button {

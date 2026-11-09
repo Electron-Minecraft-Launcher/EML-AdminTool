@@ -37,7 +37,7 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--overlay-modal);
     transition:
       opacity 0.3s,
       transform 0.3s;
@@ -51,12 +51,12 @@
       opacity 0.3s,
       transform 0.3s;
 
-    background-color: white;
+    background-color: var(--surface-white);
     padding: 50px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
 
-    box-shadow: 0 5px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 50px var(--shadow-modal);
     position: relative;
     margin: auto;
 
@@ -97,7 +97,7 @@
     button {
       display: inline-block;
       padding: 10px;
-      color: white;
+      color: var(--text-on-accent);
       background: none;
       font-weight: 600;
     }

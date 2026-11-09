@@ -114,7 +114,7 @@
 
   p.warn {
     margin: 5px 0 0 0;
-    color: #fa5650;
+    color: var(--text-error-bright);
     font-size: 12px;
   }
 
@@ -143,10 +143,10 @@
       }
 
       &.selected {
-        background: var(--primary-light-color);
+        background: var(--accent-soft-background);
 
         &:hover {
-          background: var(--primary-light-color-hover);
+          background: var(--accent-soft-hover-background);
         }
       }
 

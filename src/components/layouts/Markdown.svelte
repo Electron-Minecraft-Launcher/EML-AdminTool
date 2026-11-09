@@ -51,20 +51,20 @@
     h1 {
       font-size: 2.1rem;
       padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-subtle);
       font-weight: 700 !important;
     }
 
     h2 {
       font-size: 1.55rem;
       padding-bottom: 6px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     h3 {
       font-size: 1.27rem;
       padding-bottom: 2px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     h4 {
@@ -98,15 +98,15 @@
     }
 
     blockquote {
-      border-left: 4px solid var(--border-color2);
+      border-left: 4px solid var(--border-default);
       padding-left: 16px;
-      color: #555;
+      color: var(--text-secondary);
       margin: 16px 0;
     }
 
     hr {
       border: none;
-      border-top: 3px solid var(--border-color);
+      border-top: 3px solid var(--border-subtle);
       margin: 2rem 0;
     }
 
@@ -119,7 +119,7 @@
 
     /* --- Code --- */
     code {
-      background: var(--background-color);
+      background: var(--surface-page);
       padding: 2px 4px;
       border-radius: 4px;
       font-size: 90%;
@@ -139,7 +139,7 @@
       code.hljs {
         display: block;
         padding: 1em;
-        background: #f3f4f6;
+        background: var(--surface-code-background);
         border-radius: 5px;
 
         * {
@@ -158,13 +158,13 @@
 
       th,
       td {
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--border-subtle);
         padding: 6px 13px;
         text-align: left;
       }
 
       th {
-        background-color: var(--background-color);
+        background-color: var(--surface-page);
         font-weight: 600;
         text-align: center;
       }
@@ -206,10 +206,10 @@
 
       /* Variantes explicites (Pas de boucle each) */
       &.markdown-alert-note {
-        border-left-color: #0869da;
+        border-left-color: var(--link-color);
 
         .markdown-alert-title {
-          color: #0869da;
+          color: var(--link-color);
 
           &::before {
             content: '\f05a';
@@ -218,10 +218,10 @@
       }
 
       &.markdown-alert-tip {
-        border-left-color: #1b7f38;
+        border-left-color: var(--markdown-note-success);
 
         .markdown-alert-title {
-          color: #1b7f38;
+          color: var(--markdown-note-success);
 
           &::before {
             content: '\f0eb';
@@ -230,10 +230,10 @@
       }
 
       &.markdown-alert-important {
-        border-left-color: #8251de;
+        border-left-color: var(--markdown-note-tip);
 
         .markdown-alert-title {
-          color: #8251de;
+          color: var(--markdown-note-tip);
 
           &::before {
             content: '\f06a';
@@ -242,10 +242,10 @@
       }
 
       &.markdown-alert-warning {
-        border-left-color: #9a6700;
+        border-left-color: var(--markdown-note-warning);
 
         .markdown-alert-title {
-          color: #9a6700;
+          color: var(--markdown-note-warning);
 
           &::before {
             content: '\f071';
@@ -254,10 +254,10 @@
       }
 
       &.markdown-alert-caution {
-        border-left-color: #cf232e;
+        border-left-color: var(--markdown-note-danger);
 
         .markdown-alert-title {
-          color: #cf232e;
+          color: var(--markdown-note-danger);
 
           &::before {
             content: '\f06a';
@@ -273,14 +273,14 @@
       gap: 1rem;
       margin-top: 2.5rem;
       padding-top: 1.5rem;
-      border-top: 1px solid var(--border-color);
+      border-top: 1px solid var(--border-subtle);
 
       .nav-button {
         display: flex;
         flex-direction: column;
         flex-basis: 48%;
         padding: 16px 20px !important;
-        border: 1px solid var(--border-color) !important;
+        border: 1px solid var(--border-subtle) !important;
         border-radius: 5px;
         text-decoration: none;
         transition: all 0.2s ease;
@@ -288,7 +288,7 @@
 
         span {
           font-size: 0.9rem;
-          color: #808080;
+          color: var(--text-muted);
           margin-bottom: 4px;
           display: flex;
           align-items: center;
@@ -297,7 +297,7 @@
         strong {
           font-size: 1rem;
           font-weight: 600;
-          color: var(--primary-color);
+          color: var(--accent-color);
           transition: color 0.2s ease;
         }
 
@@ -306,11 +306,11 @@
         }
 
         &:hover {
-          border-color: var(--primary-color);
-          background-color: var(--background-light-color);
+          border-color: var(--accent-color);
+          background-color: var(--surface-white);
 
           strong {
-            color: var(--primary-color-hover);
+            color: var(--accent-hover-color);
           }
         }
 
@@ -352,12 +352,12 @@
       margin: 16px 0;
       border-radius: 5px;
       overflow: hidden;
-      background-color: var(--background-color);
+      background-color: var(--surface-page);
 
       .code-switch-header {
         display: flex;
-        background-color: #f3f4f6;
-        border-bottom: 1px solid var(--border-color);
+        background-color: var(--surface-code-background);
+        border-bottom: 1px solid var(--border-subtle);
         padding: 0;
       }
 
@@ -366,30 +366,30 @@
         font-size: 13px;
         font-family: 'Poppins', sans-serif;
         font-weight: 600;
-        color: #666;
-        background: transparent;
+        color: var(--text-secondary);
+        background: var(--transparent-color);
         border: none;
         border-radius: 5px 5px 0 0 !important;
         cursor: pointer;
-        border-bottom: 2px solid transparent !important;
+        border-bottom: 2px solid var(--transparent-color) !important;
         transition: all 0.2s ease;
         opacity: 0.7;
 
         &:hover {
           opacity: 1;
-          background-color: rgba(0, 0, 0, 0.03);
+          background-color: var(--surface-hover-subtle);
         }
 
         &.active {
-          color: var(--primary-color);
-          border-bottom-color: var(--primary-color) !important;
+          color: var(--accent-color);
+          border-bottom-color: var(--accent-color) !important;
           opacity: 1;
         }
       }
 
       .code-switch-body {
         position: relative;
-        background: #f3f4f6;
+        background: var(--surface-code-background);
       }
 
       .code-switch-pane {

@@ -183,7 +183,7 @@
   div.editor {
     height: calc(100vh - 177px - 66px - 27px - 30px - 20px - 69px);
     width: calc(100vw - 162px - 2px);
-    border: 1px solid var(--border-color2);
+    border: 1px solid var(--border-default);
     margin-top: 20px;
     overflow-y: auto;
     overflow-x: auto;

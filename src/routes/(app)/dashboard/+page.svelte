@@ -227,7 +227,7 @@
     .blog-post {
       &:not(:last-child) {
         padding-bottom: 30px;
-        border-bottom: 2px solid var(--border-color2);
+        border-bottom: 2px solid var(--border-default);
       }
     }
 
@@ -239,14 +239,14 @@
         font-size: 2rem;
         margin-top: 10px;
         margin-bottom: 0;
-        color: var(--text-main);
+        color: var(--text-primary);
       }
 
       .meta-tags {
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
-        color: #646464;
+        color: var(--text-secondary);
         font-size: 0.95rem;
         margin-bottom: 10px;
 
@@ -263,8 +263,8 @@
         }
 
         .tag {
-          background: var(--secondary-color);
-          color: var(--primary-color);
+          background: var(--surface-secondary);
+          color: var(--accent-color);
           padding: 2px 8px;
           border-radius: 4px;
           font-size: 0.8rem;
@@ -281,8 +281,8 @@
       background-size: cover;
       background-position: center;
       border-radius: 10px;
-      box-shadow: 0 4px 20px #00000026;
-      border: 1px solid var(--border-color, #333);
+      box-shadow: 0 4px 20px var(--shadow-raised-surface);
+      border: 1px solid var(--border-subtle, var(--text-primary));
     }
 
     div.doc-content {
@@ -293,9 +293,9 @@
 
   div.widget {
     position: relative;
-    background-color: white;
+    background-color: var(--surface-white);
     padding: 30px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
     width: 250px;
 
@@ -347,8 +347,8 @@
           line-height: 1;
           padding: 9px 10px;
           border-radius: 5px;
-          background-color: #f0f0f0;
-          border: 1px solid var(--border-color);
+          background-color: var(--surface-control-active);
+          border: 1px solid var(--border-subtle);
           margin-left: 10px;
           position: relative;
 
@@ -365,18 +365,18 @@
           }
 
           &.online:after {
-            background-color: #4caf50;
-            outline: 2px solid #4caf5050;
+            background-color: var(--status-success-color);
+            outline: 2px solid var(--dashboard-status-success-ring);
           }
 
           &.pinging:after {
-            background-color: #ff9800;
-            outline: 2px solid #ff980050;
+            background-color: var(--dashboard-status-warning);
+            outline: 2px solid var(--dashboard-status-warning-ring);
           }
 
           &.offline:after {
-            background-color: #be2419;
-            outline: 2px solid #c0312750;
+            background-color: var(--status-error-color);
+            outline: 2px solid var(--dashboard-status-error-ring);
           }
         }
       }
