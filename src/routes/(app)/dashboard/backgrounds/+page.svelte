@@ -114,7 +114,7 @@
   p.nothing {
     text-align: center;
     margin-top: 15px;
-    color: #606060;
+    color: var(--text-muted-color);
   }
 
   div.img {
@@ -158,7 +158,7 @@
       align-items: center;
       vertical-align: middle;
       justify-content: center;
-      background: #dfdfdfa1;
+      background: var(--image-overlay-color);
       border-radius: 5px;
       transition: opacity 0.3s;
       opacity: 0;
@@ -174,7 +174,7 @@
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-dark-color);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -186,7 +186,7 @@
     line-height: 15px;
 
     &:hover {
-      background: #eeeeeeb7;
+      background: var(--surface-hover-color);
     }
 
     &.remove {
@@ -199,7 +199,7 @@
       vertical-align: middle;
 
       &:hover {
-        background: #faeeeeb7;
+        background: var(--danger-surface-color);
       }
     }
   }

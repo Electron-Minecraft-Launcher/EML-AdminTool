@@ -212,6 +212,13 @@ De plus, assurez-vous que personne ne puisse accéder à l'EML AdminTool pendant
           confirmPassword: `Confirmer le mot de passe`
         }
       },
+      appearance: {
+        title: `Apparence`,
+        theme: `Thème`,
+        system: `Selon le système`,
+        light: `Clair`,
+        dark: `Sombre`
+      },
       permissions: {
         title: `Permissions`
       },

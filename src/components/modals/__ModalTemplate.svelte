@@ -51,7 +51,7 @@
       opacity 0.3s,
       transform 0.3s;
 
-    background-color: white;
+    background-color: var(--surface-color);
     padding: 50px;
     border: 1px solid var(--border-color);
     border-radius: 10px;

@@ -213,6 +213,13 @@ Inoltre, assicurati che nessuno possa accedere a EML AdminTool durante la reimpo
           confirmPassword: `Conferma password`
         }
       },
+      appearance: {
+        title: `Aspetto`,
+        theme: `Tema`,
+        system: `Segui il sistema`,
+        light: `Chiaro`,
+        dark: `Scuro`
+      },
       permissions: {
         title: `Permessi`
       },

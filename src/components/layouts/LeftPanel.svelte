@@ -18,7 +18,6 @@
   const user = getUser()
 
   let accountDropdownOpen = $state(false)
-
   async function accountClick() {
     if (!accountDropdownOpen) {
       await sleep(200)
@@ -73,7 +72,7 @@
   {#if leftPanelOpen}
     <h4>{$l.leftPanel.features}</h4>
   {:else}
-    <div class="h4"><hr style="border-color: #505050; border-top: 0; position: relative; top: 5px;" /></div>
+    <div class="h4"><hr style="border-color: var(--border-color2); border-top: 0; position: relative; top: 5px;" /></div>
   {/if}
 
   {#if user.profilePermissions.length > 0 || user.isAdmin}
@@ -143,7 +142,7 @@
 
 <style lang="scss">
   nav {
-    background: white;
+    background: var(--surface-color);
     border-right: 1px solid var(--border-color);
     padding: 30px;
     position: fixed;
@@ -176,7 +175,7 @@
 
         &:hover {
           color: var(--primary-color-hover);
-          background: #eeeeee;
+          background: var(--surface-hover-color);
         }
       }
     }
@@ -184,7 +183,7 @@
     div.toggle-left-panel {
       width: 39px;
       height: 43px;
-      background: white;
+      background: var(--surface-color);
       position: absolute;
       right: 0;
     }
@@ -203,7 +202,7 @@
       border: 1px solid var(--border-color);
       border-left: none;
       border-radius: 0 10px 10px 0;
-      background: white;
+      background: var(--surface-color);
       position: absolute;
       transition:
         right 0.3s,
@@ -222,25 +221,25 @@
     margin: 5px 0 40px 0;
     font-size: 20px;
     max-height: 30px;
-    color: #202020;
+    color: var(--text-dark-color);
     text-align: center;
     transition: all 0.3s;
     white-space: nowrap;
     overflow: hidden;
-    background: white;
+    background: var(--surface-color);
     z-index: 100;
     position: relative;
   }
 
   h4 {
-    color: #505050;
+    color: var(--text-muted-color);
     margin-top: 30px;
     font-size: 14px;
   }
 
   div.h4 {
     height: 21px;
-    color: #505050;
+    color: var(--text-muted-color);
     margin-top: 30px;
     margin-bottom: 18.6px;
     font-size: 14px;
@@ -250,7 +249,7 @@
     display: block;
     margin-top: 10px;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-dark-color);
     border-radius: 5px;
     padding: 10px 15px !important;
     font-size: 14px;
@@ -261,11 +260,11 @@
     &:hover,
     &.active:hover {
       color: var(--primary-color-hover);
-      background: #eeeeee;
+      background: var(--surface-hover-color);
     }
 
     &.active {
-      background: #f5f5f5;
+      background: var(--secondary-color);
     }
 
     i.fa-solid {
@@ -288,11 +287,11 @@
     }
 
     &.account:hover {
-      color: #1e1e1e;
+      color: var(--text-dark-color);
 
       i.fa-caret-up {
         color: var(--primary-color-hover);
-        background: #eeeeee;
+        background: var(--surface-hover-color);
       }
     }
   }
@@ -301,7 +300,7 @@
     display: block;
     margin-top: 10px;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-dark-color);
     background: transparent;
     border-radius: 5px;
     padding: 10px 15px;
@@ -324,7 +323,7 @@
 
       &:hover {
         color: var(--primary-color-hover);
-        background: #eeeeee;
+        background: var(--surface-hover-color);
       }
     }
 
@@ -341,16 +340,16 @@
     }
 
     &.account:hover {
-      color: #1e1e1e;
+      color: var(--text-dark-color);
 
       i.fa-caret-up {
         color: var(--primary-color-hover);
-        background: #eeeeee;
+        background: var(--surface-hover-color);
       }
     }
 
     &.active {
-      background: #f5f5f5;
+      background: var(--secondary-color);
     }
 
     i.fa-solid {
@@ -368,7 +367,7 @@
       opacity 0.2s,
       height 0.2s ease,
       display 0s;
-    background: white;
+    background: var(--surface-color);
     padding: 10px;
     border: 1px solid var(--border-color);
     z-index: 100;
@@ -385,7 +384,6 @@
       display: block;
       margin-top: 10px;
       border-bottom: none;
-      color: #1e1e1e;
       background: transparent;
       border-radius: 5px;
       padding: 10px 15px;
@@ -399,7 +397,7 @@
       color: var(--red-color);
 
       &:hover {
-        background: #faeeee;
+        background: var(--danger-surface-color);
       }
 
       i.fa-solid {

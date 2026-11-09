@@ -111,7 +111,7 @@ You will need to disable maintenance manually.`
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-dark-color);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -123,7 +123,7 @@ You will need to disable maintenance manually.`
     line-height: 15px;
 
     &:hover {
-      background: #eeeeee;
+      background: var(--surface-hover-color);
     }
 
     &.off {
@@ -136,7 +136,7 @@ You will need to disable maintenance manually.`
       vertical-align: middle;
 
       &:hover {
-        background: #eefaee;
+        background: var(--success-surface-color);
       }
     }
 
@@ -150,7 +150,7 @@ You will need to disable maintenance manually.`
       vertical-align: middle;
 
       &:hover {
-        background: #faeeee;
+        background: var(--danger-surface-color);
       }
     }
   }
@@ -171,7 +171,7 @@ You will need to disable maintenance manually.`
     padding: 2px 8px;
     border-radius: 4px;
     background: var(--secondary-color);
-    color: #505050;
+    color: var(--text-secondary);
     margin-right: 5px;
   }
 </style>

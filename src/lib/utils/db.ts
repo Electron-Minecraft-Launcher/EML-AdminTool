@@ -45,9 +45,16 @@ export const IStatAction = {
   BOOTSTRAP: 'BOOTSTRAP'
 } as const
 
+export const IThemePreference = {
+  system: 'system',
+  light: 'light',
+  dark: 'dark'
+} as const
+
 export type UserInfo = {
   id: string
   username: string
+  theme: ThemePreference
   isAdmin: boolean
   /**
    * @deprecated
@@ -85,4 +92,4 @@ export type ProfilePayload = Omit<Profile, 'id' | 'createdAt' | 'updatedAt' | 'i
 export type MaintenancePayload = Omit<Maintenance, 'id'>
 export type NewsPayload = Omit<News, 'id' | 'createdAt' | 'updatedAt'>
 export type CrashReportPayload = Omit<CrashReport, 'id' | 'fileId' | 'createdAt' | 'addressedAt' | 'comment'>
-
+export type ThemePreference = 'system' | 'light' | 'dark'

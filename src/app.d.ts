@@ -1,5 +1,5 @@
 import type { LanguageCode } from '$lib/stores/language'
-import type { UserProfilePermissionInfo } from '$lib/utils/db'
+import type { ThemePreference, UserProfilePermissionInfo } from '$lib/utils/db'
 import { NotificationCode } from '$lib/utils/notifications'
 
 // See https://kit.svelte.dev/docs/types#app
@@ -15,13 +15,13 @@ declare global {
       env: {
         language: LanguageCode
         name: string
-        theme: string
         version: string
         serverIp?: string | null
       }
       user?: {
         id: string
         username: string
+        theme: ThemePreference
         isAdmin: boolean
         /**
          * @deprecated

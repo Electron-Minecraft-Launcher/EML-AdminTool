@@ -181,7 +181,7 @@
   p.nothing {
     text-align: center;
     margin-top: 20px;
-    color: #606060;
+    color: var(--text-muted-color);
   }
 
   div.info {
@@ -282,7 +282,7 @@
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-dark-color);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -293,7 +293,7 @@
     line-height: 15px;
 
     &:hover {
-      background: #eeeeee;
+      background: var(--surface-hover-color);
     }
   }
 </style>

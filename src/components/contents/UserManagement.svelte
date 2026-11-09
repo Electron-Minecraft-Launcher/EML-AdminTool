@@ -170,15 +170,15 @@
   }
 
   button.accept {
-    color: #266e26;
+    color: var(--green-color);
   }
 
   button.refuse {
     right: 58px;
-    color: #6e2626;
+    color: var(--red-color);
   }
 
   button.delete {
-    color: #6e2626;
+    color: var(--red-color);
   }
 </style>

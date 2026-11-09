@@ -272,7 +272,7 @@
       background: none;
       padding: 15px 20px;
       font-weight: bold;
-      color: #565656 !important;
+      color: var(--text-secondary) !important;
       font-size: 1em;
 
       &.active {
@@ -345,7 +345,7 @@
       button {
         display: inline;
         border-bottom: none;
-        color: black;
+        color: var(--text-dark-color);
         font-size: 18.72px;
         border-radius: 5px;
         padding: 10px 15px;
@@ -360,12 +360,12 @@
 
         &:hover {
           color: var(--primary-color-hover);
-          background: #eeeeee;
-          color: black;
+          background: var(--surface-hover-color);
+          color: var(--text-dark-color);
         }
 
         &.active {
-          background: #f5f5f5;
+          background: var(--secondary-color);
         }
       }
     }

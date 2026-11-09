@@ -368,7 +368,7 @@
 <style lang="scss">
   p {
     font-size: 14px;
-    color: #505050;
+    color: var(--text-secondary);
 
     &.title {
       margin-top: 0;
@@ -381,7 +381,7 @@
   pre {
     font-size: 13px;
     text-align: left;
-    background: #f4f4f4;
+    background: var(--code-background-color);
     padding: 10px;
     border-radius: 4px;
     font-family: 'Fira Code', monospace;
@@ -402,7 +402,7 @@
   div.list {
     border: 1px solid var(--border-color);
     border-radius: 7px;
-    color: #555;
+    color: var(--text-secondary);
     position: relative;
     height: calc(100% - 246px);
     overflow: hidden;
@@ -419,13 +419,13 @@
       left: 0;
       width: 100%;
       padding: 7px 35px;
-      background: white;
+      background: var(--surface-color);
       border-top: 1px solid var(--border-color);
     }
 
     div.item {
-      background: #ffe3e3;
-      color: #444;
+      background: var(--danger-surface-color);
+      color: var(--text-dark-color);
       padding: 10px 35px;
       margin: 0;
       display: flex;
@@ -436,7 +436,7 @@
       }
 
       &.uploaded {
-        background: #e3ffe3;
+        background: var(--success-surface-color);
       }
 
       span {
@@ -449,14 +449,14 @@
         &.size {
           display: inline-block;
           font-size: 12px;
-          color: #777;
+          color: var(--text-muted-color);
           margin-right: 15px;
         }
 
         &.hash {
           display: inline-block;
           font-size: 12px;
-          color: #777;
+          color: var(--text-muted-color);
           font-family: 'Fira Code', monospace;
         }
       }
@@ -515,7 +515,7 @@
     padding: 8px 0 7px 0;
 
     :global(.file-separator) {
-      color: #777777;
+      color: var(--text-muted-color);
     }
   }
 
@@ -523,8 +523,8 @@
     margin: 0;
     width: 100%;
     height: 100%;
-    background: white;
-    color: #555;
+    background: var(--surface-color);
+    color: var(--text-secondary);
     transition: none;
 
     i.fa-solid {
@@ -551,13 +551,13 @@
     vertical-align: middle;
 
     &:hover {
-      background: #faeeee;
+      background: var(--danger-surface-color);
     }
   }
 
   p.nothing {
     text-align: center;
     margin-top: 20px;
-    color: #606060;
+    color: var(--text-muted-color);
   }
 </style>

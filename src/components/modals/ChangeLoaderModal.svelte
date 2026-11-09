@@ -419,7 +419,7 @@
     margin-top: 0;
     position: sticky;
     top: 0;
-    background: white;
+    background: var(--surface-color);
   }
 
   div.list {
@@ -441,7 +441,7 @@
         margin-bottom: 20px;
 
         option.old {
-          color: #912020;
+          color: var(--red-color);
         }
       }
     }
@@ -453,7 +453,7 @@
         margin-top: 0;
         position: sticky;
         top: 0;
-        background: white;
+        background: var(--surface-color);
         z-index: 100;
       }
     }
@@ -461,7 +461,7 @@
     button:not(.remove):not(.upload) {
       display: block;
       border-bottom: none;
-      color: #1e1e1e;
+      color: var(--text-dark-color);
       position: relative;
       overflow: hidden;
       white-space: nowrap;
@@ -473,21 +473,21 @@
       text-align: left;
 
       i {
-        color: #1e1e1e;
+        color: var(--text-dark-color);
       }
 
       &.active {
-        background: #f5f5f5;
+        background: var(--secondary-color);
       }
 
       &:hover {
-        background: #eeeeee;
+        background: var(--surface-hover-color);
       }
     }
   }
 
   code {
-    background: #f4f4f4;
+    background: var(--code-background-color);
     padding: 2px 4px;
     border-radius: 4px;
     font-family: 'Fira Code', monospace;

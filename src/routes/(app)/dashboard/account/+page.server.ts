@@ -6,7 +6,8 @@ import { deleteUser, updateUser } from '$lib/server/user'
 import { BusinessError, ServerError } from '$lib/utils/errors'
 import { logout } from '$lib/server/auth'
 import { deleteSession } from '$lib/server/jwt'
-import { editAccountSchema } from '$lib/utils/validations'
+import { editAccountSchema, editThemeSchema } from '$lib/utils/validations'
+import { themeCookieOptions } from '$lib/utils/theme'
 import { editEMLATName } from '$lib/server/emlat'
 import bcrypt from 'bcrypt'
 
@@ -43,6 +44,32 @@ export const actions: Actions = {
       if (user?.isAdmin) {
         await editEMLATName(username)
       }
+    } catch (err) {
+      if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
+      if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })
+
+      console.error('Unknown error:', err)
+      throw error(500, { message: NotificationCode.INTERNAL_SERVER_ERROR })
+    }
+  },
+
+  theme: async (event) => {
+    const user = event.locals.user
+    if (!user) return fail(event, 401, { failure: NotificationCode.UNAUTHORIZED })
+
+    const form = await event.request.formData()
+
+    const result = editThemeSchema.safeParse({ theme: form.get('theme') })
+
+    if (!result.success) {
+      return fail(event, 400, { failure: JSON.parse(result.error.message)[0].message })
+    }
+
+    const { theme } = result.data
+
+    try {
+      await updateUser(user.id, { theme })
+      event.cookies.set('theme', theme, themeCookieOptions(event.url))
     } catch (err) {
       if (err instanceof BusinessError) return fail(event, err.httpStatus, { failure: err.code })
       if (err instanceof ServerError) throw error(err.httpStatus, { message: err.code })

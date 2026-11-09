@@ -293,7 +293,7 @@
     margin: 0;
     font-size: 15px;
     line-height: 1.6;
-    color: black;
+    color: var(--text-dark-color);
   }
 
   div.permissions {
@@ -328,7 +328,7 @@
       text-align: left;
       font-weight: 600;
       font-size: 13px;
-      color: #606060;
+      color: var(--text-muted-color);
       margin-top: 8px;
       margin-bottom: 0;
 

@@ -227,16 +227,16 @@
   }
 
   button.accept {
-    color: #266e26;
+    color: var(--green-color);
   }
 
   button.refuse {
     right: 58px;
-    color: #6e2626;
+    color: var(--red-color);
   }
 
   button.delete {
-    color: #6e2626;
+    color: var(--red-color);
   }
 
   div.user-permissions {
@@ -261,7 +261,7 @@
       padding: 2px 8px;
       border-radius: 4px;
       background: var(--secondary-color);
-      color: #505050;
+      color: var(--text-secondary);
     }
   }
 
@@ -271,7 +271,7 @@
     padding: 2px 8px;
     border-radius: 4px;
     background: var(--secondary-color);
-    color: #505050;
+    color: var(--text-secondary);
     margin-right: 5px;
   }
 
@@ -280,11 +280,11 @@
 
     p {
       font-size: 14px;
-      color: #505050;
+      color: var(--text-secondary);
     }
 
     p.note {
-      color: #0869da;
+      color: var(--info-color);
       font-weight: 600;
       margin-bottom: 5px;
     }

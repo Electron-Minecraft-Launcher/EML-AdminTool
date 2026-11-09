@@ -114,7 +114,7 @@
 
       button {
         cursor: pointer;
-        color: #888;
+        color: var(--text-muted-color);
         background: 0 0;
         border: none;
         padding: 0;

@@ -234,7 +234,7 @@
             <label for="password">Password</label>
             <input type="password" id="password" bind:value={password} required={selectedProfile.visibility !== 'PROTECTED' && visibility === 'PROTECTED'} />
             {#if selectedProfile.visibility === 'PROTECTED'}
-              <p style="margin-top: 5px; font-size: 14px; color: #555"><i>Leave empty if you don't want to change it.</i></p>
+              <p style="margin-top: 5px; font-size: 14px; color: var(--text-secondary)"><i>Leave empty if you don't want to change it.</i></p>
             {/if}
           </div>
         {:else}
@@ -261,7 +261,7 @@
     margin: 0;
     font-size: 15px;
     line-height: 1.6;
-    color: black;
+    color: var(--text-dark-color);
   }
 
   div.flex {
@@ -313,11 +313,11 @@
 
     p {
       font-size: 14px;
-      color: #505050;
+      color: var(--text-secondary);
     }
 
     p.note {
-      color: #0869da;
+      color: var(--info-color);
       font-weight: 600;
       margin-bottom: 5px;
     }
