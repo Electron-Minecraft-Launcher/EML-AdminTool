@@ -18,7 +18,6 @@
   const user = getUser()
 
   let accountDropdownOpen = $state(false)
-
   async function accountClick() {
     if (!accountDropdownOpen) {
       await sleep(200)

@@ -280,6 +280,13 @@ Moreover, be sure that nobody can access EML AdminTool during the reset: EML Adm
           confirmPassword: `Confirm password`
         }
       },
+      appearance: {
+        title: `Appearance`,
+        theme: `Theme`,
+        system: `Use system setting`,
+        light: `Light`,
+        dark: `Dark`
+      },
       permissions: {
         title: `Permissions`
       },

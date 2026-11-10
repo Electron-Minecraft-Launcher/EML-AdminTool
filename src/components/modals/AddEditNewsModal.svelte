@@ -440,6 +440,11 @@
     }
   }
 
+  span.category {
+    color: var(--text-dark-color);
+    background-color: var(--secondary-color);
+  }
+
   button.remove {
     display: inline-block;
     margin-top: 0;

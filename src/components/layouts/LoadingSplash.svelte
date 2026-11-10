@@ -23,6 +23,11 @@
     height: 100%;
     background: var(--surface-white);
     z-index: 1000;
+
+    &.transparent {
+      background: var(--loading-overlay-color);
+      border-radius: 5px;
+    }
   }
 
   .loader {

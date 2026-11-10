@@ -213,6 +213,13 @@ EML AdminToolの翻訳にご協力いただける場合は、GitHubでJSONファ
           confirmPassword: `パスワードの確認`
         }
       },
+      appearance: {
+        title: `外観`,
+        theme: `テーマ`,
+        system: `システム設定に従う`,
+        light: `ライト`,
+        dark: `ダーク`
+      },
       permissions: {
         title: `権限`
       },

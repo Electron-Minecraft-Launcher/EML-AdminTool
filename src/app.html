@@ -1,11 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme-preference="%emlat.theme%">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   <link rel="icon" href="/images/favicon.png" type="image/png">
+  <script>
+    try {
+      const root = document.documentElement
+      const media = window.matchMedia('(prefers-color-scheme: dark)')
+      const isPreference = (value) => value === 'system' || value === 'light' || value === 'dark'
+      const getPreference = () => {
+        // Server-rendered preference wins; the cookie is only a fallback.
+        const fromServer = root.dataset.themePreference
+        if (isPreference(fromServer)) return fromServer
+        return document.cookie.match(/(?:^|; )emlat-theme=(system|light|dark)/)?.[1] ?? 'system'
+      }
+      const applyTheme = () => {
+        const preference = getPreference()
+        root.classList.toggle('dark-theme', preference === 'dark' || (preference === 'system' && media.matches))
+      }
+
+      applyTheme()
+      media.addEventListener('change', applyTheme)
+    } catch (error) {
+      console.error('Failed to read theme preference:', error)
+    }
+  </script>
   <title>EML AdminTool</title>
   %sveltekit.head%
 </head>

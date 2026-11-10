@@ -7,12 +7,42 @@
   import getUser from '$lib/utils/user'
   import type { SubmitFunction } from '@sveltejs/kit'
   import type { NotificationCode } from '$lib/utils/notifications'
+  import type { ThemePreference } from '$lib/utils/db'
+  import { applyThemePreference, isThemePreference } from '$lib/utils/theme'
   import EditAccountModal from '../../../../components/modals/EditAccountModal.svelte'
 
   const env = getEnv()
   const user = getUser()
 
   let showEditAccountModal = $state(false)
+  let theme = $state<ThemePreference>(user.theme)
+  let savedTheme = $state<ThemePreference>(user.theme)
+  let savingTheme = $state(false)
+
+  const enhanceTheme: SubmitFunction = ({ formData, cancel }) => {
+    const nextTheme = formData.get('theme')
+    if (!isThemePreference(nextTheme)) return cancel()
+
+    savingTheme = true
+    applyThemePreference(nextTheme, { animate: true })
+
+    return async ({ result, update }) => {
+      if (result.type === 'success') {
+        savedTheme = nextTheme
+        // Keep the shared user object in sync so revisiting this page shows the saved value
+        user.theme = nextTheme
+      } else {
+        theme = savedTheme
+        applyThemePreference(savedTheme, { animate: true })
+
+        const code = result.type === 'failure' ? (result.data?.failure as NotificationCode) : undefined
+        addNotification('ERROR', (code && $l.notifications[code]) || $l.notifications.INTERNAL_SERVER_ERROR)
+      }
+
+      savingTheme = false
+      await update({ reset: false })
+    }
+  }
 
   const enhanceForm: SubmitFunction = ({ formData, cancel }) => {
     if (!confirm($l.dashboard.account.dangerZone.deleteAccountWarning)) {
@@ -63,6 +93,21 @@
       <p class="label">{$l.dashboard.account.info.accountType}</p>
       <p>{user.isAdmin ? 'Administrator' : 'Standard'}</p>
     </div>
+  </div>
+</section>
+
+<section class="section">
+  <h3>{$l.dashboard.account.appearance.title}</h3>
+
+  <div class="container">
+    <form method="POST" action="?/theme" use:enhance={enhanceTheme}>
+      <label for="theme">{$l.dashboard.account.appearance.theme}</label>
+      <select id="theme" name="theme" bind:value={theme} onchange={(e) => e.currentTarget.form?.requestSubmit()} disabled={savingTheme}>
+        <option value="system">{$l.dashboard.account.appearance.system}</option>
+        <option value="light">{$l.dashboard.account.appearance.light}</option>
+        <option value="dark">{$l.dashboard.account.appearance.dark}</option>
+      </select>
+    </form>
   </div>
 </section>
 
