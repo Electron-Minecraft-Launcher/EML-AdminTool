@@ -55,10 +55,7 @@
   }
 
   function backgroundColor(color: string) {
-    const r = parseInt(color.slice(1, 3), 16)
-    const g = parseInt(color.slice(3, 5), 16)
-    const b = parseInt(color.slice(5, 7), 16)
-    return `rgba(${r}, ${g}, ${b}, 0.1)`
+    return `${color}1A`
   }
 
   async function deleteNews() {
@@ -181,7 +178,7 @@
   p.nothing {
     text-align: center;
     margin-top: 20px;
-    color: #606060;
+    color: var(--text-secondary);
   }
 
   div.info {
@@ -191,7 +188,7 @@
     p {
       margin: 0 30px 0 0;
       font-size: 14px;
-      color: var(--text-dark-color);
+      color: var(--text-primary);
       display: inline-block;
     }
   }
@@ -282,7 +279,7 @@
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-primary);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -293,7 +290,7 @@
     line-height: 15px;
 
     &:hover {
-      background: #eeeeee;
+      background: var(--surface-control-hover);
     }
   }
 </style>

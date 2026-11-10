@@ -2,46 +2,333 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root {
-  --primary-color: rgb(194, 81, 5);
-  --primary-color-hover: rgb(224, 96, 10);
-  --primary-tr-color-hover: rgb(194, 81, 5, 0.2);
-  --primary-dark-color: rgb(184, 77, 7);
-  --primary-light-color: rgb(255, 210, 151);
-  --primary-light-color-hover: rgb(255, 221, 177);
+  color-scheme: light;
 
-  --red-color: rgb(170, 24, 24);
-  --green-color: rgb(24, 170, 24);
+  --accent-color: #c25105;
+  --accent-hover-color: #e0600a;
+  --accent-focus-ring: #c2510533;
+  --accent-button-background: #b84d07;
+  --accent-soft-background: #ffd297;
+  --accent-soft-hover-background: #ffddb1;
+  --accent-overlay-background: #c2510540;
+  --accent-overlay-border: #c25105bf;
 
-  --secondary-color: rgb(240, 240, 240);
-  --secondary-color-hover: rgb(245, 245, 245);
+  --status-error-color: #aa1818;
+  --status-success-color: #4caf50;
 
-  --border-color: rgb(230, 230, 230);
-  --border-color2: rgb(200, 200, 200);
+  --surface-page: #f7f7f7;
+  --surface-white: #ffffff;
+  --surface-medium: #ebe8e6;
+  --surface-secondary: #f0f0f0;
+  --surface-control-active: #f5f5f5;
+  --surface-control-hover: #eeeeee;
+  --surface-code-background: #f4f4f4;
+  --surface-danger-soft: #faeeee;
+  --surface-success-soft: #e3ffe3;
+  --surface-dark-overlay: #353535a1;
+  --surface-selection-overlay: #dfdfdfa1;
+  --surface-hover-overlay: #eeeeeeB7;
+  --surface-danger-overlay: #faeeeeB7;
+  --surface-hover-subtle: #00000008;
 
-  --primary-shadow-dark-color: rgb(138, 57, 4);
-  --primary-shadow-dark-color-hover: rgb(155, 65, 6);
-  --secondary-shadow-dark-color: rgb(213, 213, 213);
-  --secondary-shadow-dark-color-hover: rgb(222, 222, 222);
+  --text-on-accent: #fafafa;
+  --text-primary: #303030;
+  --text-secondary: #606060;
+  --text-muted: #808080;
+  --text-error-bright: #fa5650;
+  --text-version-outdated: #912020;
+  --link-color: #0869da;
+  --management-success-text: #266e26;
+  --management-error-text: #6e2626;
 
-  --background-light-color: rgb(254, 254, 254);
-  --background-color: rgb(247, 247, 247);
-  --background-medium-color: rgb(235, 232, 230);
+  --border-subtle: #e6e6e6;
+  --border-default: #c8c8c8;
+  --border-footer: #d8d8d8;
 
+  --button-primary-shadow: #8a3904;
+  --button-primary-hover-shadow: #9b4106;
+  --button-secondary-shadow: #d5d5d5;
+  --button-secondary-hover-shadow: #dedede;
+  --button-danger-primary-shadow: #6b0c0c;
+  --button-danger-primary-hover-background: #d82b2b;
+  --button-danger-primary-hover-shadow: #b81c1c;
+  --button-danger-primary-focus-ring: #c2050533;
+  --button-danger-secondary-shadow: #d8bfbf;
+  --button-danger-secondary-focus-ring: #d82b2b33;
+
+  --dashboard-status-success-ring: #4caf5050;
+  --dashboard-status-warning: #ff9800;
+  --dashboard-status-warning-ring: #ff980050;
+  --dashboard-status-error-ring: #c0312750;
+  --stats-warning-text: #574010;
+  --stats-warning-background: #fae791;
+
+  --password-strength-very-weak: #8b0000;
+  --password-strength-weak: #ad2c0b;
+  --password-strength-medium: #d86608;
+  --password-strength-strong: #71bd0d;
+  --password-strength-very-strong: #04921c;
+
+  --notification-info-background: #6aaae2a0;
+  --notification-info-border: #91aec6;
+  --notification-warning-background: #e9d876a0;
+  --notification-warning-border: #c0b785;
+  --notification-success-background: #86c786a0;
+  --notification-success-border: #94c194;
+  --notification-error-background: #eb7575a0;
+  --notification-error-border: #dda5a5;
+  --markdown-note-success: #1b7f38;
+  --markdown-note-tip: #8251de;
+  --markdown-note-warning: #9a6700;
+  --markdown-note-danger: #cf232e;
+
+  --shadow-raised-surface: #00000026;
+  --shadow-notification: #00000030;
+  --shadow-modal: #00000080;
+  --overlay-modal: #00000066;
+  --overlay-loading-background: #ffffffb3;
+  --shadow-control: #0000001a;
+  --loading-indicator-color: #222222;
+  --transparent-color: #00000000;
+
+  --chart-fallback-color: #cbd5e1;
+  --chart-ram-max-color: #ef4444;
+  --chart-ram-max-fill: #ef44441a;
+  --chart-ram-min-fill: #3b82f61a;
+  --chart-series-1: #3b82f6;
+  --chart-series-2: #10b981;
+  --chart-series-3: #f59e0b;
+  --chart-series-4: #ec4899;
+  --chart-series-5: #8b5cf6;
+  --chart-series-6: #06b6d4;
+  --chart-os-windows: #0079d6;
+  --chart-os-macos: #272729;
+  --chart-os-linux: #b03a47;
+  --chart-auth-cracked: #424242;
+  --chart-auth-microsoft: #107b10;
+  --chart-auth-azauth: #034ce2;
+  --chart-auth-yggdrasil: #db1f2a;
+}
+
+:root.dark-theme {
+  color-scheme: dark;
+
+  --accent-color: #f58b43;
+  --accent-hover-color: #d47028;
+  --accent-focus-ring: #f58b4333;
+  --accent-button-background: #ad4a0d;
+  --accent-soft-background: #49301f;
+  --accent-soft-hover-background: #593922;
+  --accent-overlay-background: #f58b4340;
+  --accent-overlay-border: #f58b43bf;
+
+  --status-error-color: #f05a52;
+  --status-success-color: #53c56a;
+
+  --surface-page: #1b1d21;
+  --surface-white: #22252b;
+  --surface-medium: #292d33;
+  --surface-secondary: #31343a;
+  --surface-control-active: #3c4047;
+  --surface-control-hover: #363a42;
+  --surface-code-background: #292d33;
+  --surface-danger-soft: #422b2b;
+  --surface-success-soft: #263d2a;
+  --surface-dark-overlay: #000000b3;
+  --surface-selection-overlay: #454a52b7;
+  --surface-hover-overlay: #ffffff1a;
+  --surface-danger-overlay: #b23b3b60;
+  --surface-hover-subtle: #ffffff0d;
+
+  --text-on-accent: #fff4eb;
+  --text-primary: #e8e9eb;
+  --text-secondary: #b1b5bc;
+  --text-muted: #9298a2;
+  --text-error-bright: #ff746e;
+  --text-version-outdated: #ff8a80;
+  --link-color: #72b7ff;
+  --management-success-text: #75c987;
+  --management-error-text: #ff8c86;
+
+  --border-subtle: #383c43;
+  --border-default: #4d525b;
+  --border-footer: #41464f;
+
+  --button-primary-shadow: #6b2d0c;
+  --button-primary-hover-shadow: #823809;
+  --button-secondary-shadow: #24272d;
+  --button-secondary-hover-shadow: #1c1f24;
+  --button-danger-primary-shadow: #570d0d;
+  --button-danger-primary-hover-background: #ff716a;
+  --button-danger-primary-hover-shadow: #9e2424;
+  --button-danger-primary-focus-ring: #f05a5233;
+  --button-danger-secondary-shadow: #552e2e;
+  --button-danger-secondary-focus-ring: #f05a5233;
+
+  --dashboard-status-success-ring: #53c56a50;
+  --dashboard-status-warning: #ffb547;
+  --dashboard-status-warning-ring: #ffb54750;
+  --dashboard-status-error-ring: #f05a5250;
+  --stats-warning-text: #f4d06f;
+  --stats-warning-background: #463b1d;
+
+  --password-strength-very-weak: #ff6262;
+  --password-strength-weak: #f08464;
+  --password-strength-medium: #ffa14b;
+  --password-strength-strong: #a4d75d;
+  --password-strength-very-strong: #53c56a;
+
+  --notification-info-background: #25445ca0;
+  --notification-info-border: #426b8b;
+  --notification-warning-background: #514821a0;
+  --notification-warning-border: #75693c;
+  --notification-success-background: #25472da0;
+  --notification-success-border: #456d4c;
+  --notification-error-background: #512a2aa0;
+  --notification-error-border: #7d4c4c;
+
+  --markdown-note-success: #52c779;
+  --markdown-note-tip: #b294ff;
+  --markdown-note-warning: #f2c14e;
+  --markdown-note-danger: #ff7772;
+
+  --shadow-raised-surface: #00000080;
+  --shadow-notification: #00000070;
+  --shadow-modal: #000000b3;
+  --overlay-modal: #00000099;
+  --overlay-loading-background: #111318b3;
+  --shadow-control: #00000066;
+  --loading-indicator-color: #e3e6eb;
+}
+
+:root.dark-theme {
+  color-scheme: dark;
+
+  --primary-color: rgb(245, 139, 67);
+  --primary-color-hover: rgb(255, 164, 99);
+  --primary-tr-color-hover: rgb(245, 139, 67, 0.2);
+  --primary-dark-color: rgb(173, 74, 13);
+  --primary-light-color: rgb(73, 48, 31);
+  --primary-light-color-hover: rgb(89, 57, 34);
+
+  --secondary-color: rgb(49, 52, 58);
+  --secondary-color-hover: rgb(60, 64, 71);
+
+  --border-color: rgb(56, 60, 67);
+  --border-color2: rgb(77, 82, 91);
+
+  --primary-shadow-dark-color: rgb(120, 49, 8);
+  --primary-shadow-dark-color-hover: rgb(140, 57, 9);
+  --secondary-shadow-dark-color: rgb(35, 38, 43);
+  --secondary-shadow-dark-color-hover: rgb(42, 46, 52);
+
+  --background-light-color: rgb(34, 37, 42);
+  --background-color: rgb(25, 27, 31);
+  --background-medium-color: rgb(42, 45, 51);
+
+  --red-color: #f07878;
+  --green-color: #6bcf82;
+  --info-color: #78adf8;
+  --warning-text-color: #ffe08a;
   --text-light-color: #fafafa;
-  --text-dark-color: #303030;
+  --text-dark-color: #e4e6eb;
+  --text-muted-color: #a0a5ae;
+  --text-main: var(--text-dark-color);
+  --text-secondary: #a0a5ae;
+  --surface-color: #22252a;
+  --surface-hover-color: #30343b;
+  --loading-overlay-color: rgba(0, 0, 0, 0.65);
+  --danger-surface-color: #422b2d;
+  --success-surface-color: #253e2d;
+  --warning-surface-color: #4b3b17;
+  --image-overlay-color: rgba(20, 22, 26, 0.78);
+  --code-background-color: #30343b;
+  --scrollbar-track-color: #191b1f;
+  --scrollbar-thumb-color: #484d56;
+  --scrollbar-thumb-hover-color: #626975;
+  --skeleton-color: #30343b;
+  --skeleton-highlight-color: #3a3f47;
 
-  --gray-gradient: linear-gradient(#fefefe, #fcfcfc);
+  --alert-tip-color: #3fb950;
+  --alert-important-color: #a371f7;
+  --alert-warning-color: #d29922;
+  --alert-caution-color: #f85149;
+
+  --notification-info-background: #2f5b8cc0;
+  --notification-info-border: #3f6a94;
+  --notification-warning-background: #7a6420c0;
+  --notification-warning-border: #8d7a3a;
+  --notification-success-background: #2f6b3cc0;
+  --notification-success-border: #3f7a4a;
+  --notification-error-background: #8a3030c0;
+  --notification-error-border: #a05050;
+
+  --gray-gradient: linear-gradient(#292c32, #22252a);
+}
+
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    fill 220ms ease,
+    stroke 220ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transitioning,
+  .theme-transitioning *,
+  .theme-transitioning *::before,
+  .theme-transitioning *::after {
+    transition: none !important;
+  }
 }
 
 * {
   font-family: 'Poppins', 'Arial', 'Helvetica', sans-serif;
 }
 
+// Only the background goes on <html> (no flash of white around the page in dark mode).
+// overflow-x must stay on <body> alone: on both html and body, body becomes its own
+// scroll container and a second scrollbar appears.
+html {
+  background-color: var(--background-color);
+}
+
 body {
   margin: 0;
   padding: 0;
-  background-color: var(--background-color);
+  background-color: var(--surface-page);
+  color: var(--text-primary);
   overflow-x: hidden;
+}
+
+:root {
+  scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb-color);
+  border: 2px solid var(--scrollbar-track-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover-color);
 }
 
 p {
@@ -56,7 +343,7 @@ p {
 label,
 p.label {
   margin: 20px 0 5px 0;
-  color: #808080;
+  color: var(--text-muted);
   font-size: 14px;
   display: block;
 
@@ -69,15 +356,15 @@ label.p {
   margin: 0;
   font-size: 15px;
   line-height: 1.6;
-  color: black;
+  color: var(--text-primary);
 }
 
 a:not(.not-a),
 button.a {
-  color: var(--primary-color);
+  color: var(--accent-color);
   text-decoration: none;
   border: none;
-  border-bottom: 1px solid var(--primary-color);
+  border-bottom: 1px solid var(--accent-color);
   transition: all 0.2s ease;
   display: inline-block;
   cursor: pointer;
@@ -99,8 +386,8 @@ button.a {
   }
 
   &:hover {
-    color: var(--primary-color-hover);
-    border-bottom-color: var(--primary-color-hover);
+    color: var(--accent-hover-color);
+    border-bottom-color: var(--accent-hover-color);
   }
 
   &:hover:active {
@@ -117,11 +404,11 @@ input:not([type=checkbox]):not([type=radio]) {
   width: calc(100% - 32px);
   margin-top: 5px;
   padding: 12px 15px;
-  border: 1px solid var(--border-color2);
+  border: 1px solid var(--border-default);
   border-radius: 5px;
-  background-color: var(--background-light-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  outline: 0px solid var(--primary-tr-color-hover);
+  background-color: var(--surface-white);
+  box-shadow: 0 1px 3px var(--shadow-control);
+  outline: 0px solid var(--accent-focus-ring);
   transition: all 0.3s ease, shadow 0.1s ease, margin 0.1s, outline 0.1s ease;
   line-height: 16px;
 
@@ -131,7 +418,7 @@ input:not([type=checkbox]):not([type=radio]) {
 
   &:focus:not(:disabled) {
     box-shadow: none;
-    outline: 6px solid var(--primary-tr-color-hover);
+    outline: 6px solid var(--accent-focus-ring);
   }
 
   &:disabled {
@@ -143,18 +430,18 @@ input:not([type=checkbox]):not([type=radio]) {
 
 input[type=checkbox], input[type=radio] {
   margin-top: 5px;
-  accent-color: var(--primary-color);
+  accent-color: var(--accent-color);
 }
 
 select {
   display: block;
   margin-top: 5px;
   padding: 9px 12px;
-  border: 1px solid var(--border-color2);
+  border: 1px solid var(--border-default);
   border-radius: 5px;
-  background-color: var(--background-light-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  outline: 0px solid var(--primary-tr-color-hover);
+  background-color: var(--surface-white);
+  box-shadow: 0 1px 3px var(--shadow-control);
+  outline: 0px solid var(--accent-focus-ring);
   transition: all 0.3s ease, shadow 0.1s ease, margin 0.1s, outline 0.1s ease;
 
   &:hover:not(:disabled) {
@@ -163,7 +450,7 @@ select {
 
   &:hover:focus:not(:disabled) {
     box-shadow: none;
-    outline: 6px solid var(--primary-tr-color-hover);
+    outline: 6px solid var(--accent-focus-ring);
   }
 
   &:disabled {
@@ -181,77 +468,77 @@ button:not(.a) {
   padding: 12px 15px;
   cursor: pointer;
   transition: all 0.3s ease, shadow 0.1s ease, margin 0.1s, outline 0.1s ease;
-  outline: 0px solid var(--primary-tr-color-hover);
+  outline: 0px solid var(--accent-focus-ring);
   line-height: 16px;
   font-size: 13.3px;
 
   &.primary {
     margin-top: 30px;
-    background: var(--primary-dark-color);
-    box-shadow: 0 2px 0 var(--primary-shadow-dark-color);
-    color: var(--text-light-color);
+    background: var(--accent-button-background);
+    box-shadow: 0 2px 0 var(--button-primary-shadow);
+    color: var(--text-on-accent);
     width: 100%;
 
     &:hover:not(:disabled) {
-      background: var(--primary-color-hover);
-      box-shadow: 0 2px 0 var(--primary-shadow-dark-color-hover);
+      background: var(--accent-hover-color);
+      box-shadow: 0 2px 0 var(--button-primary-hover-shadow);
     }
 
     &:hover:active:not(:disabled) {
-      box-shadow: 0 0 var(--primary-shadow-dark-color-hover);
-      outline: 6px solid var(--primary-tr-color-hover);
+      box-shadow: 0 0 var(--button-primary-hover-shadow);
+      outline: 6px solid var(--accent-focus-ring);
     }
   }
 
   &.secondary {
     margin-top: 30px;
-    background: var(--secondary-color);
-    box-shadow: 0 2px 0 var(--secondary-shadow-dark-color);
-    color: var(--text-dark-color);
+    background: var(--surface-secondary);
+    box-shadow: 0 2px 0 var(--button-secondary-shadow);
+    color: var(--text-primary);
 
     &:hover:not(:disabled) {
-      background: var(--secondary-color-hover);
-      box-shadow: 0 2px 0 var(--secondary-shadow-dark-color-hover);
+      background: var(--surface-control-hover);
+      box-shadow: 0 2px 0 var(--button-secondary-hover-shadow);
     }
 
     &:hover:active:not(:disabled) {
-      box-shadow: 0 0 0 var(--secondary-shadow-dark-color-hover);
-      outline: 6px solid var(--primary-tr-color-hover);
+      box-shadow: 0 0 0 var(--button-secondary-hover-shadow);
+      outline: 6px solid var(--accent-focus-ring);
     }
   }
 
   &.primary.danger {
     margin-top: 30px;
-    background: var(--red-color);
-    box-shadow: 0 2px 0 rgb(107, 12, 12);
-    color: var(--text-light-color);
+    background: var(--status-error-color);
+    box-shadow: 0 2px 0 var(--button-danger-primary-shadow);
+    color: var(--text-on-accent);
     width: 250px;
 
     &:hover:not(:disabled) {
-      background: rgb(216, 43, 43);
-      box-shadow: 0 2px 0 rgb(184, 28, 28);
+      background: var(--button-danger-primary-hover-background);
+      box-shadow: 0 2px 0 var(--button-danger-primary-hover-shadow);
     }
 
     &:hover:active:not(:disabled) {
-      box-shadow: 0 0 rgb(184, 28, 28);
-      outline: 6px solid rgba(194, 5, 5, 0.2);
+      box-shadow: 0 0 var(--button-danger-primary-hover-shadow);
+      outline: 6px solid var(--button-danger-primary-focus-ring);
     }
   }
 
   &.secondary.danger {
     margin-top: 30px;
-    background: rgb(247, 236, 236);
-    box-shadow: 0 2px 0 rgb(216, 191, 191);
-    color: var(--red-color);
+    background: var(--surface-danger-soft);
+    box-shadow: 0 2px 0 var(--button-danger-secondary-shadow);
+    color: var(--status-error-color);
 
     &:hover:not(:disabled) {
-      background: rgb(245, 245, 245);
-      box-shadow: 0 2px 0 rgb(222, 222, 222);
+      background: var(--surface-control-hover);
+      box-shadow: 0 2px 0 var(--button-secondary-hover-shadow);
     }
 
     &:hover:active:not(:disabled) {
-      box-shadow: 0 0 rgb(222, 222, 222);
-      outline: 6px solid rgba(216, 43, 43, 0.2);
+      box-shadow: 0 0 var(--button-secondary-hover-shadow);
+      outline: 6px solid var(--button-danger-secondary-focus-ring);
     }
   }
 
@@ -268,9 +555,9 @@ button:not(.a) {
 section.section {
   margin-top: 50px;
   position: relative;
-  background-color: white;
+  background-color: var(--surface-white);
   padding: 50px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
 
   &:hover button.right {
@@ -315,7 +602,7 @@ section.section {
   label,
   p.label {
     margin: 20px 0 5px 0;
-    color: #808080;
+    color: var(--text-muted);
     font-size: 14px;
 
     &:nth-of-type(1) {

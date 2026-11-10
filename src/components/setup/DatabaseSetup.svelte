@@ -106,7 +106,7 @@
   div.rel-progress {
     width: 130px;
     border-radius: 50rem;
-    background-color: #f3f3f3;
+    background-color: var(--surface-control-active);
     display: inline-block;
     height: 7px;
     margin-top: 13px;
@@ -119,27 +119,27 @@
 
     &.progress-0 {
       width: 10%;
-      background: #8b0000;
+      background: var(--password-strength-very-weak);
     }
 
     &.progress-1 {
       width: 25%;
-      background: #ad2c0b;
+      background: var(--password-strength-weak);
     }
 
     &.progress-2 {
       width: 50%;
-      background: #d86608;
+      background: var(--password-strength-medium);
     }
 
     &.progress-3 {
       width: 75%;
-      background: #71bd0d;
+      background: var(--password-strength-strong);
     }
 
     &.progress-4 {
       width: 100%;
-      background: #04921c;
+      background: var(--password-strength-very-strong);
     }
   }
 
@@ -155,6 +155,6 @@
     display: block;
     margin-top: 5px;
     font-size: 12px;
-    color: var(--red-color);
+    color: var(--status-error-color);
   }
 </style>

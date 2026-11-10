@@ -213,6 +213,13 @@ Stelle außerdem sicher, dass während des Zurücksetzens niemand auf das EML Ad
           confirmPassword: `Passwort bestätigen`
         }
       },
+      appearance: {
+        title: `Darstellung`,
+        theme: `Darstellung`,
+        system: `Systemeinstellung verwenden`,
+        light: `Hell`,
+        dark: `Dunkel`
+      },
       permissions: {
         title: `Berechtigungen`
       },

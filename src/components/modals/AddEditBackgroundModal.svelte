@@ -132,11 +132,11 @@
     overflow: hidden;
     white-space: nowrap;
     background: none;
-    color: var(--red-color);
+    color: var(--status-error-color);
     vertical-align: middle;
 
     &:hover {
-      background: #faeeee;
+      background: var(--surface-danger-soft);
     }
   }
 </style>

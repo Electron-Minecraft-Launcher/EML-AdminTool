@@ -104,7 +104,7 @@
     overflow-x: auto;
 
     span.allowed-pseudo {
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-subtle);
       border-radius: 4px;
       align-items: center;
       gap: 0.5rem;
@@ -114,7 +114,7 @@
 
       button {
         cursor: pointer;
-        color: #888;
+        color: var(--text-muted);
         background: 0 0;
         border: none;
         padding: 0;

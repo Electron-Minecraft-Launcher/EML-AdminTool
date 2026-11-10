@@ -11,6 +11,7 @@ export const user: Readable<UserInfo> = derived(currentUser, ($currentUser) => {
 export const emptyUser: UserInfo & { status: UserStatus; createdAt: Date; updatedAt: Date } = {
   id: '0',
   username: '',
+  theme: 'system',
   isAdmin: false,
   status: IUserStatus.ACTIVE,
   p_filesUpdater: 0,
