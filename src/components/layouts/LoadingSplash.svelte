@@ -6,7 +6,7 @@
   let { transparent = false }: Props = $props()
 </script>
 
-<div class="splash-background" style={transparent ? 'background: var(--overlay-loading-background); border-radius: 5px' : ''}>
+<div class="splash-background" style={transparent ? 'background: var(--overlay-loading-background); border-radius: 10px' : ''}>
   <div class="loader">
     <svg class="circular" viewBox="25 25 50 50">
       <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="5" stroke-miterlimit="10" />
