@@ -48,30 +48,30 @@
       padding: 15px 17px;
       border-radius: 10px;
       backdrop-filter: blur(3px);
-      box-shadow: 0 0 30px #00000030;
+      box-shadow: 0 0 30px var(--shadow-notification);
       font-size: 14px;
       position: relative;
       align-items: center;
       gap: 12px;
 
       &.info {
-        background: #6aaae2a0;
-        border: 1px solid #91aec6;
+        background: var(--notification-info-background);
+        border: 1px solid var(--notification-info-border);
       }
 
       &.warning {
-        background: #e9d876a0;
-        border: 1px solid #c0b785;
+        background: var(--notification-warning-background);
+        border: 1px solid var(--notification-warning-border);
       }
 
       &.success {
-        background: #86c786a0;
-        border: 1px solid #94c194;
+        background: var(--notification-success-background);
+        border: 1px solid var(--notification-success-border);
       }
 
       &.error {
-        background: #eb7575a0;
-        border: 1px solid #dda5a5;
+        background: var(--notification-error-background);
+        border: 1px solid var(--notification-error-border);
       }
     }
   }

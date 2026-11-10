@@ -83,10 +83,7 @@
   })
 
   function backgroundColor(color: string) {
-    const r = parseInt(color.slice(1, 3), 16)
-    const g = parseInt(color.slice(3, 5), 16)
-    const b = parseInt(color.slice(5, 7), 16)
-    return `rgba(${r}, ${g}, ${b}, 0.1)`
+    return `${color}1A`
   }
 
   async function uploadImages() {
@@ -321,12 +318,12 @@
       opacity 0.3s,
       transform 0.3s;
 
-    background-color: white;
+    background-color: var(--surface-white);
     padding: 40px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     border-radius: 10px;
 
-    box-shadow: 0 5px 50px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 5px 50px var(--shadow-modal);
     margin: auto;
 
     h3 {
@@ -345,7 +342,7 @@
     p.nothing {
       text-align: center;
       margin-top: 20px;
-      color: #606060;
+      color: var(--text-secondary);
       width: 100%;
     }
 
@@ -366,7 +363,7 @@
         align-items: center;
         vertical-align: middle;
         justify-content: center;
-        background: #dfdfdfa1;
+        background: var(--surface-selection-overlay);
         border-radius: 5px;
         transition: opacity 0.3s;
         opacity: 0;
@@ -381,7 +378,7 @@
       display: inline-block;
       margin-top: 0;
       border-bottom: none;
-      color: #1e1e1e;
+      color: var(--text-primary);
       position: relative;
       overflow: hidden;
       white-space: nowrap;
@@ -393,7 +390,7 @@
       line-height: 15px;
 
       &:hover {
-        background: #eeeeeeb7;
+        background: var(--surface-hover-overlay);
       }
 
       &.remove {
@@ -402,11 +399,11 @@
         margin-left: 5px;
         position: relative;
         background: none;
-        color: var(--red-color);
+        color: var(--status-error-color);
         vertical-align: middle;
 
         &:hover {
-          background: #faeeeeb7;
+          background: var(--surface-danger-overlay);
         }
       }
     }
@@ -415,7 +412,7 @@
   div.editor {
     height: calc(100vh - 177px - 66px - 27px - 30px - 20px - 69px - 184px);
     width: calc(750px - 2px);
-    border: 1px solid var(--border-color2);
+    border: 1px solid var(--border-default);
     margin-top: 20px;
     overflow-y: auto;
     overflow-x: auto;
@@ -435,7 +432,7 @@
     padding-left: 15px;
     border-radius: 5px;
     font-size: 12px;
-    background-color: #f0f0f0;
+    background-color: var(--surface-control-active);
     line-height: 15px;
 
     i {
@@ -443,11 +440,16 @@
     }
   }
 
+  span.category {
+    color: var(--text-dark-color);
+    background-color: var(--secondary-color);
+  }
+
   button.remove {
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: #1e1e1e;
+    color: var(--text-primary);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -456,10 +458,10 @@
     background: none;
     line-height: 15px;
     margin-left: 5px;
-    color: var(--red-color);
+    color: var(--status-error-color);
 
     &:hover {
-      background: #faeeee;
+      background: var(--surface-danger-soft);
     }
 
     i {
@@ -492,15 +494,15 @@
       opacity 0.2s,
       height 0.2s ease,
       display 0s;
-    background: white;
+    background: var(--surface-white);
     padding: 10px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     z-index: 100;
     position: absolute;
     width: 178px;
     top: 42px;
     left: 0;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 20px var(--shadow-raised-surface);
     max-height: 110px;
     overflow-y: auto;
 
@@ -517,7 +519,7 @@
       }
 
       &:hover {
-        background: #eeeeee;
+        background: var(--surface-control-hover);
       }
     }
   }

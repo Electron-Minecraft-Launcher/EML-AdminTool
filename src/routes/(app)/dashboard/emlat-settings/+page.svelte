@@ -284,7 +284,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    background-color: white;
+    background-color: var(--surface-white);
 
     div {
       position: fixed;
@@ -296,7 +296,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      background-color: white;
+      background-color: var(--surface-white);
     }
 
     p {
@@ -325,7 +325,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 
       i {
         font-size: 20px;
-        color: var(--red-color);
+        color: var(--status-error-color);
       }
     }
   }
@@ -333,7 +333,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
   i.fa-solid.fa-star {
     cursor: help;
     font-size: 10px;
-    color: #5f5f5f;
+    color: var(--text-secondary);
   }
 
   div.updater {
@@ -350,7 +350,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
 
     p.release-date {
       font-size: 14px;
-      color: var(--text-dark-color);
+      color: var(--text-primary);
     }
 
     div.actions {
@@ -385,8 +385,8 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     margin-top: 20px;
     padding: 20px;
     border-radius: 5px;
-    background: rgb(253, 253, 253);
-    border: 1px solid rgb(240, 240, 240);
+    background: var(--surface-white);
+    border: 1px solid var(--surface-secondary);
     height: 400px;
     overflow-y: auto;
 
@@ -401,7 +401,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
     width: 200px;
     height: 1px;
     margin-bottom: 5px;
-    background: var(--border-color2);
+    background: var(--border-default);
     position: relative;
     margin-right: 10px;
 
@@ -410,7 +410,7 @@ Please note that EML AdminTool, and therefore the Launchers too, will be unavail
       position: relative;
       height: 3px;
       top: -1px;
-      background: var(--primary-color);
+      background: var(--accent-color);
       border-radius: 3px;
     }
   }

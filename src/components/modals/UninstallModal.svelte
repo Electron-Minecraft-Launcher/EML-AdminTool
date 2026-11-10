@@ -26,7 +26,7 @@
     }
     code,
     ol li code {
-      background: var(--background-color);
+      background: var(--surface-page);
       padding: 2px 4px;
       border-radius: 4px;
       font-size: 90%;

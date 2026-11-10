@@ -34,19 +34,23 @@
     goto(url.toString(), { keepFocus: true, invalidateAll: true })
   }
 
-  const palette = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4']
+  const cssColor = (name: string) => getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  const palette = [
+    cssColor('--chart-series-1'), cssColor('--chart-series-2'), cssColor('--chart-series-3'),
+    cssColor('--chart-series-4'), cssColor('--chart-series-5'), cssColor('--chart-series-6')
+  ]
 
   const osColors: Record<string, string> = {
-    'Windows': '#0079d6',
-    'macOS': '#272729',
-    'Linux': '#b03a47'
+    'Windows': cssColor('--chart-os-windows'),
+    'macOS': cssColor('--chart-os-macos'),
+    'Linux': cssColor('--chart-os-linux')
   }
 
   const authColors: Record<string, string> = {
-    'Cracked': '#424242',
-    'Microsoft': '#107b10',
-    'AzAuth': '#034ce2',
-    'Yggdrasil': '#db1f2a'
+    'Cracked': cssColor('--chart-auth-cracked'),
+    'Microsoft': cssColor('--chart-auth-microsoft'),
+    'AzAuth': cssColor('--chart-auth-azauth'),
+    'Yggdrasil': cssColor('--chart-auth-yggdrasil')
   }
 
   let versionsEvolutionConfig = $derived({
@@ -83,7 +87,7 @@
         datasets: allArchs.map((arch, i) => ({
           label: arch,
           data: osLabels.map((os) => data.charts.osArch[os][arch] || 0),
-          backgroundColor: osLabels.map((os) => (osColors[os] || '#cbd5e1') + (opacities[i % opacities.length] || 'FF')),
+          backgroundColor: osLabels.map((os) => (osColors[os] || cssColor('--chart-fallback-color')) + (opacities[i % opacities.length] || 'FF')),
           borderRadius: 4
         }))
       },
@@ -115,7 +119,7 @@
         datasets: [
           {
             data: Object.values(data.charts.authTypes),
-            backgroundColor: authKeys.map(a => authColors[a] || '#cbd5e1'),
+            backgroundColor: authKeys.map(a => authColors[a] || cssColor('--chart-fallback-color')),
             borderWidth: 0
           }
         ]
@@ -132,48 +136,48 @@
         {
           label: 'Max RAM (+1 SD)',
           data: data.charts.ramOverTime.map((d) => d.max.avg + d.max.std),
-          borderColor: 'transparent',
-          backgroundColor: 'transparent',
+          borderColor: cssColor('--transparent-color'),
+          backgroundColor: cssColor('--transparent-color'),
           pointRadius: 0,
           fill: false
         },
         {
           label: 'Average Max RAM',
           data: data.charts.ramOverTime.map((d) => d.max.avg),
-          borderColor: '#ef4444',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderColor: cssColor('--chart-ram-max-color'),
+          backgroundColor: cssColor('--chart-ram-max-fill'),
           pointRadius: 2,
           fill: '-1'
         },
         {
           label: 'Max RAM (-1 SD)',
           data: data.charts.ramOverTime.map((d) => Math.max(0, d.max.avg - d.max.std)),
-          borderColor: 'transparent',
-          backgroundColor: 'rgba(239, 68, 68, 0.1)',
+          borderColor: cssColor('--transparent-color'),
+          backgroundColor: cssColor('--chart-ram-max-fill'),
           pointRadius: 0,
           fill: '-1'
         },
         {
           label: 'Min RAM (+1 SD)',
           data: data.charts.ramOverTime.map((d) => d.min.avg + d.min.std),
-          borderColor: 'transparent',
-          backgroundColor: 'transparent',
+          borderColor: cssColor('--transparent-color'),
+          backgroundColor: cssColor('--transparent-color'),
           pointRadius: 0,
           fill: false
         },
         {
           label: 'Average Min RAM',
           data: data.charts.ramOverTime.map((d) => d.min.avg),
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderColor: palette[0],
+          backgroundColor: cssColor('--chart-ram-min-fill'),
           pointRadius: 2,
           fill: '-1'
         },
         {
           label: 'Min RAM (-1 SD)',
           data: data.charts.ramOverTime.map((d) => Math.max(0, d.min.avg - d.min.std)),
-          borderColor: 'transparent',
-          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderColor: cssColor('--transparent-color'),
+          backgroundColor: cssColor('--chart-ram-min-fill'),
           pointRadius: 0,
           fill: '-1'
         }
@@ -299,10 +303,10 @@
 
   h2 span {
     font-size: 15px;
-    color: #574010;
+    color: var(--stats-warning-text);
     display: inline-block;
     margin-left: 10px;
-    background-color: #fae791;
+    background-color: var(--stats-warning-background);
     padding: 2px 12px;
     border-radius: 50rem;
     vertical-align: middle;

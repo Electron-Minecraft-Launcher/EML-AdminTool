@@ -4,6 +4,7 @@
   import LeftPanel from '../../../components/layouts/LeftPanel.svelte'
   import Footer from '../../../components/layouts/Footer.svelte'
   import getEnv from '$lib/utils/env'
+  import { applyThemePreference } from '$lib/utils/theme'
   import UploadWidget from '../../../components/layouts/UploadWidget.svelte'
   import { customLoaderUploader, filesUpdaterUploader } from '$lib/stores/upload.svelte'
 
@@ -15,6 +16,9 @@
   let { data, children }: Props = $props()
 
   setContext('user', data.user)
+
+  // Keep <html> in sync with the saved preference on client-side navigation (e.g. right after login)
+  $effect(() => applyThemePreference(data.user.theme))
 
   const env = getEnv()
 

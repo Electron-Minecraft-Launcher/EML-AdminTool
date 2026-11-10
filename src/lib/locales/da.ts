@@ -213,6 +213,13 @@ Sørg desuden for, at ingen kan få adgang til EML AdminTool under nulstillingen
           confirmPassword: `Bekræft adgangskode`
         }
       },
+      appearance: {
+        title: `Udseende`,
+        theme: `Tema`,
+        system: `Følg systemet`,
+        light: `Lyst`,
+        dark: `Mørkt`
+      },
       permissions: {
         title: `Tilladelser`
       },
