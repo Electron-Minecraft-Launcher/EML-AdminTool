@@ -43,11 +43,11 @@
     }
 
     &:not(:global(.disabled)):hover span.slider {
-      background: var(--secondary-color-hover);
+      background: var(--surface-control-hover);
     }
 
     &:not(:global(.disabled)):hover input:checked + span.slider {
-      background: var(--primary-color-hover);
+      background: var(--accent-hover-color);
     }
 
     &:not(:global(.disabled)):active {
@@ -63,7 +63,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: var(--secondary-color);
+    background-color: var(--surface-secondary);
     transition: 0.3s;
   }
 
@@ -74,12 +74,12 @@
     width: 13px;
     left: 2px;
     bottom: 2px;
-    background-color: var(--surface-color);
+    background-color: var(--surface-white);
     transition: 0.2s;
   }
 
   input:checked + .slider {
-    background-color: var(--primary-color);
+    background-color: var(--accent-color);
   }
 
   input:checked + .slider:before {

@@ -48,7 +48,7 @@
       padding: 15px 17px;
       border-radius: 10px;
       backdrop-filter: blur(3px);
-      box-shadow: 0 0 30px #00000030;
+      box-shadow: 0 0 30px var(--shadow-notification);
       font-size: 14px;
       position: relative;
       align-items: center;

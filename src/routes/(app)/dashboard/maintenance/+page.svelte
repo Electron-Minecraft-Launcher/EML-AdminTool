@@ -111,7 +111,7 @@ You will need to disable maintenance manually.`
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: var(--text-dark-color);
+    color: var(--text-primary);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -123,7 +123,7 @@ You will need to disable maintenance manually.`
     line-height: 15px;
 
     &:hover {
-      background: var(--surface-hover-color);
+      background: var(--surface-control-hover);
     }
 
     &.off {
@@ -132,11 +132,11 @@ You will need to disable maintenance manually.`
       margin-left: 5px;
       position: relative;
       background: none;
-      color: var(--green-color);
+      color: var(--status-success-color);
       vertical-align: middle;
 
       &:hover {
-        background: var(--success-surface-color);
+        background: var(--surface-success-soft);
       }
     }
 
@@ -146,11 +146,11 @@ You will need to disable maintenance manually.`
       margin-left: 5px;
       position: relative;
       background: none;
-      color: var(--red-color);
+      color: var(--status-error-color);
       vertical-align: middle;
 
       &:hover {
-        background: var(--danger-surface-color);
+        background: var(--surface-danger-soft);
       }
     }
   }
@@ -170,7 +170,7 @@ You will need to disable maintenance manually.`
     font-size: 12px;
     padding: 2px 8px;
     border-radius: 4px;
-    background: var(--secondary-color);
+    background: var(--surface-secondary);
     color: var(--text-secondary);
     margin-right: 5px;
   }

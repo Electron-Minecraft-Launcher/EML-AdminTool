@@ -72,7 +72,7 @@
   {#if leftPanelOpen}
     <h4>{$l.leftPanel.features}</h4>
   {:else}
-    <div class="h4"><hr style="border-color: var(--border-color2); border-top: 0; position: relative; top: 5px;" /></div>
+    <div class="h4"><hr style="border-color: var(--text-secondary); border-top: 0; position: relative; top: 5px;" /></div>
   {/if}
 
   {#if user.profilePermissions.length > 0 || user.isAdmin}
@@ -142,8 +142,8 @@
 
 <style lang="scss">
   nav {
-    background: var(--surface-color);
-    border-right: 1px solid var(--border-color);
+    background: var(--surface-white);
+    border-right: 1px solid var(--border-subtle);
     padding: 30px;
     position: fixed;
     left: 0;
@@ -174,8 +174,8 @@
         }
 
         &:hover {
-          color: var(--primary-color-hover);
-          background: var(--surface-hover-color);
+          color: var(--accent-hover-color);
+          background: var(--surface-control-hover);
         }
       }
     }
@@ -183,7 +183,7 @@
     div.toggle-left-panel {
       width: 39px;
       height: 43px;
-      background: var(--surface-color);
+      background: var(--surface-white);
       position: absolute;
       right: 0;
     }
@@ -199,10 +199,10 @@
 
     button.toggle-left-panel {
       width: 39px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border-subtle);
       border-left: none;
       border-radius: 0 10px 10px 0;
-      background: var(--surface-color);
+      background: var(--surface-white);
       position: absolute;
       transition:
         right 0.3s,
@@ -221,25 +221,25 @@
     margin: 5px 0 40px 0;
     font-size: 20px;
     max-height: 30px;
-    color: var(--text-dark-color);
+    color: var(--text-primary);
     text-align: center;
     transition: all 0.3s;
     white-space: nowrap;
     overflow: hidden;
-    background: var(--surface-color);
+    background: var(--surface-white);
     z-index: 100;
     position: relative;
   }
 
   h4 {
-    color: var(--text-muted-color);
+    color: var(--text-secondary);
     margin-top: 30px;
     font-size: 14px;
   }
 
   div.h4 {
     height: 21px;
-    color: var(--text-muted-color);
+    color: var(--text-secondary);
     margin-top: 30px;
     margin-bottom: 18.6px;
     font-size: 14px;
@@ -249,7 +249,7 @@
     display: block;
     margin-top: 10px;
     border-bottom: none;
-    color: var(--text-dark-color);
+    color: var(--text-primary);
     border-radius: 5px;
     padding: 10px 15px !important;
     font-size: 14px;
@@ -259,12 +259,12 @@
 
     &:hover,
     &.active:hover {
-      color: var(--primary-color-hover);
-      background: var(--surface-hover-color);
+      color: var(--accent-hover-color);
+      background: var(--surface-control-hover);
     }
 
     &.active {
-      background: var(--secondary-color);
+      background: var(--surface-control-active);
     }
 
     i.fa-solid {
@@ -287,11 +287,11 @@
     }
 
     &.account:hover {
-      color: var(--text-dark-color);
+      color: var(--text-primary);
 
       i.fa-caret-up {
-        color: var(--primary-color-hover);
-        background: var(--surface-hover-color);
+        color: var(--accent-hover-color);
+        background: var(--surface-control-hover);
       }
     }
   }
@@ -300,8 +300,8 @@
     display: block;
     margin-top: 10px;
     border-bottom: none;
-    color: var(--text-dark-color);
-    background: transparent;
+    color: var(--text-primary);
+    background: var(--transparent-color);
     border-radius: 5px;
     padding: 10px 15px;
     font-size: 14px;
@@ -322,8 +322,8 @@
       }
 
       &:hover {
-        color: var(--primary-color-hover);
-        background: var(--surface-hover-color);
+        color: var(--accent-hover-color);
+        background: var(--surface-control-hover);
       }
     }
 
@@ -340,16 +340,16 @@
     }
 
     &.account:hover {
-      color: var(--text-dark-color);
+      color: var(--text-primary);
 
       i.fa-caret-up {
-        color: var(--primary-color-hover);
-        background: var(--surface-hover-color);
+        color: var(--accent-hover-color);
+        background: var(--surface-control-hover);
       }
     }
 
     &.active {
-      background: var(--secondary-color);
+      background: var(--surface-control-active);
     }
 
     i.fa-solid {
@@ -367,14 +367,14 @@
       opacity 0.2s,
       height 0.2s ease,
       display 0s;
-    background: var(--surface-color);
+    background: var(--surface-white);
     padding: 10px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     z-index: 100;
     position: absolute;
     width: 178px;
     bottom: 142px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 20px var(--shadow-raised-surface);
 
     > a:nth-of-type(1) {
       margin-top: 0;
@@ -384,7 +384,8 @@
       display: block;
       margin-top: 10px;
       border-bottom: none;
-      background: transparent;
+      color: var(--text-primary);
+      background: var(--transparent-color);
       border-radius: 5px;
       padding: 10px 15px;
       font-size: 14px;
@@ -394,10 +395,10 @@
       width: 178px;
       text-align: left;
       height: 41px;
-      color: var(--red-color);
+      color: var(--status-error-color);
 
       &:hover {
-        background: var(--danger-surface-color);
+        background: var(--surface-danger-soft);
       }
 
       i.fa-solid {

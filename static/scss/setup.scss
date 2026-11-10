@@ -15,11 +15,11 @@ form {
   margin: 12vh auto 30px auto;
   transition: opacity 0.5s;
   position: relative;
-  background-color: var(--surface-color);
+  background-color: var(--surface-white);
   padding: 50px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-subtle);
   border-radius: 10px;
-  box-shadow: 0 5px 50px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 50px var(--shadow-control);
 }
 
 button.primary {

@@ -14,10 +14,7 @@
   let { newsTags, selectedTagId = $bindable(), showAddEditTagModal = $bindable() }: Props = $props()
 
   function backgroundColor(color: string) {
-    const r = parseInt(color.slice(1, 3), 16)
-    const g = parseInt(color.slice(3, 5), 16)
-    const b = parseInt(color.slice(5, 7), 16)
-    return `rgba(${r}, ${g}, ${b}, 0.1)`
+    return `${color}1A`
   }
 
   async function deleteTag(tagId: string) {
@@ -68,14 +65,14 @@
   p.nothing {
     text-align: center;
     margin-top: 15px;
-    color: var(--text-muted-color);
+    color: var(--text-secondary);
   }
 
   button {
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: var(--text-dark-color);
+    color: var(--text-primary);
     position: relative;
     vertical-align: bottom;
     font-family: 'Poppins';
@@ -83,7 +80,7 @@
     line-height: 15px;
 
     &:hover {
-      background: var(--surface-hover-color);
+      background: var(--surface-control-hover);
     }
 
     &.remove {
@@ -92,11 +89,11 @@
       margin-left: 5px;
       position: relative;
       background: none;
-      color: var(--red-color);
+      color: var(--status-error-color);
       vertical-align: middle;
 
       &:hover {
-        background: var(--danger-surface-color);
+        background: var(--surface-danger-soft);
       }
     }
   }

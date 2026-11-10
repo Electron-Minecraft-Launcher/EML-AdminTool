@@ -51,10 +51,10 @@
     position: fixed;
     top: 20px;
     right: 25px;
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
+    background: var(--surface-white);
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px var(--shadow-control);
     display: flex;
     align-items: center;
     padding: 15px 20px;
@@ -65,7 +65,7 @@
     flex-shrink: 0;
 
     .icon {
-      color: var(--primary-color);
+      color: var(--accent-color);
       font-size: 20px;
     }
 
@@ -85,13 +85,13 @@
       .progress-bar {
         width: 100%;
         height: 6px;
-        background: var(--secondary-color);
+        background: var(--surface-control-hover);
         border-radius: 3px;
         overflow: hidden;
 
         .fill {
           height: 100%;
-          background: var(--primary-color);
+          background: var(--accent-color);
           transition: width 0.2s ease-out;
         }
       }
@@ -99,7 +99,7 @@
 
     .count {
       font-size: 12px;
-      color: var(--text-muted-color);
+      color: var(--text-secondary);
       white-space: nowrap;
       text-align: right;
       width: 170px;

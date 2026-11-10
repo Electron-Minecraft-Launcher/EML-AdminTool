@@ -419,7 +419,7 @@
     margin-top: 0;
     position: sticky;
     top: 0;
-    background: var(--surface-color);
+    background: var(--surface-white);
   }
 
   div.list {
@@ -441,7 +441,7 @@
         margin-bottom: 20px;
 
         option.old {
-          color: var(--red-color);
+          color: var(--text-version-outdated);
         }
       }
     }
@@ -453,7 +453,7 @@
         margin-top: 0;
         position: sticky;
         top: 0;
-        background: var(--surface-color);
+        background: var(--surface-white);
         z-index: 100;
       }
     }
@@ -461,7 +461,7 @@
     button:not(.remove):not(.upload) {
       display: block;
       border-bottom: none;
-      color: var(--text-dark-color);
+      color: var(--text-primary);
       position: relative;
       overflow: hidden;
       white-space: nowrap;
@@ -473,21 +473,21 @@
       text-align: left;
 
       i {
-        color: var(--text-dark-color);
+        color: var(--text-primary);
       }
 
       &.active {
-        background: var(--secondary-color);
+        background: var(--surface-control-active);
       }
 
       &:hover {
-        background: var(--surface-hover-color);
+        background: var(--surface-control-hover);
       }
     }
   }
 
   code {
-    background: var(--code-background-color);
+    background: var(--surface-code-background);
     padding: 2px 4px;
     border-radius: 4px;
     font-family: 'Fira Code', monospace;

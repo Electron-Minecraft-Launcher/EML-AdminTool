@@ -150,7 +150,7 @@ You will need to disable maintenance manually.`
     }
 
     p.note {
-      color: var(--info-color);
+      color: var(--link-color);
       font-weight: 600;
       margin-bottom: 5px;
       margin-top: 30px;

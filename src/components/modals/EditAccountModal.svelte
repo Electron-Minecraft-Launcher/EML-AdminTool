@@ -79,7 +79,7 @@
 
   p.warn {
     margin: 5px 0 0 0;
-    color: #fa5650;
+    color: var(--text-error-bright);
     font-size: 12px;
   }
 

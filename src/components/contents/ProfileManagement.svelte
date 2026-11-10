@@ -227,16 +227,16 @@
   }
 
   button.accept {
-    color: var(--green-color);
+    color: var(--management-success-text);
   }
 
   button.refuse {
     right: 58px;
-    color: var(--red-color);
+    color: var(--management-error-text);
   }
 
   button.delete {
-    color: var(--red-color);
+    color: var(--management-error-text);
   }
 
   div.user-permissions {
@@ -260,7 +260,7 @@
       font-size: 12px;
       padding: 2px 8px;
       border-radius: 4px;
-      background: var(--secondary-color);
+      background: var(--surface-secondary);
       color: var(--text-secondary);
     }
   }
@@ -270,7 +270,7 @@
     font-size: 12px;
     padding: 2px 8px;
     border-radius: 4px;
-    background: var(--secondary-color);
+    background: var(--surface-secondary);
     color: var(--text-secondary);
     margin-right: 5px;
   }
@@ -284,7 +284,7 @@
     }
 
     p.note {
-      color: var(--info-color);
+      color: var(--link-color);
       font-weight: 600;
       margin-bottom: 5px;
     }

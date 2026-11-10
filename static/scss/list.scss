@@ -27,11 +27,11 @@ div.list-container {
         margin-top: 5px;
   
         &.active {
-          background: var(--secondary-color);
+          background: var(--surface-control-active);
         }
   
         &:hover {
-          background: var(--secondary-color-hover);
+          background: var(--surface-control-hover);
         }
       }
     }

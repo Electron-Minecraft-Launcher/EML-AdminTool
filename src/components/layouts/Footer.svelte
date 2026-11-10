@@ -33,7 +33,7 @@
   }
 
   hr {
-    background-color: var(--border-color);
+    background-color: var(--border-footer);
     height: 1px;
     border-width: 0px;
     margin-bottom: 30px;

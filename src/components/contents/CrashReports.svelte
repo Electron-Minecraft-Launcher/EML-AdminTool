@@ -98,9 +98,9 @@
             <p class="label">Addressed</p>
             <p>
               {@html cr.addressedAt
-                ? '<i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>&nbsp;&nbsp;' +
+                ? '<i class="fa-solid fa-circle-check" style="color: var(--status-success-color);"></i>&nbsp;&nbsp;' +
                   new Date(cr.addressedAt).toLocaleDateString()
-                : '<i class="fa-solid fa-circle-xmark" style="color: var(--red-color);"></i>'}
+                : '<i class="fa-solid fa-circle-xmark" style="color: var(--status-error-color);"></i>'}
             </p>
           </div>
         </div>
@@ -155,7 +155,7 @@
   p.nothing {
     text-align: center;
     margin-top: 20px;
-    color: var(--text-muted-color);
+    color: var(--text-secondary);
   }
 
   div.info {
@@ -165,7 +165,7 @@
     p {
       margin: 0 30px 0 0;
       font-size: 14px;
-      color: var(--text-dark-color);
+      color: var(--text-primary);
       display: inline-block;
     }
   }
@@ -229,11 +229,11 @@
 
   i.fa-solid {
     .fa-circle-check {
-      color: green;
+      color: var(--status-success-color);
     }
 
     .fa-circle-xmark {
-      color: red;
+      color: var(--status-error-color);
     }
   }
 
@@ -241,7 +241,7 @@
     display: inline-block;
     margin-top: 0;
     border-bottom: none;
-    color: var(--text-dark-color);
+    color: var(--text-primary);
     position: relative;
     overflow: hidden;
     white-space: nowrap;
@@ -252,7 +252,7 @@
     line-height: 15px;
 
     &:hover {
-      background: var(--surface-hover-color);
+      background: var(--surface-control-hover);
     }
   }
 </style>

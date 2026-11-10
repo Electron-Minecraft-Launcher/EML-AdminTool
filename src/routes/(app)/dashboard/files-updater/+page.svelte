@@ -261,13 +261,13 @@
   div.profile-tabs {
     display: flex;
     gap: 10px;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-subtle);
     overflow-x: auto;
     overflow-y: hidden;
 
     button {
       border: none;
-      border-bottom: 2px solid transparent;
+      border-bottom: 2px solid var(--transparent-color);
       border-radius: 5px 5px 0 0;
       background: none;
       padding: 15px 20px;
@@ -276,8 +276,8 @@
       font-size: 1em;
 
       &.active {
-        color: var(--primary-color) !important;
-        border-bottom: 2px solid var(--primary-color);
+        color: var(--accent-color) !important;
+        border-bottom: 2px solid var(--accent-color);
       }
     }
   }
@@ -290,15 +290,15 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: rgb(194, 81, 5);
+      color: var(--accent-color);
       position: absolute;
       top: 10px;
       left: 10px;
       width: calc(100% - 26px);
       height: calc(100% - 26px);
-      background: rgba(194, 81, 5, 0.25);
+      background: var(--accent-overlay-background);
       border-radius: 7px;
-      border: 3px dashed rgba(194, 81, 5, 0.75);
+      border: 3px dashed var(--accent-overlay-border);
       z-index: 1000;
     }
 
@@ -326,7 +326,7 @@
           left: 103px;
           width: 60px;
           height: 53px;
-          background: linear-gradient(to right, white, transparent);
+          background: linear-gradient(to right, var(--surface-white), var(--transparent-color));
           z-index: 10;
         }
 
@@ -337,7 +337,7 @@
           left: 774px;
           width: 60px;
           height: 53px;
-          background: linear-gradient(to right, transparent, white);
+          background: linear-gradient(to right, var(--transparent-color), var(--surface-white));
           z-index: 10;
         }
       }
@@ -345,7 +345,7 @@
       button {
         display: inline;
         border-bottom: none;
-        color: var(--text-dark-color);
+        color: var(--text-primary);
         font-size: 18.72px;
         border-radius: 5px;
         padding: 10px 15px;
@@ -359,13 +359,13 @@
         line-height: 28.72px;
 
         &:hover {
-          color: var(--primary-color-hover);
-          background: var(--surface-hover-color);
-          color: var(--text-dark-color);
+          color: var(--accent-hover-color);
+          background: var(--surface-control-hover);
+          color: var(--text-primary);
         }
 
         &.active {
-          background: var(--secondary-color);
+          background: var(--surface-control-active);
         }
       }
     }

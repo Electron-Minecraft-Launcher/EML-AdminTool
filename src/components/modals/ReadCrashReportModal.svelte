@@ -187,11 +187,11 @@
       <div class="addressed">
         {#if addressedAt}
           <p>
-            <i class="fa-solid fa-circle-check" style="color: var(--green-color);"></i>&nbsp;&nbsp;Addressed on
+            <i class="fa-solid fa-circle-check" style="color: var(--status-success-color);"></i>&nbsp;&nbsp;Addressed on
             {new Date(addressedAt).toLocaleDateString()}
           </p>
         {:else}
-          <p><i class="fa-solid fa-circle-xmark" style="color: var(--red-color);"></i>&nbsp;&nbsp;Not addressed</p>
+          <p><i class="fa-solid fa-circle-xmark" style="color: var(--status-error-color);"></i>&nbsp;&nbsp;Not addressed</p>
         {/if}
       </div>
       <button type="button" class="secondary" onclick={() => (show = false)}>{$l.common.cancel}</button>
@@ -221,13 +221,13 @@
   div.data-tabs {
     display: flex;
     gap: 10px;
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 2px solid var(--border-subtle);
     overflow-x: auto;
     overflow-y: hidden;
 
     button {
       border: none;
-      border-bottom: 2px solid transparent;
+      border-bottom: 2px solid var(--transparent-color);
       border-radius: 5px 5px 0 0;
       background: none;
       padding: 15px 20px;
@@ -236,8 +236,8 @@
       font-size: 1em;
 
       &.active {
-        color: var(--primary-color) !important;
-        border-bottom: 2px solid var(--primary-color);
+        color: var(--accent-color) !important;
+        border-bottom: 2px solid var(--accent-color);
       }
     }
   }

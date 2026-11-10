@@ -261,7 +261,7 @@
     margin: 0;
     font-size: 15px;
     line-height: 1.6;
-    color: var(--text-dark-color);
+    color: var(--text-primary);
   }
 
   div.flex {
@@ -286,7 +286,7 @@
   div.permission {
     display: flex;
     gap: 20px;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-subtle);
     border-radius: 5px;
     padding: 5px;
     margin-top: 5px;
@@ -317,7 +317,7 @@
     }
 
     p.note {
-      color: var(--info-color);
+      color: var(--link-color);
       font-weight: 600;
       margin-bottom: 5px;
     }

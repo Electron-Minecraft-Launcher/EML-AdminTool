@@ -124,7 +124,7 @@
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    background-color: white;
+    background-color: var(--surface-white);
 
     div {
       position: fixed;
@@ -136,7 +136,7 @@
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      background-color: white;
+      background-color: var(--surface-white);
     }
 
     p {
@@ -192,13 +192,13 @@
     left: 0;
     width: 100%;
     height: 5px;
-    background-color: var(--medium-background-color);
+    background-color: var(--surface-medium);
 
     span {
       height: 5px;
       width: 0;
       transition: width 0.8s cubic-bezier(0, 0, 0.2, 1);
-      background-color: var(--primary-color);
+      background-color: var(--accent-color);
       display: block;
       border-top-right-radius: 50rem;
       border-bottom-right-radius: 50rem;

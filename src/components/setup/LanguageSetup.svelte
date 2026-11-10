@@ -110,10 +110,10 @@
       }
 
       &.selected {
-        background: var(--primary-light-color);
+        background: var(--accent-soft-background);
 
         &:hover {
-          background: var(--primary-light-color-hover);
+          background: var(--accent-soft-hover-background);
         }
       }
 
